@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; }
+body { font-family: -apple-system, 'Segoe UI', sans-serif; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 9999px; }
+input,select,textarea { outline: none; }
