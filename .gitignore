@@ -1,58 +1,82 @@
 # =========================
-# Node.js (Frontend + Backend)
+# NODE MODULES
 # =========================
 node_modules/
-**/node_modules/
-
-# =========================
-# Build & Output
-# =========================
-.next/
-dist/
-build/
-out/
-
-# =========================
-# Logs
-# =========================
-logs
-*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
 # =========================
-# Environment files
+# NEXT.JS
+# =========================
+.next/
+out/
+build/
+.next/cache/
+
+# =========================
+# ENV FILES (IMPORTANT 🔐)
 # =========================
 .env
 .env.local
-.env.development
-.env.production
+.env.development.local
+.env.test.local
+.env.production.local
 
 # =========================
-# TypeScript
+# LOG FILES
 # =========================
-*.tsbuildinfo
+logs/
+*.log
 
 # =========================
-# OS files
+# OS FILES
 # =========================
 .DS_Store
 Thumbs.db
 
 # =========================
-# IDE / Editor
+# IDE / EDITOR
 # =========================
 .vscode/
 .idea/
+*.swp
 
 # =========================
-# Cache
+# PRISMA
 # =========================
-.cache/
+prisma/dev.db
+prisma/dev.db-journal
+prisma/*.db
+
+# =========================
+# BUILD FILES
+# =========================
+dist/
 coverage/
 
 # =========================
-# Misc
+# CACHE
+# =========================
+.cache/
+.tmp/
+
+# =========================
+# UPLOADS (if any)
+# =========================
+uploads/
+public/uploads/
+
+# =========================
+# CERTIFICATES / KEYS 🔐
 # =========================
 *.pem
+*.key
+*.crt
+
+# =========================
+# MISC
+# =========================
+*.tgz
+*.zip
