@@ -29,13 +29,13 @@ export const authApi = {
 
 // Companies
 export const companyApi = {
-  list:           (params?: any)       => request<any>(`/companies?${new URLSearchParams(params||{})}`),
-  get:            (id: string)         => request<any>(`/companies/${id}`),
-  create:         (body: any)          => request<any>('/companies', { method: 'POST', body: JSON.stringify(body) }),
+  list:           (params?: any)          => request<any>(`/companies?${new URLSearchParams(params||{})}`),
+  get:            (id: string)            => request<any>(`/companies/${id}`),
+  create:         (body: any)             => request<any>('/companies', { method: 'POST', body: JSON.stringify(body) }),
   update:         (id: string, body: any) => request<any>(`/companies/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
-  getSettings:    (id: string)         => request<any>(`/companies/${id}/settings`),
+  getSettings:    (id: string)            => request<any>(`/companies/${id}/settings`),
   updateSettings: (id: string, body: any) => request<any>(`/companies/${id}/settings`, { method: 'PUT', body: JSON.stringify(body) }),
-  regenerateKey:  (id: string)         => request<any>(`/companies/${id}/regenerate-key`, { method: 'POST' }),
+  regenerateKey:  (id: string)            => request<any>(`/companies/${id}/regenerate-key`, { method: 'POST' }),
 };
 
 // Leads

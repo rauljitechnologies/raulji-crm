@@ -15,8 +15,8 @@ export function Topbar({ title, subtitle, actions }: { title: string; subtitle?:
 }
 
 // ── Card ──────────────────────────────────────────────────────
-export function Card({ children, className = '', ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div {...props} className={`bg-white border border-slate-200 rounded-xl p-4 ${className}`}>{children}</div>;
+export function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  return <div className={`bg-white border border-slate-200 rounded-xl p-4 ${className}`}>{children}</div>;
 }
 
 // ── Button ────────────────────────────────────────────────────
