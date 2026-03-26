@@ -1,44 +1,8 @@
 const { PrismaClient } = require('@prisma/client');
 const crypto = require('crypto');
-const prisma = new PrismaClient();
+const prisma  = new PrismaClient();
 
 const genKey = (slug) => `rcrm_live_${slug.slice(0,6)}_${crypto.randomBytes(16).toString('hex')}`;
-const clean = (value) => {
-  if (value === undefined || value === null) return undefined;
-  if (typeof value !== 'string') return value;
-  const trimmed = value.trim();
-  return trimmed || null;
-};
-
-const buildAddress = (input = {}) => {
-  const address = {
-    street: clean(input.street),
-    area: clean(input.area),
-    city: clean(input.city),
-    state: clean(input.state),
-    country: clean(input.country),
-    pincode: clean(input.pincode),
-  };
-  return Object.fromEntries(Object.entries(address).filter(([, value]) => value != null));
-};
-
-const buildCompanySettings = (existing = {}, input = {}) => {
-  const merged = {
-    ...existing,
-    brandName: clean(input.brandName),
-    contactPerson: clean(input.contactPerson),
-    mobileNumber: clean(input.mobileNumber),
-    email: clean(input.email),
-    website: clean(input.website),
-    otherInformation: clean(input.otherInformation),
-  };
-  return Object.fromEntries(Object.entries(merged).filter(([, value]) => value !== undefined));
-};
-
-const normalizeCompanyIds = (user) => {
-  const extra = Array.isArray(user?.permissions?.accessibleCompanyIds) ? user.permissions.accessibleCompanyIds : [];
-  return [...new Set([user?.companyId, ...extra].filter(Boolean))];
-};
 
 exports.getAll = async (req, res) => {
   try {
@@ -48,13 +12,6 @@ exports.getAll = async (req, res) => {
       ...(status && { status }),
       ...(search && { OR:[{name:{contains:search,mode:'insensitive'}},{domain:{contains:search,mode:'insensitive'}}] })
     };
-    if (req.user?.role !== 'SUPER_ADMIN') {
-      const currentUser = await prisma.user.findUnique({
-        where: { userId: req.user.userId },
-        select: { companyId: true, permissions: true },
-      });
-      where.companyId = { in: normalizeCompanyIds(currentUser) };
-    }
     const [companies, total] = await Promise.all([
       prisma.company.findMany({ where, include:{ _count:{ select:{ leads:true, users:true } } }, orderBy:{ createdAt:'desc' }, skip:(page-1)*+limit, take:+limit }),
       prisma.company.count({ where })
@@ -65,30 +22,24 @@ exports.getAll = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
-    const {
-      name, domain, gst, industry, plan, address, logo,
-      brandName, contactPerson, mobileNumber, email, website, otherInformation
-    } = req.body;
+    const { name, domain, gst, industry, plan, address, phone, email, website } = req.body;
     if (!name) return res.status(400).json({ success:false, error:{ message:'Name required.' } });
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
     const exists = await prisma.company.findUnique({ where:{ slug } });
     const finalSlug = exists ? `${slug}-${Date.now()}` : slug;
     const company = await prisma.company.create({ data:{
       name, slug:finalSlug,
-      domain: clean(domain),
-      logo: clean(logo),
-      gst: clean(gst),
-      industry: clean(industry),
-      plan: (plan || 'STARTER').toUpperCase(),
-      apiKey: genKey(finalSlug),
+      domain:   domain   || null,
+      gst:      gst      || null,
+      industry: industry || null,
+      phone:    phone    || null,
+      email:    email    || null,
+      website:  website  || null,
+      plan:     (plan || 'STARTER').toUpperCase(),
+      apiKey:   genKey(finalSlug),
       apiSecret: crypto.randomBytes(16).toString('hex'),
-      address: buildAddress(address),
-      settings: {
-        currency:'INR',
-        timezone:'Asia/Kolkata',
-        gstRate:18,
-        ...buildCompanySettings({}, { brandName, contactPerson, mobileNumber, email, website, otherInformation }),
-      }
+      address:  address || {},
+      settings: { currency:'INR', timezone:'Asia/Kolkata', gstRate:18 }
     }});
     return res.status(201).json({ success:true, data:company });
   } catch(err) { return res.status(500).json({ success:false, error:{ message:err.message } }); }
@@ -107,26 +58,10 @@ exports.getOne = async (req, res) => {
 
 exports.update = async (req, res) => {
   try {
-    const {
-      name, domain, gst, industry, plan, status, logo, address,
-      brandName, contactPerson, mobileNumber, email, website, otherInformation
-    } = req.body;
-    const current = await prisma.company.findUnique({ where:{ companyId:req.params.companyId } });
-    if (!current) return res.status(404).json({ success:false, error:{ message:'Not found.' } });
     const updateData = {};
-    if (name     !== undefined) updateData.name     = name;
-    if (domain   !== undefined) updateData.domain   = clean(domain);
-    if (logo     !== undefined) updateData.logo     = clean(logo);
-    if (gst      !== undefined) updateData.gst      = clean(gst);
-    if (industry !== undefined) updateData.industry = clean(industry);
-    if (plan     !== undefined) updateData.plan     = plan.toUpperCase();
-    if (status   !== undefined) updateData.status   = status;
-    if (address  !== undefined) updateData.address  = buildAddress(address);
-    if ([brandName, contactPerson, mobileNumber, email, website, otherInformation].some(v => v !== undefined)) {
-      updateData.settings = buildCompanySettings(current.settings || {}, {
-        brandName, contactPerson, mobileNumber, email, website, otherInformation
-      });
-    }
+    const fields = ['name','domain','gst','industry','phone','email','website','plan','status','address','bankDetails'];
+    fields.forEach(f => { if (req.body[f] !== undefined) updateData[f] = req.body[f]; });
+    if (updateData.plan) updateData.plan = updateData.plan.toUpperCase();
     const co = await prisma.company.update({ where:{ companyId:req.params.companyId }, data:updateData });
     return res.json({ success:true, data:co });
   } catch(err) { return res.status(500).json({ success:false, error:{ message:err.message } }); }
@@ -148,21 +83,31 @@ exports.regenerateKey = async (req, res) => {
   } catch(err) { return res.status(500).json({ success:false, error:{ message:err.message } }); }
 };
 
+// Returns full company profile — used by invoice/quotation create forms
 exports.getSettings = async (req, res) => {
   try {
     const co = await prisma.company.findUnique({
       where: { companyId:req.params.companyId },
-      select: { companyId:true, name:true, logo:true, domain:true, settings:true, plan:true, apiKey:true, gst:true, address:true }
+      select: { companyId:true, name:true, logo:true, gst:true, phone:true, email:true, website:true, address:true, bankDetails:true, settings:true, plan:true, apiKey:true }
     });
     return res.json({ success:true, data:co });
   } catch(err) { return res.status(500).json({ success:false, error:{ message:err.message } }); }
 };
 
+// Updates both settings JSON and top-level fields (phone, email, website, bankDetails, etc.)
 exports.updateSettings = async (req, res) => {
   try {
-    const co = await prisma.company.findUnique({ where:{ companyId:req.params.companyId } });
-    const merged = { ...(co.settings || {}), ...req.body };
-    await prisma.company.update({ where:{ companyId:req.params.companyId }, data:{ settings:merged } });
+    const { phone, email, website, address, gst, bankDetails, ...settingsFields } = req.body;
+    const co      = await prisma.company.findUnique({ where:{ companyId:req.params.companyId } });
+    const merged  = { ...(co.settings || {}), ...settingsFields };
+    const updateData = { settings: merged };
+    if (phone       !== undefined) updateData.phone       = phone;
+    if (email       !== undefined) updateData.email       = email;
+    if (website     !== undefined) updateData.website     = website;
+    if (address     !== undefined) updateData.address     = address;
+    if (gst         !== undefined) updateData.gst         = gst;
+    if (bankDetails !== undefined) updateData.bankDetails = bankDetails;
+    await prisma.company.update({ where:{ companyId:req.params.companyId }, data: updateData });
     return res.json({ success:true, data:{ settings:merged } });
   } catch(err) { return res.status(500).json({ success:false, error:{ message:err.message } }); }
 };

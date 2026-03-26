@@ -6,10 +6,6 @@ const prisma = new PrismaClient();
 
 const signAccess  = (p) => jwt.sign(p, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN  || '1h'  });
 const signRefresh = (p) => jwt.sign(p, process.env.JWT_SECRET, { expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN || '30d' });
-const normalizeCompanyIds = (user) => {
-  const extra = Array.isArray(user?.permissions?.accessibleCompanyIds) ? user.permissions.accessibleCompanyIds : [];
-  return [...new Set([user?.companyId, ...extra].filter(Boolean))];
-};
 
 exports.register = async (req, res) => {
   try {
@@ -39,20 +35,7 @@ exports.login = async (req, res) => {
     if (!await bcrypt.compare(password, user.password))
       return res.status(401).json({ success: false, error: { code: 'AUTH_001', message: 'Invalid credentials.' } });
 
-    const accessibleCompanyIds = normalizeCompanyIds(user);
-    const accessibleCompanies = user.role === 'SUPER_ADMIN'
-      ? await prisma.company.findMany({
-          where: { deletedAt: null, status: { not: 'DELETED' } },
-          select: { companyId: true, name: true, logo: true, plan: true, slug: true },
-          orderBy: { createdAt: 'desc' },
-        })
-      : await prisma.company.findMany({
-          where: { companyId: { in: accessibleCompanyIds }, deletedAt: null, status: { not: 'DELETED' } },
-          select: { companyId: true, name: true, logo: true, plan: true, slug: true },
-          orderBy: { createdAt: 'desc' },
-        });
-
-    const payload = { userId: user.userId, email: user.email, role: user.role, companyId: user.companyId, companyIds: accessibleCompanyIds };
+    const payload = { userId: user.userId, email: user.email, role: user.role, companyId: user.companyId };
     const accessToken  = signAccess(payload);
     const refreshToken = signRefresh(payload);
 
@@ -61,18 +44,7 @@ exports.login = async (req, res) => {
 
     return res.json({ success: true, data: {
       accessToken, refreshToken, expiresIn: 3600, tokenType: 'Bearer',
-      user: {
-        userId: user.userId,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        companyId: user.companyId,
-        companyIds: accessibleCompanyIds,
-        avatar: user.avatar,
-        permissions: { ...(user.permissions || {}), accessibleCompanyIds },
-        company: user.company,
-        companies: accessibleCompanies,
-      }
+      user: { userId: user.userId, name: user.name, email: user.email, role: user.role, companyId: user.companyId, avatar: user.avatar, permissions: user.permissions, company: user.company }
     }});
   } catch (err) { return res.status(500).json({ success: false, error: { message: err.message } }); }
 };
@@ -85,7 +57,7 @@ exports.refreshToken = async (req, res) => {
     if (!stored || stored.expiresAt < new Date())
       return res.status(401).json({ success: false, error: { message: 'Refresh token expired.' } });
     const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
-    return res.json({ success: true, data: { accessToken: signAccess({ userId: decoded.userId, email: decoded.email, role: decoded.role, companyId: decoded.companyId, companyIds: decoded.companyIds || [] }), expiresIn: 3600 } });
+    return res.json({ success: true, data: { accessToken: signAccess({ userId: decoded.userId, email: decoded.email, role: decoded.role, companyId: decoded.companyId }), expiresIn: 3600 } });
   } catch (err) { return res.status(401).json({ success: false, error: { message: 'Invalid refresh token.' } }); }
 };
 
@@ -101,36 +73,10 @@ exports.getMe = async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
       where: { userId: req.user.userId },
-      include: { company: { select: { companyId: true, name: true, logo: true, plan: true, slug: true, apiKey: true } } }
+      include: { company: { select: { companyId: true, name: true, logo: true, plan: true, slug: true, apiKey: true } } },
+      select: { userId: true, name: true, email: true, phone: true, role: true, permissions: true, avatar: true, companyId: true, isVerified: true, lastLogin: true, company: true, createdAt: true }
     });
-    const accessibleCompanyIds = normalizeCompanyIds(user);
-    const companies = user.role === 'SUPER_ADMIN'
-      ? await prisma.company.findMany({
-          where: { deletedAt: null, status: { not: 'DELETED' } },
-          select: { companyId: true, name: true, logo: true, plan: true, slug: true },
-          orderBy: { createdAt: 'desc' },
-        })
-      : await prisma.company.findMany({
-          where: { companyId: { in: accessibleCompanyIds }, deletedAt: null, status: { not: 'DELETED' } },
-          select: { companyId: true, name: true, logo: true, plan: true, slug: true },
-          orderBy: { createdAt: 'desc' },
-        });
-    return res.json({ success: true, data: {
-      userId: user.userId,
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      role: user.role,
-      permissions: { ...(user.permissions || {}), accessibleCompanyIds },
-      avatar: user.avatar,
-      companyId: user.companyId,
-      companyIds: accessibleCompanyIds,
-      isVerified: user.isVerified,
-      lastLogin: user.lastLogin,
-      company: user.company,
-      companies,
-      createdAt: user.createdAt,
-    } });
+    return res.json({ success: true, data: user });
   } catch (err) { return res.status(500).json({ success: false, error: { message: err.message } }); }
 };
 

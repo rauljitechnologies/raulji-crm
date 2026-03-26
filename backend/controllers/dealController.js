@@ -1,63 +1,38 @@
 const { PrismaClient } = require('@prisma/client');
-
 const prisma = new PrismaClient();
 
+// ================= GET DEALS =================
 exports.getDeals = async (req, res) => {
   try {
     const { companyId } = req.params;
-    const {
-      stage,
-      search,
-      assignedTo,
-      page = 1,
-      limit = 25,
-      sortBy = 'updatedAt',
-      sortOrder = 'desc',
-    } = req.query;
+    const { stage, page = 1, limit = 25 } = req.query;
 
     const where = {
       companyId,
-      ...(stage && { stage }),
-      ...(assignedTo && { assignedToId: assignedTo }),
-      ...(search && {
-        OR: [
-          { name: { contains: search, mode: 'insensitive' } },
-          { lostReason: { contains: search, mode: 'insensitive' } },
-        ],
-      }),
+      ...(stage && { stage })
     };
 
-    const [deals, total, pipeline] = await Promise.all([
+    const [deals, total] = await Promise.all([
       prisma.deal.findMany({
         where,
         include: {
           lead: {
-            select: {
-              leadId: true,
-              name: true,
-              phone: true,
-            },
-          },
-          assignedTo: {
-            select: {
-              userId: true,
-              name: true,
-              avatar: true,
-            },
-          },
+            select: { leadId: true, name: true, phone: true }
+          }
         },
-        orderBy: { [sortBy]: sortOrder },
-        skip: (+page - 1) * +limit,
-        take: +limit,
+        orderBy: { updatedAt: 'desc' },
+        skip: (page - 1) * +limit,
+        take: +limit
       }),
-      prisma.deal.count({ where }),
-      prisma.deal.groupBy({
-        by: ['stage'],
-        where: { companyId },
-        _count: { stage: true },
-        _sum: { value: true },
-      }),
+      prisma.deal.count({ where })
     ]);
+
+    const pipeline = await prisma.deal.groupBy({
+      by: ['stage'],
+      where: { companyId },
+      _count: { stage: true },
+      _sum: { value: true }
+    });
 
     return res.json({
       success: true,
@@ -67,35 +42,34 @@ exports.getDeals = async (req, res) => {
           total,
           page: +page,
           limit: +limit,
-          pages: Math.ceil(total / limit),
+          pages: Math.ceil(total / limit)
         },
-        pipeline,
-      },
+        pipeline
+      }
     });
   } catch (err) {
     return res.status(500).json({
       success: false,
-      error: { message: err.message },
+      error: { message: err.message }
     });
   }
 };
 
+// ================= GET SINGLE DEAL =================
 exports.getDeal = async (req, res) => {
   try {
-    const { companyId, dealId } = req.params;
-
     const deal = await prisma.deal.findFirst({
-      where: { dealId, companyId },
-      include: {
-        lead: true,
-        assignedTo: true,
+      where: {
+        dealId: req.params.dealId,
+        companyId: req.params.companyId
       },
+      include: { lead: true }
     });
 
     if (!deal) {
       return res.status(404).json({
         success: false,
-        error: { message: 'Deal not found.' },
+        error: { message: 'Not found.' }
       });
     }
 
@@ -103,14 +77,16 @@ exports.getDeal = async (req, res) => {
   } catch (err) {
     return res.status(500).json({
       success: false,
-      error: { message: err.message },
+      error: { message: err.message }
     });
   }
 };
 
+// ================= CREATE DEAL =================
 exports.createDeal = async (req, res) => {
   try {
     const { companyId } = req.params;
+
     const {
       leadId,
       name,
@@ -119,181 +95,120 @@ exports.createDeal = async (req, res) => {
       stage = 'NEW_LEAD',
       probability = 0,
       expectedCloseDate,
-      assignedToId,
-      lostReason,
+      assignedToId
     } = req.body;
-
-    if (!name) {
-      return res.status(400).json({
-        success: false,
-        error: { message: 'Deal name is required.' },
-      });
-    }
 
     const deal = await prisma.deal.create({
       data: {
         companyId,
         leadId: leadId || null,
         name,
-        value: +value || 0,
+        value: +value,
         currency,
         stage,
-        probability: +probability || 0,
-        expectedCloseDate: expectedCloseDate ? new Date(expectedCloseDate) : null,
-        assignedToId: assignedToId || null,
-        lostReason: lostReason || null,
-        ...(stage === 'WON' || stage === 'LOST' ? { closedAt: new Date() } : {}),
-      },
-      include: {
-        lead: true,
-        assignedTo: true,
-      },
+        probability: +probability,
+        expectedCloseDate: expectedCloseDate
+          ? new Date(expectedCloseDate)
+          : null,
+        assignedToId: assignedToId || null
+      }
     });
 
-    return res.status(201).json({ success: true, data: deal });
+    return res.status(201).json({
+      success: true,
+      data: deal
+    });
   } catch (err) {
     return res.status(500).json({
       success: false,
-      error: { message: err.message },
+      error: { message: err.message }
     });
   }
 };
 
+// ================= UPDATE DEAL (FIXED) =================
 exports.updateDeal = async (req, res) => {
   try {
     const { companyId, dealId } = req.params;
-    const old = await prisma.deal.findFirst({ where: { dealId, companyId } });
+    const b = req.body;
 
-    if (!old) {
-      return res.status(404).json({
-        success: false,
-        error: { message: 'Deal not found.' },
-      });
-    }
-
-    const {
-      leadId,
-      name,
-      value,
-      currency,
-      stage,
-      probability,
-      expectedCloseDate,
-      assignedToId,
-      lostReason,
-      closedAt,
-    } = req.body;
-
-    const updateData = {};
-
-    if (leadId !== undefined) updateData.leadId = leadId || null;
-    if (name !== undefined) updateData.name = name;
-    if (value !== undefined) updateData.value = +value;
-    if (currency !== undefined) updateData.currency = currency;
-    if (stage !== undefined) updateData.stage = stage;
-    if (probability !== undefined) updateData.probability = +probability;
-    if (expectedCloseDate !== undefined) {
-      updateData.expectedCloseDate = expectedCloseDate ? new Date(expectedCloseDate) : null;
-    }
-    if (assignedToId !== undefined) updateData.assignedToId = assignedToId || null;
-    if (lostReason !== undefined) updateData.lostReason = lostReason || null;
-    if (closedAt !== undefined) updateData.closedAt = closedAt ? new Date(closedAt) : null;
-
-    if (stage === 'WON' || stage === 'LOST') {
-      updateData.closedAt = old.closedAt || new Date();
-    }
-
-    if (stage && stage !== 'WON' && stage !== 'LOST' && closedAt === undefined) {
-      updateData.closedAt = null;
-    }
-
-    const result = await prisma.deal.updateMany({
-      where: { dealId, companyId },
-      data: updateData,
-    });
-
-    if (!result.count) {
-      return res.status(404).json({
-        success: false,
-        error: { message: 'Deal not found.' },
-      });
-    }
-
-    const deal = await prisma.deal.findFirst({
-      where: { dealId, companyId },
-      include: {
-        lead: true,
-        assignedTo: true,
-      },
-    });
-
-    return res.json({ success: true, data: deal });
-  } catch (err) {
-    return res.status(500).json({
-      success: false,
-      error: { message: err.message },
-    });
-  }
-};
-
-exports.updateStage = async (req, res) => {
-  try {
-    const { companyId, dealId } = req.params;
-    const { stage, lostReason } = req.body;
-
-    const old = await prisma.deal.findFirst({ where: { dealId, companyId } });
-
-    if (!old) {
-      return res.status(404).json({
-        success: false,
-        error: { message: 'Deal not found.' },
-      });
-    }
-
-    const updateData = { stage };
-
-    if (lostReason !== undefined) updateData.lostReason = lostReason || null;
-
-    if (stage === 'WON' || stage === 'LOST') {
-      updateData.closedAt = old.closedAt || new Date();
-    } else {
-      updateData.closedAt = null;
-    }
+    const data = {
+      ...(b.name && { name: b.name }),
+      ...(b.value !== undefined && { value: +b.value }),
+      ...(b.stage && {
+        stage: b.stage,
+        ...(b.stage === 'WON' && { closedAt: new Date() })
+      }),
+      ...(b.probability !== undefined && {
+        probability: +b.probability
+      }),
+      ...(b.assignedToId !== undefined && {
+        assignedToId: b.assignedToId
+      }),
+      ...(b.lostReason && { lostReason: b.lostReason })
+    };
 
     await prisma.deal.updateMany({
       where: { dealId, companyId },
-      data: updateData,
+      data
     });
 
-    return res.json({ success: true, message: 'Stage updated.' });
+    return res.json({
+      success: true,
+      message: 'Updated.'
+    });
   } catch (err) {
     return res.status(500).json({
       success: false,
-      error: { message: err.message },
+      error: { message: err.message }
     });
   }
 };
 
-exports.deleteDeal = async (req, res) => {
+// ================= UPDATE STAGE =================
+exports.updateStage = async (req, res) => {
   try {
     const { companyId, dealId } = req.params;
+    const { stage } = req.body;
 
-    const result = await prisma.deal.deleteMany({
+    await prisma.deal.updateMany({
       where: { dealId, companyId },
+      data: {
+        stage,
+        ...(stage === 'WON' && { closedAt: new Date() })
+      }
     });
 
-    if (!result.count) {
-      return res.status(404).json({
-        success: false,
-        error: { message: 'Deal not found.' },
-      });
-    }
-
-    return res.json({ success: true, message: 'Deleted.' });
+    return res.json({
+      success: true,
+      message: 'Stage updated.'
+    });
   } catch (err) {
     return res.status(500).json({
       success: false,
-      error: { message: err.message },
+      error: { message: err.message }
+    });
+  }
+};
+
+// ================= DELETE DEAL =================
+exports.deleteDeal = async (req, res) => {
+  try {
+    await prisma.deal.deleteMany({
+      where: {
+        dealId: req.params.dealId,
+        companyId: req.params.companyId
+      }
+    });
+
+    return res.json({
+      success: true,
+      message: 'Deleted.'
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      error: { message: err.message }
     });
   }
 };
