@@ -6,7 +6,7 @@ const pdfSvc  = require('../services/pdfService');
 const calcTotals = (items) => {
   let subtotal = 0, totalGst = 0, totalDiscount = 0;
   const processed = items.map(item => {
-    const after   = item.quantity * item.unitPrice - (item.discount || 0);
+    const after   = item.quantity * (item.unitPrice || 0) - (item.discount || 0);
     const gst     = Math.round(after * (item.gstPercent || 18) / 100);
     subtotal      += after;
     totalGst      += gst;
@@ -21,17 +21,18 @@ const nextInvNum = async (companyId) => {
   return `INV-${new Date().getFullYear()}-${String(c + 1).padStart(4, '0')}`;
 };
 
-// ── GET ALL ───────────────────────────────────────────────────────────────────
+// ── GET ALL ───────────────────────────────────────────────────
 exports.getInvoices = async (req, res) => {
   try {
     const { companyId } = req.params;
-    const { page = 1, limit = 20, status, search } = req.query;
+    const { page = 1, limit = 100, status, search } = req.query;
     const where = {
       companyId,
       ...(status && { status }),
       ...(search && { OR: [
         { invoiceNumber: { contains: search, mode: 'insensitive' } },
-        { clientName:    { contains: search, mode: 'insensitive' } }
+        { clientName:    { contains: search, mode: 'insensitive' } },
+        { clientEmail:   { contains: search, mode: 'insensitive' } },
       ]})
     };
     const [invoices, total, summary] = await Promise.all([
@@ -45,19 +46,19 @@ exports.getInvoices = async (req, res) => {
   } catch (err) { return res.status(500).json({ success: false, error: { message: err.message } }); }
 };
 
-// ── GET ONE ───────────────────────────────────────────────────────────────────
+// ── GET ONE ───────────────────────────────────────────────────
 exports.getInvoice = async (req, res) => {
   try {
     const inv = await prisma.invoice.findFirst({
       where: { invoiceId: req.params.id, companyId: req.params.companyId },
-      include: { company: { select: { name: true, logo: true, gst: true, address: true, phone: true, email: true } } }
+      include: { company: { select: { name:true, logo:true, gst:true, address:true, phone:true, email:true, website:true, bankDetails:true } } }
     });
     if (!inv) return res.status(404).json({ success: false, error: { message: 'Not found.' } });
     return res.json({ success: true, data: inv });
   } catch (err) { return res.status(500).json({ success: false, error: { message: err.message } }); }
 };
 
-// ── CREATE ────────────────────────────────────────────────────────────────────
+// ── CREATE ────────────────────────────────────────────────────
 exports.createInvoice = async (req, res) => {
   try {
     const { companyId } = req.params;
@@ -67,10 +68,8 @@ exports.createInvoice = async (req, res) => {
       currency = 'INR', items = [],
       paymentTerms = 'Net 30', bankDetails, notes
     } = req.body;
-
     if (!clientName)   return res.status(400).json({ success: false, error: { message: 'Client name required.' } });
     if (!items.length) return res.status(400).json({ success: false, error: { message: 'At least one item required.' } });
-
     const totals = calcTotals(items);
     const inv = await prisma.invoice.create({
       data: {
@@ -99,22 +98,36 @@ exports.createInvoice = async (req, res) => {
   } catch (err) { return res.status(500).json({ success: false, error: { message: err.message } }); }
 };
 
-// ── UPDATE ────────────────────────────────────────────────────────────────────
+// ── UPDATE (full edit — all fields) ──────────────────────────
 exports.updateInvoice = async (req, res) => {
   try {
     const { id, companyId } = req.params;
+    const b = req.body;
     const updateData = {};
-    if (req.body.clientName  !== undefined) updateData.clientName  = req.body.clientName;
-    if (req.body.dueDate     !== undefined) updateData.dueDate     = new Date(req.body.dueDate);
-    if (req.body.notes       !== undefined) updateData.notes       = req.body.notes;
-    if (req.body.status      !== undefined) updateData.status      = req.body.status;
-    if (req.body.bankDetails !== undefined) updateData.bankDetails = req.body.bankDetails;
+    if (b.clientName    !== undefined) updateData.clientName    = b.clientName;
+    if (b.clientEmail   !== undefined) updateData.clientEmail   = b.clientEmail;
+    if (b.clientPhone   !== undefined) updateData.clientPhone   = b.clientPhone;
+    if (b.clientGst     !== undefined) updateData.clientGst     = b.clientGst;
+    if (b.clientAddress !== undefined) updateData.clientAddress = b.clientAddress;
+    if (b.dueDate       !== undefined) updateData.dueDate       = new Date(b.dueDate);
+    if (b.paymentTerms  !== undefined) updateData.paymentTerms  = b.paymentTerms;
+    if (b.notes         !== undefined) updateData.notes         = b.notes;
+    if (b.status        !== undefined) updateData.status        = b.status;
+    if (b.bankDetails   !== undefined) updateData.bankDetails   = b.bankDetails;
+    if (b.items && b.items.length) {
+      const totals = calcTotals(b.items);
+      updateData.items         = totals.items;
+      updateData.subtotal      = totals.subtotal;
+      updateData.totalGst      = totals.totalGst;
+      updateData.totalDiscount = totals.totalDiscount;
+      updateData.grandTotal    = totals.grandTotal;
+    }
     await prisma.invoice.updateMany({ where: { invoiceId: id, companyId }, data: updateData });
     return res.json({ success: true, message: 'Updated.' });
   } catch (err) { return res.status(500).json({ success: false, error: { message: err.message } }); }
 };
 
-// ── DELETE ────────────────────────────────────────────────────────────────────
+// ── DELETE / CANCEL ───────────────────────────────────────────
 exports.removeInvoice = async (req, res) => {
   try {
     await prisma.invoice.updateMany({ where: { invoiceId: req.params.id, companyId: req.params.companyId }, data: { status: 'CANCELLED' } });
@@ -122,7 +135,7 @@ exports.removeInvoice = async (req, res) => {
   } catch (err) { return res.status(500).json({ success: false, error: { message: err.message } }); }
 };
 
-// ── MARK PAID ─────────────────────────────────────────────────────────────────
+// ── MARK PAID ─────────────────────────────────────────────────
 exports.markPaid = async (req, res) => {
   try {
     const { companyId, id } = req.params;
@@ -139,40 +152,35 @@ exports.markPaid = async (req, res) => {
   } catch (err) { return res.status(500).json({ success: false, error: { message: err.message } }); }
 };
 
-// ── SEND ──────────────────────────────────────────────────────────────────────
+// ── SEND ──────────────────────────────────────────────────────
 exports.sendInvoice = async (req, res) => {
   try {
     await prisma.invoice.updateMany({ where: { invoiceId: req.params.id, companyId: req.params.companyId }, data: { status: 'SENT', sentAt: new Date() } });
-    return res.json({ success: true, message: `Invoice marked sent via ${req.body.channel || 'email'}.` });
+    return res.json({ success: true, message: `Sent via ${req.body.channel || 'email'}.` });
   } catch (err) { return res.status(500).json({ success: false, error: { message: err.message } }); }
 };
 
-// ── DOWNLOAD PDF ──────────────────────────────────────────────────────────────
+// ── DOWNLOAD PDF ──────────────────────────────────────────────
 exports.getInvoicePdf = async (req, res) => {
   try {
     const { id, companyId } = req.params;
     const inv = await prisma.invoice.findFirst({ where: { invoiceId: id, companyId } });
     if (!inv) return res.status(404).json({ success: false, error: { message: 'Not found.' } });
-
     const result = await pdfSvc.generateInvoicePdf(id);
-
     if (result.buffer) {
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename="${inv.invoiceNumber}.pdf"`);
       return res.send(result.buffer);
-    } else {
-      res.setHeader('Content-Type', 'text/html');
-      return res.send(result.html + `<script>window.onload=()=>window.print();</script>`);
     }
+    res.setHeader('Content-Type', 'text/html');
+    return res.send(result.html + '<script>window.onload=()=>window.print();</script>');
   } catch (err) { return res.status(500).json({ success: false, error: { message: err.message } }); }
 };
 
-// ── VIEW IN BROWSER ───────────────────────────────────────────────────────────
+// ── VIEW IN BROWSER ───────────────────────────────────────────
 exports.viewInvoicePdf = async (req, res) => {
   try {
     const { id, companyId } = req.params;
-    const inv = await prisma.invoice.findFirst({ where: { invoiceId: id, companyId } });
-    if (!inv) return res.status(404).json({ success: false, error: { message: 'Not found.' } });
     const html = await pdfSvc.buildInvoiceHtml(id);
     res.setHeader('Content-Type', 'text/html');
     return res.send(html);

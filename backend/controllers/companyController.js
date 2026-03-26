@@ -59,7 +59,7 @@ exports.getOne = async (req, res) => {
 exports.update = async (req, res) => {
   try {
     const updateData = {};
-    const fields = ['name','domain','gst','industry','phone','email','website','plan','status','address','bankDetails'];
+    const fields = ['name','domain','logo','gst','industry','phone','email','website','plan','status','address','bankDetails'];
     fields.forEach(f => { if (req.body[f] !== undefined) updateData[f] = req.body[f]; });
     if (updateData.plan) updateData.plan = updateData.plan.toUpperCase();
     const co = await prisma.company.update({ where:{ companyId:req.params.companyId }, data:updateData });
@@ -97,7 +97,7 @@ exports.getSettings = async (req, res) => {
 // Updates both settings JSON and top-level fields (phone, email, website, bankDetails, etc.)
 exports.updateSettings = async (req, res) => {
   try {
-    const { phone, email, website, address, gst, bankDetails, ...settingsFields } = req.body;
+    const { phone, email, website, address, gst, logo, bankDetails, ...settingsFields } = req.body;
     const co      = await prisma.company.findUnique({ where:{ companyId:req.params.companyId } });
     const merged  = { ...(co.settings || {}), ...settingsFields };
     const updateData = { settings: merged };
@@ -106,6 +106,7 @@ exports.updateSettings = async (req, res) => {
     if (website     !== undefined) updateData.website     = website;
     if (address     !== undefined) updateData.address     = address;
     if (gst         !== undefined) updateData.gst         = gst;
+    if (logo        !== undefined) updateData.logo        = logo;
     if (bankDetails !== undefined) updateData.bankDetails = bankDetails;
     await prisma.company.update({ where:{ companyId:req.params.companyId }, data: updateData });
     return res.json({ success:true, data:{ settings:merged } });
