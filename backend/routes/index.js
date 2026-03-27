@@ -8,6 +8,8 @@ const lead      = require('../controllers/leadController');
 const deal      = require('../controllers/dealController');
 const quotation = require('../controllers/quotationController');
 const invoice   = require('../controllers/invoiceController');
+const client    = require('../controllers/clientController');
+const gst       = require('../controllers/gstController');
 const user      = require('../controllers/userController');
 const analytics = require('../controllers/analyticsController');
 
@@ -79,6 +81,17 @@ router.put(   '/companies/:companyId/invoices/:id/mark-paid', authenticate, invo
 router.post(  '/companies/:companyId/invoices/:id/send',      authenticate, invoice.sendInvoice);
 router.get(   '/companies/:companyId/invoices/:id/pdf',       authenticate, invoice.getInvoicePdf);   // download
 router.get(   '/companies/:companyId/invoices/:id/view',      authenticate, invoice.viewInvoicePdf);  // view in browser
+
+// ── Clients ───────────────────────────────────────────────────────────────────
+router.get(   '/companies/:companyId/clients',          authenticate, client.getClients);
+router.post(  '/companies/:companyId/clients',          authenticate, client.createClient);
+router.get(   '/companies/:companyId/clients/:id',      authenticate, client.getClient);
+router.put(   '/companies/:companyId/clients/:id',      authenticate, client.updateClient);
+router.delete('/companies/:companyId/clients/:id',      authenticate, client.removeClient);
+
+// ── GST Lookup ────────────────────────────────────────────────────────────────
+router.get('/gst/validate/:gstin', gst.validate);
+router.get('/gst/lookup/:gstin',   gst.lookup);
 
 // ── Analytics ─────────────────────────────────────────────────────────────────
 router.get('/companies/:companyId/analytics/overview',  authenticate, analytics.getOverview);

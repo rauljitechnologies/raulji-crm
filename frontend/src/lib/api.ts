@@ -78,6 +78,21 @@ export const invoiceApi = {
   send:     (cid: string, id: string, body: any) => request<any>(`/companies/${cid}/invoices/${id}/send`, { method: 'POST', body: JSON.stringify(body) }),
 };
 
+// Clients
+export const clientApi = {
+  list:   (cid: string, params?: any) => request<any>(`/companies/${cid}/clients?${new URLSearchParams(params||{})}`),
+  get:    (cid: string, id: string)   => request<any>(`/companies/${cid}/clients/${id}`),
+  create: (cid: string, body: any)    => request<any>(`/companies/${cid}/clients`, { method: 'POST', body: JSON.stringify(body) }),
+  update: (cid: string, id: string, body: any) => request<any>(`/companies/${cid}/clients/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+  remove: (cid: string, id: string)   => request<any>(`/companies/${cid}/clients/${id}`, { method: 'DELETE' }),
+};
+
+// GST
+export const gstApi = {
+  validate: (gstin: string) => request<any>(`/gst/validate/${encodeURIComponent(gstin)}`),
+  lookup:   (gstin: string) => request<any>(`/gst/lookup/${encodeURIComponent(gstin)}`),
+};
+
 // Users
 export const userApi = {
   list:       (cid: string)              => request<any>(`/companies/${cid}/users`),

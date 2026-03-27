@@ -1,12 +1,12 @@
 'use client';
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { companyApi, invoiceApi } from '@/lib/api';
+import { companyApi, invoiceApi, clientApi } from '@/lib/api';
 import { Topbar, Card, Btn, Input, Sel, Modal, useToast } from '@/components/ui';
 
 const API      = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
 const tok      = () => (typeof window !== 'undefined' ? localStorage.getItem('accessToken') || '' : '');
 const inr      = (n: number) => '₹' + (n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 });
-const BLANK    = () => ({ description: '', quantity: 1, unitPrice: 0, gstPercent: 18, discount: 0 });
+const BLANK    = () => ({ description: '', hsnCode: '', quantity: 1, unitPrice: 0, gstPercent: 18, discount: 0 });
 const dateStr  = (d?: string) => d ? new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
 
 // ─── Status badge ────────────────────────────────────────────
@@ -30,8 +30,27 @@ function Badge({ s }: { s: string }) {
 
 // ─── PDF Preview + Download modal ────────────────────────────
 function PdfModal({ inv, cid, onClose }: { inv: any; cid: string; onClose: () => void }) {
-  const [loading, setLoading] = useState(false);
+  const [loading,   setLoading]   = useState(false);
+  const [iframeSrc, setIframeSrc] = useState('');
+  const [iframeLoading, setIframeLoading] = useState(true);
+  const blobUrlRef = useRef('');
   const viewUrl = `${API}/companies/${cid}/invoices/${inv.invoiceId}/view`;
+
+  // Fetch invoice HTML with auth token → blob URL for iframe (bypasses auth on iframe)
+  useEffect(() => {
+    setIframeLoading(true);
+    fetch(viewUrl, { headers: { Authorization: `Bearer ${tok()}` } })
+      .then(r => r.text())
+      .then(html => {
+        if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
+        const blob = new Blob([html], { type: 'text/html' });
+        blobUrlRef.current = URL.createObjectURL(blob);
+        setIframeSrc(blobUrlRef.current);
+      })
+      .catch(() => setIframeSrc(''))
+      .finally(() => setIframeLoading(false));
+    return () => { if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current); };
+  }, [viewUrl]);
 
   const download = async () => {
     setLoading(true);
@@ -45,14 +64,18 @@ function PdfModal({ inv, cid, onClose }: { inv: any; cid: string; onClose: () =>
         a.click();
         URL.revokeObjectURL(a.href);
       } else {
-        // Fallback — open HTML for browser print
         window.open(viewUrl, '_blank');
       }
     } catch { window.open(viewUrl, '_blank'); }
     finally { setLoading(false); }
   };
 
-  const print = () => window.open(viewUrl, '_blank');
+  const print = () => {
+    if (iframeSrc) {
+      const w = window.open('', '_blank');
+      if (w) { w.document.write(`<iframe src="${iframeSrc}" style="width:100%;height:100%;border:none"></iframe>`); w.print(); }
+    } else { window.open(viewUrl, '_blank'); }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3" onClick={onClose}>
@@ -60,7 +83,7 @@ function PdfModal({ inv, cid, onClose }: { inv: any; cid: string; onClose: () =>
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200 bg-white flex-shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold text-sm flex-shrink-0">₹</div>
+            <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 font-bold text-sm flex-shrink-0">₹</div>
             <div>
               <div className="font-bold text-slate-900 text-sm">{inv.invoiceNumber}</div>
               <div className="text-xs text-slate-400">{inv.clientName} · {inr(inv.grandTotal)}</div>
@@ -74,8 +97,16 @@ function PdfModal({ inv, cid, onClose }: { inv: any; cid: string; onClose: () =>
           </div>
         </div>
         {/* Preview */}
-        <div className="flex-1 overflow-hidden bg-slate-200">
-          <iframe src={viewUrl} className="w-full h-full border-none" title="Invoice Preview" />
+        <div className="flex-1 overflow-hidden bg-slate-200 relative">
+          {iframeLoading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-slate-100 z-10">
+              <svg className="animate-spin w-6 h-6 text-blue-500" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" opacity=".3"/><path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/></svg>
+            </div>
+          )}
+          {iframeSrc
+            ? <iframe src={iframeSrc} className="w-full h-full border-none" title="Invoice Preview" onLoad={() => setIframeLoading(false)} />
+            : !iframeLoading && <div className="flex items-center justify-center h-full text-slate-400 text-sm">Unable to load preview</div>
+          }
         </div>
       </div>
     </div>
@@ -226,9 +257,9 @@ function EditModal({ inv, cid, onClose, onDone }: any) {
               </div>
               <div className="border border-slate-200 rounded-xl overflow-hidden">
                 <table className="w-full text-xs" style={{ tableLayout: 'fixed' }}>
-                  <colgroup><col width="35%"/><col width="8%"/><col width="14%"/><col width="10%"/><col width="11%"/><col width="16%"/><col width="28px"/></colgroup>
+                  <colgroup><col width="28%"/><col width="10%"/><col width="7%"/><col width="12%"/><col width="9%"/><col width="10%"/><col width="14%"/><col width="28px"/></colgroup>
                   <thead><tr className="bg-slate-50 border-b border-slate-100">
-                    {['Description','Qty','Rate','GST%','Disc.','Total',''].map(h => <th key={h} className="text-left px-2 py-2 text-xs font-semibold text-slate-400">{h}</th>)}
+                    {['Description','HSN/SAC','Qty','Rate','GST%','Disc.','Total',''].map(h => <th key={h} className="text-left px-2 py-2 text-xs font-semibold text-slate-400">{h}</th>)}
                   </tr></thead>
                   <tbody>
                     {f.items.map((it: any, i: number) => {
@@ -236,11 +267,12 @@ function EditModal({ inv, cid, onClose, onDone }: any) {
                       const gst   = Math.round(after * it.gstPercent / 100);
                       return (
                         <tr key={i} className="border-b border-slate-50 last:border-none">
-                          <td className="px-2 py-1.5"><input className="w-full text-xs border border-slate-200 rounded-lg px-2 py-1.5 focus:border-indigo-400 outline-none" value={it.description} onChange={e => updItem(i,'description',e.target.value)} placeholder="Item"/></td>
-                          <td className="px-2 py-1.5"><input type="number" min="1" className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 text-center focus:border-indigo-400 outline-none" value={it.quantity} onChange={e => updItem(i,'quantity',+e.target.value||1)}/></td>
-                          <td className="px-2 py-1.5"><input type="number" min="0" className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 text-right focus:border-indigo-400 outline-none" value={it.unitPrice} onChange={e => updItem(i,'unitPrice',+e.target.value||0)}/></td>
+                          <td className="px-2 py-1.5"><input className="w-full text-xs border border-slate-200 rounded-lg px-2 py-1.5 focus:border-blue-400 outline-none" value={it.description} onChange={e => updItem(i,'description',e.target.value)} placeholder="Item"/></td>
+                          <td className="px-2 py-1.5"><input className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 font-mono focus:border-blue-400 outline-none" value={it.hsnCode||''} onChange={e => updItem(i,'hsnCode',e.target.value)} placeholder="998311"/></td>
+                          <td className="px-2 py-1.5"><input type="number" min="1" className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 text-center focus:border-blue-400 outline-none" value={it.quantity} onChange={e => updItem(i,'quantity',+e.target.value||1)}/></td>
+                          <td className="px-2 py-1.5"><input type="number" min="0" className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 text-right focus:border-blue-400 outline-none" value={it.unitPrice} onChange={e => updItem(i,'unitPrice',+e.target.value||0)}/></td>
                           <td className="px-2 py-1.5"><select className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 outline-none" value={it.gstPercent} onChange={e => updItem(i,'gstPercent',+e.target.value)}>{[0,5,12,18,28].map(r=><option key={r} value={r}>{r}%</option>)}</select></td>
-                          <td className="px-2 py-1.5"><input type="number" min="0" className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 text-right focus:border-indigo-400 outline-none" value={it.discount||0} onChange={e => updItem(i,'discount',+e.target.value||0)}/></td>
+                          <td className="px-2 py-1.5"><input type="number" min="0" className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 text-right focus:border-blue-400 outline-none" value={it.discount||0} onChange={e => updItem(i,'discount',+e.target.value||0)}/></td>
                           <td className="px-2 py-1.5 text-right">
                             <div className="text-xs font-bold text-slate-800">{inr(after+gst)}</div>
                             <div className="text-xs text-slate-400">+{inr(gst)} GST</div>
@@ -258,7 +290,7 @@ function EditModal({ inv, cid, onClose, onDone }: any) {
                 <div className="w-52 text-xs">
                   <div className="flex justify-between py-1 text-slate-500 border-b border-slate-100"><span>Subtotal</span><span>{inr(subtotal)}</span></div>
                   <div className="flex justify-between py-1 text-slate-500 border-b border-slate-100"><span>GST</span><span>{inr(gstTotal)}</span></div>
-                  <div className="flex justify-between py-2 px-3 mt-1 bg-indigo-600 rounded-xl text-white font-bold text-sm"><span>Grand Total</span><span>{inr(grandTotal)}</span></div>
+                  <div className="flex justify-between py-2 px-3 mt-1 rounded-xl text-white font-bold text-sm" style={{ background: 'linear-gradient(135deg,#3199d4,#1f293f)' }}><span>Grand Total</span><span>{inr(grandTotal)}</span></div>
                 </div>
               </div>
             </div>
@@ -336,6 +368,9 @@ export default function InvoicesPage() {
   const [showCreate,  setShowCreate]  = useState(false);
   const [saving,      setSaving]      = useState(false);
   const [form,        setForm]        = useState(emptyForm());
+  const [clients,     setClients]     = useState<any[]>([]);
+  const [clientSearch,setClientSearch]= useState('');
+  const [showClientDrop,setShowClientDrop]= useState(false);
   const { toast, ToastContainer }     = useToast();
 
   // Load companies
@@ -349,13 +384,11 @@ export default function InvoicesPage() {
   }, []);
   useEffect(() => { loadCos(); }, []);
 
-  // When company changes — load profile + invoices
+  // When company changes — load profile + invoices + clients
   useEffect(() => {
     if (!cid) return;
-    // Fetch company profile (for billing auto-fill)
     companyApi.getSettings(cid).then((d: any) => {
       setCoProfile(d);
-      // Auto-fill bank details from company settings
       const bd = d.bankDetails || {};
       setForm(f => ({
         ...f,
@@ -369,6 +402,8 @@ export default function InvoicesPage() {
         }
       }));
     }).catch(() => {});
+    // Load clients for auto-fill
+    clientApi.list(cid, { limit: '200' }).then((d: any) => setClients(d.clients || [])).catch(() => {});
     loadInvoices();
   }, [cid]);
 
@@ -410,7 +445,8 @@ export default function InvoicesPage() {
 
   const openCreate = () => {
     setForm(emptyForm());
-    // Re-apply company bank details
+    setClientSearch('');
+    setShowClientDrop(false);
     const bd = coProfile?.bankDetails || {};
     setForm(f => ({
       ...f,
@@ -418,6 +454,21 @@ export default function InvoicesPage() {
       bankDetails: { bankName: bd.bankName||'', accountNumber: bd.accountNumber||'', ifsc: bd.ifsc||'', accountName: bd.accountName||'', upiId: bd.upiId||'' }
     }));
     setShowCreate(true);
+  };
+
+  // Select client → auto-fill invoice client fields
+  const selectLead = (c: any) => {
+    const addr = [c.address, c.city, c.state, c.pincode].filter(Boolean).join(', ');
+    setForm(f => ({
+      ...f,
+      clientName:    c.name    || '',
+      clientEmail:   c.email   || '',
+      clientPhone:   c.phone   || '',
+      clientGst:     c.gst     || '',
+      clientAddress: addr || c.address || '',
+    }));
+    setClientSearch(c.name || '');
+    setShowClientDrop(false);
   };
 
   const create = async () => {
@@ -599,7 +650,7 @@ export default function InvoicesPage() {
             <div className="flex items-center gap-3 bg-indigo-50 border border-indigo-100 rounded-xl px-4 py-3">
               {coProfile.logo
                 ? <img src={coProfile.logo} alt="" className="h-10 w-10 rounded-lg object-contain flex-shrink-0 bg-white p-1 border border-slate-200" />
-                : <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">{coProfile.name.split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase()}</div>
+                : <div className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0" style={{ background: 'linear-gradient(135deg,#3199d4,#1f293f)' }}>{coProfile.name.split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase()}</div>
               }
               <div className="flex-1 min-w-0">
                 <div className="text-xs font-bold text-indigo-900">{coProfile.name}</div>
@@ -612,9 +663,51 @@ export default function InvoicesPage() {
             </div>
           )}
 
-          {/* Client details */}
+          {/* Client Search / Bill To */}
           <div>
             <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Client / Bill To</div>
+
+            {/* Lead search */}
+            <div className="relative mb-3">
+              <label className="text-xs font-semibold text-slate-600 mb-1 block">
+                Select Saved Client
+                <a href="/dashboard/clients" target="_blank" className="ml-2 text-blue-500 hover:underline font-normal">+ Add New Client</a>
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
+                <input
+                  className="w-full pl-8 pr-8 py-2.5 border border-slate-200 rounded-xl text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+                  placeholder="Search clients by name, email, or GST..."
+                  value={clientSearch}
+                  onChange={e => { setClientSearch(e.target.value); setShowClientDrop(true); }}
+                  onFocus={() => setShowClientDrop(true)}
+                  onBlur={() => setTimeout(() => setShowClientDrop(false), 150)}
+                />
+                {clientSearch && (
+                  <button onClick={() => { setClientSearch(''); setShowClientDrop(false); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-sm">✕</button>
+                )}
+              </div>
+              {clients.length === 0 && !clientSearch && (
+                <p className="text-xs text-slate-400 mt-1">No saved clients yet. <a href="/dashboard/clients" target="_blank" className="text-blue-500 hover:underline">Add clients here</a>, or fill manually below.</p>
+              )}
+              {showClientDrop && clients.filter(c => (c.name||'').toLowerCase().includes(clientSearch.toLowerCase()) || (c.email||'').toLowerCase().includes(clientSearch.toLowerCase()) || (c.gst||'').toLowerCase().includes(clientSearch.toLowerCase())).slice(0, 8).length > 0 && (
+                <div className="absolute z-30 top-full mt-1 left-0 right-0 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden">
+                  {clients.filter(c => (c.name||'').toLowerCase().includes(clientSearch.toLowerCase()) || (c.email||'').toLowerCase().includes(clientSearch.toLowerCase()) || (c.gst||'').toLowerCase().includes(clientSearch.toLowerCase())).slice(0, 8).map((c: any) => (
+                    <button key={c.clientId} onMouseDown={() => selectLead(c)}
+                      className="w-full text-left px-4 py-2.5 hover:bg-blue-50 transition-colors border-b border-slate-50 last:border-none">
+                      <div className="font-semibold text-slate-800 text-xs">{c.name}</div>
+                      <div className="text-xs text-slate-400 flex gap-3">
+                        {c.email && <span>{c.email}</span>}
+                        {c.phone && <span>{c.phone}</span>}
+                        {c.gst   && <span className="font-mono">GST: {c.gst}</span>}
+                        {(c.city || c.state) && <span>{[c.city, c.state].filter(Boolean).join(', ')}</span>}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <div className="grid grid-cols-2 gap-3">
               <Input label="Client Name *"    value={form.clientName}    onChange={e => setForm(f => ({ ...f, clientName:    e.target.value }))} placeholder="Rahul Sharma / Ariya Corp" />
               <Input label="Client GSTIN"     value={form.clientGst}     onChange={e => setForm(f => ({ ...f, clientGst:     e.target.value }))} placeholder="27AAAA0000A1Z5" />
@@ -640,9 +733,9 @@ export default function InvoicesPage() {
             </div>
             <div className="border border-slate-200 rounded-xl overflow-hidden">
               <table className="w-full text-xs" style={{ tableLayout: 'fixed' }}>
-                <colgroup><col width="35%"/><col width="8%"/><col width="14%"/><col width="10%"/><col width="11%"/><col width="16%"/><col width="28px"/></colgroup>
+                <colgroup><col width="27%"/><col width="10%"/><col width="7%"/><col width="12%"/><col width="9%"/><col width="10%"/><col width="15%"/><col width="28px"/></colgroup>
                 <thead><tr className="bg-slate-50 border-b border-slate-100">
-                  {['Description','Qty','Rate (₹)','GST%','Disc.','Total',''].map(h => <th key={h} className="text-left px-2 py-2 text-xs font-semibold text-slate-400">{h}</th>)}
+                  {['Description','HSN/SAC','Qty','Rate (₹)','GST%','Disc.','Total',''].map(h => <th key={h} className="text-left px-2 py-2 text-xs font-semibold text-slate-400">{h}</th>)}
                 </tr></thead>
                 <tbody>
                   {form.items.map((it: any, i: number) => {
@@ -650,11 +743,12 @@ export default function InvoicesPage() {
                     const gst   = Math.round(after * it.gstPercent / 100);
                     return (
                       <tr key={i} className="border-b border-slate-50 last:border-none">
-                        <td className="px-2 py-1.5"><input className="w-full text-xs border border-slate-200 rounded-lg px-2 py-1.5 focus:border-indigo-400 outline-none" value={it.description} onChange={e => updItem(i,'description',e.target.value)} placeholder="Item description"/></td>
-                        <td className="px-2 py-1.5"><input type="number" min="1" className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 text-center focus:border-indigo-400 outline-none" value={it.quantity} onChange={e => updItem(i,'quantity',+e.target.value||1)}/></td>
-                        <td className="px-2 py-1.5"><input type="number" min="0" className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 text-right focus:border-indigo-400 outline-none" value={it.unitPrice} onChange={e => updItem(i,'unitPrice',+e.target.value||0)}/></td>
+                        <td className="px-2 py-1.5"><input className="w-full text-xs border border-slate-200 rounded-lg px-2 py-1.5 focus:border-blue-400 outline-none" value={it.description} onChange={e => updItem(i,'description',e.target.value)} placeholder="Item description"/></td>
+                        <td className="px-2 py-1.5"><input className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 font-mono focus:border-blue-400 outline-none" value={it.hsnCode||''} onChange={e => updItem(i,'hsnCode',e.target.value)} placeholder="998311"/></td>
+                        <td className="px-2 py-1.5"><input type="number" min="1" className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 text-center focus:border-blue-400 outline-none" value={it.quantity} onChange={e => updItem(i,'quantity',+e.target.value||1)}/></td>
+                        <td className="px-2 py-1.5"><input type="number" min="0" className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 text-right focus:border-blue-400 outline-none" value={it.unitPrice} onChange={e => updItem(i,'unitPrice',+e.target.value||0)}/></td>
                         <td className="px-2 py-1.5"><select className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 outline-none" value={it.gstPercent} onChange={e => updItem(i,'gstPercent',+e.target.value)}>{[0,5,12,18,28].map(r=><option key={r} value={r}>{r}%</option>)}</select></td>
-                        <td className="px-2 py-1.5"><input type="number" min="0" className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 text-right focus:border-indigo-400 outline-none" value={it.discount||0} onChange={e => updItem(i,'discount',+e.target.value||0)}/></td>
+                        <td className="px-2 py-1.5"><input type="number" min="0" className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 text-right focus:border-blue-400 outline-none" value={it.discount||0} onChange={e => updItem(i,'discount',+e.target.value||0)}/></td>
                         <td className="px-2 py-1.5 text-right">
                           <div className="text-xs font-bold text-slate-800">{inr(after+gst)}</div>
                           <div className="text-xs text-slate-400">GST {inr(gst)}</div>
@@ -672,7 +766,7 @@ export default function InvoicesPage() {
               <div className="w-56 text-xs">
                 <div className="flex justify-between py-1.5 border-b border-slate-100 text-slate-500"><span>Subtotal</span><span className="font-medium">{inr(subtotal)}</span></div>
                 <div className="flex justify-between py-1.5 border-b border-slate-100 text-slate-500"><span>GST Total</span><span className="font-medium">{inr(gstTotal)}</span></div>
-                <div className="flex justify-between py-2.5 px-3 mt-1.5 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-xl text-white font-bold text-sm"><span>Grand Total</span><span>{inr(grandTotal)}</span></div>
+                <div className="flex justify-between py-2.5 px-3 mt-1.5 rounded-xl text-white font-bold text-sm" style={{ background: 'linear-gradient(135deg,#3199d4,#1f293f)' }}><span>Grand Total</span><span>{inr(grandTotal)}</span></div>
               </div>
             </div>
           </div>

@@ -1,6 +1,6 @@
 // backend/controllers/invoiceController.js
-const { PrismaClient } = require('@prisma/client');
-const prisma  = new PrismaClient();
+
+const prisma = require('../lib/prisma');
 const pdfSvc  = require('../services/pdfService');
 
 const calcTotals = (items) => {

@@ -1,6 +1,6 @@
-const { PrismaClient } = require('@prisma/client');
+
 const crypto = require('crypto');
-const prisma  = new PrismaClient();
+const prisma = require('../lib/prisma');
 
 const genKey = (slug) => `rcrm_live_${slug.slice(0,6)}_${crypto.randomBytes(16).toString('hex')}`;
 

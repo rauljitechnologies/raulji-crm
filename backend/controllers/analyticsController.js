@@ -1,4 +1,5 @@
 // ── analyticsController.js ────────────────────────────────────
+const prisma = require('../lib/prisma');
 exports.getOverview = async (req,res) => {
   try {
     const { companyId } = req.params;

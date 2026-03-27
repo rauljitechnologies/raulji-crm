@@ -12,6 +12,7 @@ const NAV = [
     { href: '/dashboard/deals',       label: 'Deals',          icon: '★' },
   ]},
   { section: 'Finance', items: [
+    { href: '/dashboard/clients',     label: 'Clients',        icon: '🏛' },
     { href: '/dashboard/quotations',  label: 'Quotations',     icon: '📄' },
     { href: '/dashboard/invoices',    label: 'Invoices',       icon: '💳' },
   ]},

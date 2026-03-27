@@ -1,6 +1,7 @@
 // ── userController.js ─────────────────────────────────────────
 const bcrypt = require('bcryptjs');
 const crypto2 = require('crypto');
+const prisma = require('../lib/prisma');
 
 exports.getUsers = async (req,res) => {
   try {
