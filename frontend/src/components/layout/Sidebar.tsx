@@ -23,6 +23,7 @@ const NAV = [
   { section: 'System', items: [
     { href: '/dashboard/users',       label: 'Users',          icon: '👥' },
     { href: '/dashboard/settings',    label: 'Settings',       icon: '⚙' },
+    { href: '/dashboard/api-docs',    label: 'API & Webhooks', icon: '🔗' },
   ]},
 ];
 
