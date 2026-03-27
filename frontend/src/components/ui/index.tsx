@@ -16,7 +16,8 @@ export function Topbar({ title, subtitle, actions }: { title: string; subtitle?:
 
 // ── Card ──────────────────────────────────────────────────────
 export function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <div className={`bg-white border border-slate-200 rounded-xl p-4 ${className}`}>{children}</div>;
+  const hasCustomPadding = /\bp-\d/.test(className);
+  return <div className={`bg-white border border-slate-200 rounded-xl ${hasCustomPadding ? '' : 'p-4'} ${className}`}>{children}</div>;
 }
 
 // ── Button ────────────────────────────────────────────────────

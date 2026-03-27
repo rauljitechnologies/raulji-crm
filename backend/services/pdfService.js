@@ -93,32 +93,17 @@ function buildHtml(data, type) {
   const totalTaxable = hsnEntries.reduce((s, e) => s + e.taxable, 0);
   const totalTax     = hsnEntries.reduce((s, e) => s + e.tax,     0);
 
-  // ── Tfoot GST rows (IGST or CGST+SGST per rate) ───────────
+  // ── Tfoot GST rows (GST % wise — CGST/SGST/IGST detail is in Tax Summary below) ───────────
   // Group by rate only for the summary rows in tfoot
   const rateMap = {};
   hsnEntries.forEach(e => {
     rateMap[e.rate] = (rateMap[e.rate] || 0) + e.tax;
   });
-  const gstRows = Object.entries(rateMap).map(([rate, taxAmt]) => {
-    if (isIntraState) {
-      const half = taxAmt / 2;
-      return `
+  const gstRows = Object.entries(rateMap).map(([rate, taxAmt]) => `
         <tr>
-          <td colspan="5" style="padding:4px 14px;text-align:right;font-size:12px;color:#64748b">CGST @ ${rate / 2}%</td>
-          <td colspan="2" style="padding:4px 14px;text-align:right;font-size:12px;color:#475569">${inr(half)}</td>
-        </tr>
-        <tr>
-          <td colspan="5" style="padding:4px 14px;text-align:right;font-size:12px;color:#64748b">SGST @ ${rate / 2}%</td>
-          <td colspan="2" style="padding:4px 14px;text-align:right;font-size:12px;color:#475569">${inr(half)}</td>
-        </tr>`;
-    } else {
-      return `
-        <tr>
-          <td colspan="5" style="padding:4px 14px;text-align:right;font-size:12px;color:#64748b">IGST @ ${rate}%</td>
+          <td colspan="5" style="padding:4px 14px;text-align:right;font-size:12px;color:#64748b">GST @ ${rate}%</td>
           <td colspan="2" style="padding:4px 14px;text-align:right;font-size:12px;color:#475569">${inr(taxAmt)}</td>
-        </tr>`;
-    }
-  }).join('');
+        </tr>`).join('');
 
   // ── Tax Summary block (HSN-wise) ───────────────────────────
   const taxSummaryBlock = hsnEntries.length > 0 ? (() => {

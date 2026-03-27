@@ -209,6 +209,12 @@ function EditModal({ inv, cid, onClose, onDone }: any) {
   const subtotal   = f.items.reduce((a: number, it: any) => a + it.quantity * it.unitPrice - (it.discount || 0), 0);
   const gstTotal   = f.items.reduce((a: number, it: any) => a + Math.round((it.quantity * it.unitPrice - (it.discount || 0)) * it.gstPercent / 100), 0);
   const grandTotal = subtotal + gstTotal;
+  const gstByRate: Record<number, number> = {};
+  f.items.forEach((it: any) => {
+    const taxable = it.quantity * it.unitPrice - (it.discount || 0);
+    const tax = Math.round(taxable * it.gstPercent / 100);
+    gstByRate[it.gstPercent] = (gstByRate[it.gstPercent] || 0) + tax;
+  });
 
   const save = async () => {
     if (!f.clientName) return toast('Client name required', 'err');
@@ -289,7 +295,9 @@ function EditModal({ inv, cid, onClose, onDone }: any) {
               <div className="flex justify-end mt-2">
                 <div className="w-52 text-xs">
                   <div className="flex justify-between py-1 text-slate-500 border-b border-slate-100"><span>Subtotal</span><span>{inr(subtotal)}</span></div>
-                  <div className="flex justify-between py-1 text-slate-500 border-b border-slate-100"><span>GST</span><span>{inr(gstTotal)}</span></div>
+                  {Object.entries(gstByRate).filter(([, amt]) => (amt as number) > 0).map(([rate, amt]) => (
+                    <div key={rate} className="flex justify-between py-1 text-slate-500 border-b border-slate-100"><span>GST @ {rate}%</span><span>{inr(amt as number)}</span></div>
+                  ))}
                   <div className="flex justify-between py-2 px-3 mt-1 rounded-xl text-white font-bold text-sm" style={{ background: 'linear-gradient(135deg,#3199d4,#1f293f)' }}><span>Grand Total</span><span>{inr(grandTotal)}</span></div>
                 </div>
               </div>
@@ -341,6 +349,482 @@ function CancelModal({ inv, cid, onClose, onDone }: any) {
   );
 }
 
+// ─── Chart Components ─────────────────────────────────────────
+
+function SimpleBarChart({ groups, colors, barNames, labels, valueFormatter, chartHeight = 180 }: {
+  groups: { vals: number[] }[];
+  colors: string[];
+  barNames: string[];
+  labels: string[];
+  valueFormatter: (n: number) => string;
+  chartHeight?: number;
+}) {
+  const maxVal = Math.max(...groups.flatMap(g => g.vals), 1);
+  return (
+    <div>
+      {/* Legend */}
+      <div className="flex items-center gap-4 mb-3 flex-wrap">
+        {barNames.map((name, i) => (
+          <div key={i} className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded-sm" style={{ background: colors[i] }} />
+            <span className="text-xs text-slate-500">{name}</span>
+          </div>
+        ))}
+      </div>
+      {/* Bars */}
+      <div className="flex items-end gap-3" style={{ height: chartHeight }}>
+        {groups.map((g, gi) => (
+          <div key={gi} className="flex-1 flex items-end gap-0.5">
+            {g.vals.map((v, vi) => {
+              const pct = maxVal > 0 ? Math.max((v / maxVal) * 100, v > 0 ? 1 : 0) : 0;
+              return (
+                <div key={vi} title={`${barNames[vi]}: ${valueFormatter(v)}`}
+                  className="flex-1 rounded-t-sm transition-all duration-500 cursor-default"
+                  style={{ height: `${pct}%`, background: colors[vi], minHeight: v > 0 ? 3 : 0 }}
+                />
+              );
+            })}
+          </div>
+        ))}
+      </div>
+      {/* X labels */}
+      <div className="flex gap-3 mt-1.5">
+        {labels.map((l, i) => (
+          <div key={i} className="flex-1 text-center text-xs text-slate-400 truncate" title={l}>{l}</div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function MiniLineChart({ data, valueKey, labelKey, color = '#3199d4', height = 160 }: {
+  data: Record<string, any>[];
+  valueKey: string;
+  labelKey: string;
+  color?: string;
+  height?: number;
+}) {
+  if (data.length < 2) return (
+    <div className="flex items-center justify-center text-slate-300 text-sm" style={{ height }}>Not enough data</div>
+  );
+  const W = 520, H = height;
+  const PL = 52, PR = 16, PT = 12, PB = 32;
+  const cW = W - PL - PR, cH = H - PT - PB;
+  const vals = data.map(d => d[valueKey] || 0);
+  const maxV = Math.max(...vals, 1);
+  const pts = data.map((d, i) => ({
+    x: PL + (i / (data.length - 1)) * cW,
+    y: PT + cH - (d[valueKey] / maxV) * cH,
+    label: d[labelKey],
+    val: d[valueKey],
+  }));
+  const linePath = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+  const areaPath = `${linePath} L${pts[pts.length - 1].x.toFixed(1)} ${PT + cH} L${pts[0].x.toFixed(1)} ${PT + cH} Z`;
+  const TICKS = 4;
+  const shortV = (n: number) => n >= 1e7 ? `${(n/1e7).toFixed(1)}Cr` : n >= 1e5 ? `${(n/1e5).toFixed(1)}L` : n >= 1e3 ? `${(n/1e3).toFixed(0)}K` : `${Math.round(n)}`;
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height }} preserveAspectRatio="xMidYMid meet">
+      {Array.from({ length: TICKS + 1 }, (_, i) => {
+        const y = PT + cH - (i / TICKS) * cH;
+        return (
+          <g key={i}>
+            <line x1={PL} y1={y} x2={W - PR} y2={y} stroke={i === 0 ? '#e2e8f0' : '#f8fafc'} strokeWidth="1" />
+            <text x={PL - 5} y={y + 4} textAnchor="end" fontSize="9" fill="#94a3b8">{shortV((i / TICKS) * maxV)}</text>
+          </g>
+        );
+      })}
+      <line x1={PL} y1={PT} x2={PL} y2={PT + cH} stroke="#e2e8f0" strokeWidth="1" />
+      <path d={areaPath} fill={color} fillOpacity="0.08" />
+      <path d={linePath} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      {pts.map((p, i) => (
+        <g key={i}>
+          <circle cx={p.x} cy={p.y} r="3.5" fill={color} stroke="white" strokeWidth="1.5" />
+          {(data.length <= 12 || i % Math.ceil(data.length / 12) === 0 || i === data.length - 1) && (
+            <text x={p.x} y={H - 4} textAnchor="middle" fontSize="8.5" fill="#94a3b8">{p.label}</text>
+          )}
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+function DonutChart({ segs }: { segs: { label: string; value: number; color: string }[] }) {
+  const total = segs.reduce((a, s) => a + s.value, 0);
+  const SIZE = 108;
+  if (total === 0) return <div className="rounded-full bg-slate-100 mx-auto" style={{ width: SIZE, height: SIZE }} />;
+  let cum = 0;
+  const stops = segs.filter(s => s.value > 0).map(s => {
+    const start = (cum / total) * 360;
+    cum += s.value;
+    const end = (cum / total) * 360;
+    return `${s.color} ${start.toFixed(1)}deg ${end.toFixed(1)}deg`;
+  });
+  const innerSize = SIZE * 0.58;
+  return (
+    <div className="flex items-center gap-5">
+      <div className="relative flex-shrink-0" style={{ width: SIZE, height: SIZE }}>
+        <div className="rounded-full" style={{ width: SIZE, height: SIZE, background: `conic-gradient(${stops.join(', ')})` }} />
+        <div className="absolute rounded-full bg-white flex flex-col items-center justify-center"
+          style={{ width: innerSize, height: innerSize, top: (SIZE - innerSize) / 2, left: (SIZE - innerSize) / 2 }}>
+          <div className="text-sm font-bold text-slate-700">{total}</div>
+          <div className="text-xs text-slate-400">invoices</div>
+        </div>
+      </div>
+      <div className="flex flex-col gap-1.5 flex-1">
+        {segs.filter(s => s.value > 0).map(s => (
+          <div key={s.label} className="flex items-center gap-2">
+            <div className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ background: s.color }} />
+            <span className="text-xs text-slate-600 flex-1">{s.label}</span>
+            <span className="text-xs font-bold text-slate-700">{s.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Analytics View ───────────────────────────────────────────
+function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
+  const [fyFilter, setFyFilter] = useState('ALL');
+
+  const shortFmt = (n: number) => n >= 1e7 ? `₹${(n/1e7).toFixed(1)}Cr` : n >= 1e5 ? `₹${(n/1e5).toFixed(1)}L` : n >= 1e3 ? `₹${(n/1e3).toFixed(0)}K` : `₹${Math.round(n)}`;
+  const fmtInr  = (n: number) => '₹' + (n||0).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+  const getFY   = (s: string) => { const d = new Date(s); const y = d.getFullYear(), m = d.getMonth(); return m >= 3 ? `FY ${y}-${String(y+1).slice(2)}` : `FY ${y-1}-${String(y).slice(2)}`; };
+
+  const activeInvs = allInvoices.filter(i => i.status !== 'CANCELLED');
+  const paidInvs   = allInvoices.filter(i => i.status === 'PAID');
+
+  const totalRevenue  = activeInvs.reduce((a, i) => a + (i.grandTotal || 0), 0);
+  const collected     = paidInvs.reduce((a, i) => a + (i.grandTotal || 0), 0);
+  const totalTax      = activeInvs.reduce((a, i) => a + (i.totalGst || 0), 0);
+  const totalSubtotal = activeInvs.reduce((a, i) => a + (i.subtotal || 0), 0);
+  const pending       = allInvoices.filter(i => ['SENT','PARTIAL'].includes(i.status)).reduce((a, i) => a + (i.grandTotal || 0), 0);
+
+  // FY map (all active)
+  const fyMapAll: Record<string, { subtotal: number; tax: number; grand: number; paid: number; count: number }> = {};
+  activeInvs.forEach(i => {
+    const fy = getFY(i.createdAt);
+    if (!fyMapAll[fy]) fyMapAll[fy] = { subtotal: 0, tax: 0, grand: 0, paid: 0, count: 0 };
+    fyMapAll[fy].subtotal += i.subtotal || 0;
+    fyMapAll[fy].tax      += i.totalGst || 0;
+    fyMapAll[fy].grand    += i.grandTotal || 0;
+    fyMapAll[fy].count    += 1;
+    if (i.status === 'PAID') fyMapAll[fy].paid += i.grandTotal || 0;
+  });
+  const fyList = Object.keys(fyMapAll).sort();
+  const fyChartData = fyList.map(fy => ({ label: fy.replace('FY ', ''), vals: [fyMapAll[fy].subtotal, fyMapAll[fy].tax, fyMapAll[fy].grand] }));
+  const fyChartGroups = fyChartData.map(d => ({ vals: d.vals }));
+
+  // Filtered invoices (by FY)
+  const filteredInvs = fyFilter === 'ALL' ? activeInvs : activeInvs.filter(i => getFY(i.createdAt) === fyFilter);
+
+  // Monthly data
+  const monthMap: Record<string, { grand: number; paid: number; label: string }> = {};
+  filteredInvs.forEach(i => {
+    const d   = new Date(i.createdAt);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    const lbl = d.toLocaleDateString('en-IN', { month: 'short', year: '2-digit' });
+    if (!monthMap[key]) monthMap[key] = { grand: 0, paid: 0, label: lbl };
+    monthMap[key].grand += i.grandTotal || 0;
+    if (i.status === 'PAID') monthMap[key].paid += i.grandTotal || 0;
+  });
+  const monthData = Object.keys(monthMap).sort().map(k => monthMap[k]);
+
+  // Client data (filtered)
+  const clientMapA: Record<string, { grand: number; paid: number; count: number; subtotal: number; tax: number }> = {};
+  filteredInvs.forEach(i => {
+    const k = i.clientName || 'Unknown';
+    if (!clientMapA[k]) clientMapA[k] = { grand: 0, paid: 0, count: 0, subtotal: 0, tax: 0 };
+    clientMapA[k].grand    += i.grandTotal || 0;
+    clientMapA[k].subtotal += i.subtotal || 0;
+    clientMapA[k].tax      += i.totalGst || 0;
+    clientMapA[k].count    += 1;
+    clientMapA[k].paid     += i.paidAmount || (i.status === 'PAID' ? i.grandTotal : 0) || 0;
+  });
+  const clientRows    = Object.entries(clientMapA).sort((a, b) => b[1].grand - a[1].grand).slice(0, 10);
+  const maxClientGrand = Math.max(...clientRows.map(([, v]) => v.grand), 1);
+
+  // Status counts
+  const SC = allInvoices.reduce((a, i) => { a[i.status] = (a[i.status] || 0) + 1; return a; }, {} as Record<string, number>);
+  const donutSegs = [
+    { label: 'Paid',      value: SC.PAID      || 0, color: '#22c55e' },
+    { label: 'Sent',      value: SC.SENT      || 0, color: '#3b82f6' },
+    { label: 'Partial',   value: SC.PARTIAL   || 0, color: '#f97316' },
+    { label: 'Draft',     value: SC.DRAFT     || 0, color: '#94a3b8' },
+    { label: 'Cancelled', value: SC.CANCELLED || 0, color: '#e2e8f0' },
+  ];
+
+  // GST rate breakdown (filtered)
+  const gstRateMap: Record<string, { taxable: number; tax: number }> = {};
+  filteredInvs.forEach(i => {
+    (i.items || []).forEach((item: any) => {
+      const rate = String(item.gstPercent ?? 0);
+      if (!gstRateMap[rate]) gstRateMap[rate] = { taxable: 0, tax: 0 };
+      const base = (item.quantity * (item.unitPrice || 0)) - (item.discount || 0);
+      gstRateMap[rate].taxable += base;
+      gstRateMap[rate].tax     += Math.round(base * (item.gstPercent || 0) / 100);
+    });
+  });
+  const gstRateRows = Object.entries(gstRateMap).sort((a, b) => +a[0] - +b[0]);
+  const totalGstTax = gstRateRows.reduce((a, [, v]) => a + v.tax, 0);
+
+  // Download CSV
+  const downloadCSV = () => {
+    const hdr = ['Invoice #','Date','Due Date','Client','Client GST','Status','Subtotal (₹)','GST (₹)','Grand Total (₹)','Paid Amount (₹)','Balance (₹)'];
+    const rows = allInvoices.map(i => [
+      i.invoiceNumber,
+      new Date(i.createdAt).toLocaleDateString('en-IN'),
+      i.dueDate ? new Date(i.dueDate).toLocaleDateString('en-IN') : '',
+      i.clientName || '', i.clientGst || '', i.status,
+      i.subtotal || 0, i.totalGst || 0, i.grandTotal || 0,
+      i.paidAmount || 0,
+      Math.max(0, (i.grandTotal || 0) - (i.paidAmount || 0)),
+    ]);
+    const csv = [hdr, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const a = document.createElement('a');
+    a.href = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(csv);
+    a.download = `invoice-report-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  };
+
+  // Print HTML report
+  const printReport = () => {
+    const w = window.open('', '_blank', 'width=960,height=720');
+    if (!w) return;
+    const SC_COLOR: Record<string, string> = { PAID: '#16a34a', SENT: '#3b82f6', DRAFT: '#94a3b8', PARTIAL: '#f97316', OVERDUE: '#ef4444', CANCELLED: '#94a3b8' };
+    const tRows = allInvoices.map(i => {
+      const bal = Math.max(0, (i.grandTotal || 0) - (i.paidAmount || 0));
+      return `<tr>
+        <td>${i.invoiceNumber}</td>
+        <td>${new Date(i.createdAt).toLocaleDateString('en-IN')}</td>
+        <td>${i.clientName || ''}</td>
+        <td><span style="background:${SC_COLOR[i.status]||'#94a3b8'};color:white;padding:2px 8px;border-radius:4px;font-size:10px">${i.status}</span></td>
+        <td style="text-align:right">${fmtInr(i.subtotal||0)}</td>
+        <td style="text-align:right;color:#6366f1">${fmtInr(i.totalGst||0)}</td>
+        <td style="text-align:right;font-weight:700">${fmtInr(i.grandTotal||0)}</td>
+        <td style="text-align:right;color:${(i.paidAmount||0)>0?'#16a34a':'#94a3b8'}">${fmtInr(i.paidAmount||0)}</td>
+        <td style="text-align:right;color:${bal>0?'#ef4444':'#16a34a'}">${fmtInr(bal)}</td>
+      </tr>`;
+    }).join('');
+    w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Invoice Report</title>
+<style>
+  *{box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:32px;color:#1e293b;font-size:13px}
+  h1{font-size:22px;font-weight:800;margin:0 0 2px;color:#1f293f}
+  .sub{color:#64748b;font-size:12px;margin-bottom:24px}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px}
+  .kpi{border:1px solid #e2e8f0;border-radius:10px;padding:14px 16px}
+  .kpi-label{font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+  .kpi-val{font-size:20px;font-weight:800}
+  table{width:100%;border-collapse:collapse}
+  th{background:#f8fafc;padding:8px 12px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#64748b;border-bottom:2px solid #e2e8f0;white-space:nowrap}
+  td{padding:9px 12px;border-bottom:1px solid #f1f5f9;font-size:12px}
+  tfoot td{font-weight:700;background:#f0f9ff;border-top:2px solid #3199d4}
+  @media print{body{padding:16px}@page{margin:1cm}}
+</style></head><body>
+<h1>Invoice Report</h1>
+<div class="sub">Generated ${new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'})} &nbsp;·&nbsp; ${allInvoices.length} invoices total${fyFilter !== 'ALL' ? ' &nbsp;·&nbsp; ' + fyFilter : ''}</div>
+<div class="kpis">
+  <div class="kpi"><div class="kpi-label">Total Revenue</div><div class="kpi-val" style="color:#3199d4">${fmtInr(totalRevenue)}</div></div>
+  <div class="kpi"><div class="kpi-label">Collected (Paid)</div><div class="kpi-val" style="color:#16a34a">${fmtInr(collected)}</div></div>
+  <div class="kpi"><div class="kpi-label">Subtotal (Taxable)</div><div class="kpi-val">${fmtInr(totalSubtotal)}</div></div>
+  <div class="kpi"><div class="kpi-label">Total GST</div><div class="kpi-val" style="color:#6366f1">${fmtInr(totalTax)}</div></div>
+</div>
+<table>
+  <thead><tr><th>Invoice #</th><th>Date</th><th>Client</th><th>Status</th><th style="text-align:right">Subtotal</th><th style="text-align:right">GST</th><th style="text-align:right">Grand Total</th><th style="text-align:right">Paid</th><th style="text-align:right">Balance</th></tr></thead>
+  <tbody>${tRows}</tbody>
+  <tfoot><tr>
+    <td colspan="4">TOTAL (${allInvoices.length} invoices)</td>
+    <td style="text-align:right">${fmtInr(totalSubtotal)}</td>
+    <td style="text-align:right">${fmtInr(totalTax)}</td>
+    <td style="text-align:right">${fmtInr(totalRevenue)}</td>
+    <td style="text-align:right">${fmtInr(collected)}</td>
+    <td style="text-align:right">${fmtInr(Math.max(0, totalRevenue - collected))}</td>
+  </tr></tfoot>
+</table>
+</body></html>`);
+    w.document.close(); w.focus(); setTimeout(() => w.print(), 600);
+  };
+
+  return (
+    <div className="flex-1 min-h-0 overflow-y-auto p-5 flex flex-col gap-5">
+
+      {/* ── Header ── */}
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <div className="text-lg font-bold text-slate-800">Invoice Analytics</div>
+          <div className="text-xs text-slate-400 mt-0.5">{allInvoices.length} total · {filteredInvs.length} in period · {paidInvs.length} paid</div>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <select value={fyFilter} onChange={e => setFyFilter(e.target.value)}
+            className="border border-slate-200 rounded-lg px-3 py-1.5 text-xs outline-none focus:border-indigo-500 bg-white font-medium">
+            <option value="ALL">All Financial Years</option>
+            {fyList.map(fy => <option key={fy} value={fy}>{fy}</option>)}
+          </select>
+          <button onClick={downloadCSV}
+            className="px-3 py-1.5 text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg font-semibold hover:bg-emerald-100 transition-colors flex items-center gap-1.5">
+            ⬇ Download CSV
+          </button>
+          <button onClick={printReport}
+            className="px-3 py-1.5 text-xs bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-lg font-semibold hover:bg-indigo-100 transition-colors flex items-center gap-1.5">
+            🖨 Print Report
+          </button>
+        </div>
+      </div>
+
+      {/* ── KPI Row ── */}
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+        {[
+          { label: 'Total Revenue',    val: totalRevenue,  sub: `${activeInvs.length} invoices`,                  color: 'text-blue-600',    border: 'border-blue-100' },
+          { label: 'Collected',        val: collected,     sub: `${paidInvs.length} paid`,                        color: 'text-emerald-600', border: 'border-emerald-100' },
+          { label: 'Outstanding',      val: pending,       sub: `${allInvoices.filter(i=>['SENT','PARTIAL'].includes(i.status)).length} unpaid`, color: 'text-amber-600', border: 'border-amber-100' },
+          { label: 'Subtotal (Taxable)',val: totalSubtotal,sub: 'Before GST',                                      color: 'text-slate-700',   border: 'border-slate-200' },
+          { label: 'Total GST',        val: totalTax,      sub: totalSubtotal > 0 ? `${((totalTax/totalSubtotal)*100).toFixed(1)}% eff. rate` : '—', color: 'text-indigo-600', border: 'border-indigo-100' },
+        ].map((k, i) => (
+          <div key={i} className={`bg-white border ${k.border} rounded-xl px-4 py-3`}>
+            <div className="text-xs text-slate-400 font-medium mb-1">{k.label}</div>
+            <div className={`text-lg font-bold ${k.color}`}>{shortFmt(k.val)}</div>
+            <div className="text-xs text-slate-400 mt-0.5">{k.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── FY Bar Chart + Status Donut ── */}
+      <div className="grid grid-cols-5 gap-4">
+        <Card className="col-span-3 p-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="font-semibold text-slate-800 text-sm">Revenue by Financial Year</div>
+            <div className="text-xs text-slate-400">Apr – Mar</div>
+          </div>
+          {fyChartGroups.length === 0 ? (
+            <div className="flex items-center justify-center h-40 text-slate-300 text-sm">No data</div>
+          ) : (
+            <SimpleBarChart
+              groups={fyChartGroups}
+              colors={['#93c5fd', '#a5b4fc', '#1f293f']}
+              barNames={['Subtotal', 'GST', 'Grand Total']}
+              labels={fyChartData.map(d => d.label)}
+              valueFormatter={shortFmt}
+              chartHeight={180}
+            />
+          )}
+        </Card>
+        <Card className="col-span-2 p-4">
+          <div className="font-semibold text-slate-800 text-sm mb-4">Invoice Status</div>
+          <DonutChart segs={donutSegs} />
+          <div className="mt-4 pt-4 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
+            <div className="text-slate-400">Paid Revenue</div>
+            <div className="font-bold text-emerald-600 text-right">{shortFmt(collected)}</div>
+            <div className="text-slate-400">Outstanding</div>
+            <div className="font-bold text-amber-600 text-right">{shortFmt(pending)}</div>
+            <div className="text-slate-400">Collection Rate</div>
+            <div className="font-bold text-indigo-600 text-right">{totalRevenue > 0 ? `${((collected/totalRevenue)*100).toFixed(1)}%` : '—'}</div>
+          </div>
+        </Card>
+      </div>
+
+      {/* ── Monthly Trend ── */}
+      <Card className="p-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="font-semibold text-slate-800 text-sm">Monthly Revenue Trend</div>
+          <div className="flex items-center gap-3 text-xs">
+            <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-blue-400 inline-block rounded" />Revenue</span>
+            <span className="text-slate-400">{fyFilter === 'ALL' ? 'All time' : fyFilter}</span>
+          </div>
+        </div>
+        <MiniLineChart data={monthData} valueKey="grand" labelKey="label" color="#3199d4" height={160} />
+      </Card>
+
+      {/* ── Client Chart + GST Breakdown ── */}
+      <div className="grid grid-cols-2 gap-4">
+        <Card className="p-4">
+          <div className="font-semibold text-slate-800 text-sm mb-4">Top Clients by Revenue</div>
+          {clientRows.length === 0 ? (
+            <div className="text-slate-300 text-sm text-center py-8">No data</div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {clientRows.map(([name, v], i) => (
+                <div key={name}>
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold flex-shrink-0">{i + 1}</div>
+                      <span className="text-xs font-semibold text-slate-700 truncate">{name}</span>
+                    </div>
+                    <div className="text-right flex-shrink-0 ml-2">
+                      <div className="text-xs font-bold text-slate-800">{shortFmt(v.grand)}</div>
+                      {v.paid > 0 && <div className="text-xs text-emerald-500">{shortFmt(v.paid)} paid</div>}
+                    </div>
+                  </div>
+                  <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-2 rounded-full flex overflow-hidden">
+                      <div className="bg-emerald-400 transition-all duration-500" style={{ width: `${(v.paid / maxClientGrand) * 100}%` }} />
+                      <div className="bg-blue-300 transition-all duration-500" style={{ width: `${Math.max(0, (v.grand - v.paid) / maxClientGrand * 100)}%` }} />
+                    </div>
+                  </div>
+                  <div className="flex justify-between text-xs text-slate-400 mt-0.5">
+                    <span>Sub {shortFmt(v.subtotal)}</span>
+                    <span className="text-indigo-400">+GST {shortFmt(v.tax)}</span>
+                    <span>{v.count} inv.</span>
+                  </div>
+                </div>
+              ))}
+              <div className="flex items-center gap-3 pt-2 border-t border-slate-100 text-xs text-slate-400">
+                <span className="flex items-center gap-1"><span className="w-3 h-1.5 bg-emerald-400 rounded-sm inline-block"/>Paid</span>
+                <span className="flex items-center gap-1"><span className="w-3 h-1.5 bg-blue-300 rounded-sm inline-block"/>Pending</span>
+              </div>
+            </div>
+          )}
+        </Card>
+        <Card className="p-4">
+          <div className="font-semibold text-slate-800 text-sm mb-4">GST Rate Breakdown</div>
+          {gstRateRows.length === 0 ? (
+            <div className="text-slate-300 text-sm text-center py-8">No data</div>
+          ) : (
+            <div>
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b border-slate-100">
+                    {['GST Rate','Taxable Value','Tax Amount','% of Total Tax'].map(h => (
+                      <th key={h} className="pb-2 text-left text-xs font-semibold text-slate-400">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {gstRateRows.map(([rate, v]) => (
+                    <tr key={rate} className="border-b border-slate-50">
+                      <td className="py-2.5">
+                        <span className="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-full font-bold">{rate}%</span>
+                      </td>
+                      <td className="py-2.5 text-slate-700 font-medium">{shortFmt(v.taxable)}</td>
+                      <td className="py-2.5 text-indigo-600 font-semibold">{shortFmt(v.tax)}</td>
+                      <td className="py-2.5">
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 h-1.5 bg-slate-100 rounded-full max-w-16">
+                            <div className="h-1.5 bg-indigo-400 rounded-full" style={{ width: `${totalGstTax > 0 ? (v.tax/totalGstTax)*100 : 0}%` }} />
+                          </div>
+                          <span className="text-slate-500">{totalGstTax > 0 ? `${((v.tax/totalGstTax)*100).toFixed(1)}%` : '—'}</span>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr className="bg-slate-50 border-t-2 border-slate-200">
+                    <td className="py-2.5 font-bold text-slate-700">Total</td>
+                    <td className="py-2.5 font-bold text-slate-800">{shortFmt(gstRateRows.reduce((a,[,v])=>a+v.taxable,0))}</td>
+                    <td className="py-2.5 font-bold text-indigo-700">{shortFmt(totalGstTax)}</td>
+                    <td className="py-2.5 font-bold text-slate-600">100%</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          )}
+        </Card>
+      </div>
+
+    </div>
+  );
+}
+
 // ─── Create invoice form ──────────────────────────────────────
 function emptyForm() {
   return {
@@ -358,7 +842,6 @@ export default function InvoicesPage() {
   const [cid,         setCid]         = useState('');
   const [coProfile,   setCoProfile]   = useState<any>({});
   const [allInvoices, setAllInvoices] = useState<any[]>([]);
-  const [summary,     setSummary]     = useState<any>({});
   const [loading,     setLoading]     = useState(false);
   const [tab,         setTab]         = useState('ALL');
   const [previewInv,  setPreviewInv]  = useState<any>(null);
@@ -371,6 +854,7 @@ export default function InvoicesPage() {
   const [clients,     setClients]     = useState<any[]>([]);
   const [clientSearch,setClientSearch]= useState('');
   const [showClientDrop,setShowClientDrop]= useState(false);
+  const [viewMode,    setViewMode]    = useState<'invoices' | 'analytics'>('invoices');
   const { toast, ToastContainer }     = useToast();
 
   // Load companies
@@ -413,7 +897,6 @@ export default function InvoicesPage() {
     try {
       const d = await invoiceApi.list(cid, { limit: '100' });
       setAllInvoices(d.invoices || []);
-      setSummary(d.summary || {});
     } catch (e: any) { toast(e.message, 'err'); }
     finally { setLoading(false); }
   };
@@ -437,11 +920,23 @@ export default function InvoicesPage() {
   const overdue   = allInvoices.filter(i => i.status === 'SENT' && new Date(i.dueDate) < new Date()).reduce((a, i) => a + (i.grandTotal || 0), 0);
   const fmtL      = (n: number) => n >= 100000 ? `₹${(n / 100000).toFixed(1)}L` : inr(n);
 
+  // Totals breakdown (all non-cancelled invoices)
+  const activeInvs    = allInvoices.filter(i => i.status !== 'CANCELLED');
+  const totalSubtotal = activeInvs.reduce((a, i) => a + (i.subtotal  || 0), 0);
+  const totalTax      = activeInvs.reduce((a, i) => a + (i.totalGst  || 0), 0);
+  const totalRevenue  = activeInvs.reduce((a, i) => a + (i.grandTotal|| 0), 0);
+
   // Item helpers
   const updItem = (i: number, k: string, v: any) => setForm(f => ({ ...f, items: f.items.map((it: any, idx: number) => idx === i ? { ...it, [k]: v } : it) }));
   const subtotal   = form.items.reduce((a, it: any) => a + it.quantity * it.unitPrice - (it.discount || 0), 0);
   const gstTotal   = form.items.reduce((a, it: any) => a + Math.round((it.quantity * it.unitPrice - (it.discount || 0)) * it.gstPercent / 100), 0);
   const grandTotal = subtotal + gstTotal;
+  const formGstByRate: Record<number, number> = {};
+  form.items.forEach((it: any) => {
+    const taxable = it.quantity * it.unitPrice - (it.discount || 0);
+    const tax = Math.round(taxable * it.gstPercent / 100);
+    formGstByRate[it.gstPercent] = (formGstByRate[it.gstPercent] || 0) + tax;
+  });
 
   const openCreate = () => {
     setForm(emptyForm());
@@ -489,150 +984,210 @@ export default function InvoicesPage() {
     <>
       <Topbar title="Invoices" subtitle={`${allInvoices.length} invoices · ${fmtL(collected)} collected`}
         actions={<>
+          <div className="flex bg-slate-100 p-0.5 rounded-lg gap-0.5">
+            <button onClick={() => setViewMode('invoices')}
+              className={`px-3 py-1 text-xs rounded-md font-medium transition-all ${viewMode === 'invoices' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
+              Invoices
+            </button>
+            <button onClick={() => setViewMode('analytics')}
+              className={`px-3 py-1 text-xs rounded-md font-medium transition-all ${viewMode === 'analytics' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
+              Analytics
+            </button>
+          </div>
           <select value={cid} onChange={e => setCid(e.target.value)}
             className="border border-slate-200 rounded-lg px-3 py-1.5 text-xs outline-none focus:border-indigo-500 bg-white">
             {companies.map((c: any) => <option key={c.companyId} value={c.companyId}>{c.name}</option>)}
           </select>
-          <Btn variant="primary" size="sm" onClick={openCreate}>+ New Invoice</Btn>
+          {viewMode === 'invoices' && <Btn variant="primary" size="sm" onClick={openCreate}>+ New Invoice</Btn>}
         </>}
       />
 
-      <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-4">
+      {viewMode === 'analytics' ? (
+        <AnalyticsView allInvoices={allInvoices} />
+      ) : (
+        <div className="flex-1 min-h-0 overflow-y-auto p-5 flex flex-col gap-4">
 
-        {/* Summary */}
-        <div className="grid grid-cols-4 gap-3">
-          {[
-            { label: 'Collected', value: fmtL(collected), color: 'text-emerald-600', border: 'border-emerald-200', icon: '₹' },
-            { label: 'Pending',   value: fmtL(pending),   color: 'text-blue-600',    border: 'border-blue-200',    icon: '⏳' },
-            { label: 'Overdue',   value: fmtL(overdue),   color: 'text-red-600',     border: 'border-red-200',     icon: '!' },
-            { label: 'Total',     value: String(allInvoices.length), color: 'text-slate-700', border: 'border-slate-200', icon: '#' },
-          ].map((s, i) => (
-            <div key={i} className={`bg-white border ${s.border} rounded-xl px-4 py-3 flex items-center gap-3`}>
-              <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-sm font-bold text-slate-500 flex-shrink-0">{s.icon}</div>
-              <div>
-                <div className="text-xs text-slate-400 font-medium">{s.label}</div>
-                <div className={`text-lg font-bold ${s.color}`}>{s.value}</div>
+          {/* Summary row 1 — status */}
+          <div className="grid grid-cols-4 gap-3">
+            {[
+              { label: 'Collected',     value: fmtL(collected), color: 'text-emerald-600', border: 'border-emerald-200', icon: '₹' },
+              { label: 'Pending',       value: fmtL(pending),   color: 'text-blue-600',    border: 'border-blue-200',    icon: '⏳' },
+              { label: 'Overdue',       value: fmtL(overdue),   color: 'text-red-600',     border: 'border-red-200',     icon: '!' },
+              { label: 'Total Invoices',value: String(allInvoices.length), color: 'text-slate-700', border: 'border-slate-200', icon: '#' },
+            ].map((s, i) => (
+              <div key={i} className={`bg-white border ${s.border} rounded-xl px-4 py-3 flex items-center gap-3`}>
+                <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-sm font-bold text-slate-500 flex-shrink-0">{s.icon}</div>
+                <div>
+                  <div className="text-xs text-slate-400 font-medium">{s.label}</div>
+                  <div className={`text-lg font-bold ${s.color}`}>{s.value}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Summary row 2 — revenue breakdown */}
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-white border border-slate-200 rounded-xl px-5 py-4 flex flex-col gap-1">
+              <div className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Subtotal (Taxable)</div>
+              <div className="text-2xl font-bold text-slate-800">{fmtL(totalSubtotal)}</div>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs text-slate-400">Before GST</span>
+                <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-full font-medium">{activeInvs.length} invoices</span>
               </div>
             </div>
-          ))}
-        </div>
-
-        {/* Tabs */}
-        <div className="flex gap-1 bg-slate-100 p-1 rounded-xl w-fit flex-wrap">
-          {TABS.map(t => {
-            const count = t.key === 'ALL' ? allInvoices.length : allInvoices.filter(t.fn).length;
-            return (
-              <button key={t.key} onClick={() => setTab(t.key)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${tab === t.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
-                {t.label}
-                {count > 0 && <span className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${tab === t.key ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-200 text-slate-500'}`}>{count}</span>}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Table */}
-        <Card className="p-0 overflow-hidden">
-          {loading ? (
-            <div className="py-14 text-center flex flex-col items-center gap-2">
-              <svg className="animate-spin w-6 h-6 text-indigo-600" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" opacity=".3"/><path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/></svg>
-              <span className="text-xs text-slate-400">Loading...</span>
-            </div>
-          ) : invoices.length === 0 ? (
-            <div className="py-16 text-center">
-              <div className="text-4xl mb-3">🧾</div>
-              <div className="text-sm font-semibold text-slate-700 mb-1">
-                {tab === 'ALL' ? 'No invoices yet' : `No ${activeTab.label.toLowerCase()} invoices`}
+            <div className="bg-white border border-indigo-100 rounded-xl px-5 py-4 flex flex-col gap-1">
+              <div className="text-xs text-indigo-400 font-semibold uppercase tracking-wider">Total GST Collected</div>
+              <div className="text-2xl font-bold text-indigo-600">{fmtL(totalTax)}</div>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs text-slate-400">Effective rate</span>
+                <span className="text-xs bg-indigo-50 text-indigo-500 px-1.5 py-0.5 rounded-full font-medium">{totalSubtotal > 0 ? ((totalTax / totalSubtotal) * 100).toFixed(1) : 0}%</span>
               </div>
-              <div className="text-xs text-slate-400 mb-4">
-                {tab === 'ALL' ? 'Create your first invoice or convert a quotation' : 'Switch tabs to see other invoices'}
-              </div>
-              {tab === 'ALL' && <Btn variant="primary" size="sm" onClick={openCreate}>+ Create Invoice</Btn>}
             </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs border-collapse">
-                <thead>
-                  <tr className="bg-slate-50 border-b border-slate-100">
-                    {['Invoice #', 'Bill To', 'Amount', 'Status', 'Due Date', 'Payment', 'Actions'].map(h => (
-                      <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wide whitespace-nowrap">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {invoices.map((inv: any) => {
-                    const isOverdue = inv.status === 'SENT' && inv.dueDate && new Date(inv.dueDate) < new Date();
-                    const displayS  = isOverdue ? 'OVERDUE' : inv.status;
-                    const balance   = (inv.grandTotal || 0) - (inv.paidAmount || 0);
-                    return (
-                      <tr key={inv.invoiceId} className="border-b border-slate-50 hover:bg-indigo-50/20 transition-colors group">
-                        {/* Invoice # */}
-                        <td className="px-4 py-3">
-                          <button onClick={() => setPreviewInv(inv)} className="font-mono font-bold text-indigo-600 hover:underline">{inv.invoiceNumber}</button>
-                          <div className="text-xs text-slate-400 mt-0.5">{dateStr(inv.createdAt)}</div>
-                        </td>
-                        {/* Bill To */}
-                        <td className="px-4 py-3" style={{ maxWidth: 180 }}>
-                          <div className="font-semibold text-slate-800 truncate">{inv.clientName}</div>
-                          {inv.clientGst   && <div className="text-xs text-slate-400 font-mono">GST: {inv.clientGst}</div>}
-                          {inv.clientEmail && <div className="text-xs text-indigo-400 truncate">{inv.clientEmail}</div>}
-                          {inv.clientPhone && <div className="text-xs text-slate-400">{inv.clientPhone}</div>}
-                        </td>
-                        {/* Amount */}
-                        <td className="px-4 py-3">
-                          <div className="font-bold text-slate-900">{inr(inv.grandTotal)}</div>
-                          {inv.status === 'PAID' && <div className="text-xs text-emerald-500 font-medium">✓ Fully Paid</div>}
-                          {inv.status === 'PARTIAL' && balance > 0 && <div className="text-xs text-amber-500">Due {inr(balance)}</div>}
-                          {inv.paidAmount > 0 && !['PAID'].includes(inv.status) && <div className="text-xs text-slate-400">Paid {inr(inv.paidAmount)}</div>}
-                        </td>
-                        {/* Status */}
-                        <td className="px-4 py-3"><Badge s={displayS} /></td>
-                        {/* Due Date */}
-                        <td className="px-4 py-3">
-                          <div className={`text-xs font-medium ${isOverdue ? 'text-red-600 font-bold' : 'text-slate-500'}`}>{dateStr(inv.dueDate)}</div>
-                          {isOverdue && <div className="text-xs text-red-400">Overdue!</div>}
-                        </td>
-                        {/* Payment */}
-                        <td className="px-4 py-3">
-                          {inv.paymentMethod ? (
-                            <div>
-                              <div className="text-xs font-medium text-slate-700 capitalize">{inv.paymentMethod.replace(/_/g, ' ')}</div>
-                              {inv.transactionId && <div className="text-xs text-slate-400 font-mono truncate max-w-28">{inv.transactionId}</div>}
-                              {inv.paidAt        && <div className="text-xs text-slate-400">{dateStr(inv.paidAt)}</div>}
+            <div className="rounded-xl px-5 py-4 flex flex-col gap-1 text-white" style={{ background: 'linear-gradient(135deg,#3199d4,#1f293f)' }}>
+              <div className="text-xs font-semibold uppercase tracking-wider text-blue-200">Total Revenue</div>
+              <div className="text-2xl font-bold">{fmtL(totalRevenue)}</div>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs text-blue-200">Grand Total incl. GST</span>
+                <span className="text-xs bg-white/20 text-white px-1.5 py-0.5 rounded-full font-medium">{fmtL(collected)} paid</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Tabs */}
+          <div className="flex gap-1 bg-slate-100 p-1 rounded-xl w-fit flex-wrap">
+            {TABS.map(t => {
+              const count = t.key === 'ALL' ? allInvoices.length : allInvoices.filter(t.fn).length;
+              return (
+                <button key={t.key} onClick={() => setTab(t.key)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${tab === t.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
+                  {t.label}
+                  {count > 0 && <span className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${tab === t.key ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-200 text-slate-500'}`}>{count}</span>}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Table */}
+          <Card className="p-0 overflow-hidden">
+            {loading ? (
+              <div className="py-14 text-center flex flex-col items-center gap-2">
+                <svg className="animate-spin w-6 h-6 text-indigo-600" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" opacity=".3"/><path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/></svg>
+                <span className="text-xs text-slate-400">Loading...</span>
+              </div>
+            ) : invoices.length === 0 ? (
+              <div className="py-16 text-center">
+                <div className="text-4xl mb-3">🧾</div>
+                <div className="text-sm font-semibold text-slate-700 mb-1">
+                  {tab === 'ALL' ? 'No invoices yet' : `No ${activeTab.label.toLowerCase()} invoices`}
+                </div>
+                <div className="text-xs text-slate-400 mb-4">
+                  {tab === 'ALL' ? 'Create your first invoice or convert a quotation' : 'Switch tabs to see other invoices'}
+                </div>
+                {tab === 'ALL' && <Btn variant="primary" size="sm" onClick={openCreate}>+ Create Invoice</Btn>}
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-100">
+                      {['Invoice #', 'Bill To', 'Amount', 'Status', 'Due Date', 'Payment', 'Actions'].map(h => (
+                        <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wide whitespace-nowrap">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {invoices.map((inv: any) => {
+                      const isOverdue = inv.status === 'SENT' && inv.dueDate && new Date(inv.dueDate) < new Date();
+                      const displayS  = isOverdue ? 'OVERDUE' : inv.status;
+                      const balance   = (inv.grandTotal || 0) - (inv.paidAmount || 0);
+                      return (
+                        <tr key={inv.invoiceId} className="border-b border-slate-50 hover:bg-indigo-50/20 transition-colors group">
+                          {/* Invoice # */}
+                          <td className="px-4 py-3">
+                            <button onClick={() => setPreviewInv(inv)} className="font-mono font-bold text-indigo-600 hover:underline">{inv.invoiceNumber}</button>
+                            <div className="text-xs text-slate-400 mt-0.5">{dateStr(inv.createdAt)}</div>
+                          </td>
+                          {/* Bill To */}
+                          <td className="px-4 py-3" style={{ maxWidth: 180 }}>
+                            <div className="font-semibold text-slate-800 truncate">{inv.clientName}</div>
+                            {inv.clientGst   && <div className="text-xs text-slate-400 font-mono">GST: {inv.clientGst}</div>}
+                            {inv.clientEmail && <div className="text-xs text-indigo-400 truncate">{inv.clientEmail}</div>}
+                            {inv.clientPhone && <div className="text-xs text-slate-400">{inv.clientPhone}</div>}
+                          </td>
+                          {/* Amount */}
+                          <td className="px-4 py-3">
+                            <div className="font-bold text-slate-900 text-sm">{inr(inv.grandTotal)}</div>
+                            {(inv.subtotal > 0 || inv.totalGst > 0) && (
+                              <div className="text-xs text-slate-400 mt-0.5 flex gap-2">
+                                {inv.subtotal > 0 && <span>Sub {inr(inv.subtotal)}</span>}
+                                {inv.totalGst > 0 && <span className="text-indigo-400">+GST {inr(inv.totalGst)}</span>}
+                              </div>
+                            )}
+                            {inv.status === 'PAID' && <div className="text-xs text-emerald-500 font-medium mt-0.5">✓ Fully Paid</div>}
+                            {inv.status === 'PARTIAL' && balance > 0 && <div className="text-xs text-amber-500 mt-0.5">Due {inr(balance)}</div>}
+                            {inv.paidAmount > 0 && !['PAID'].includes(inv.status) && <div className="text-xs text-slate-400">Paid {inr(inv.paidAmount)}</div>}
+                          </td>
+                          {/* Status */}
+                          <td className="px-4 py-3"><Badge s={displayS} /></td>
+                          {/* Due Date */}
+                          <td className="px-4 py-3">
+                            <div className={`text-xs font-medium ${isOverdue ? 'text-red-600 font-bold' : 'text-slate-500'}`}>{dateStr(inv.dueDate)}</div>
+                            {isOverdue && <div className="text-xs text-red-400">Overdue!</div>}
+                          </td>
+                          {/* Payment */}
+                          <td className="px-4 py-3">
+                            {inv.paymentMethod ? (
+                              <div>
+                                <div className="text-xs font-medium text-slate-700 capitalize">{inv.paymentMethod.replace(/_/g, ' ')}</div>
+                                {inv.transactionId && <div className="text-xs text-slate-400 font-mono truncate max-w-28">{inv.transactionId}</div>}
+                                {inv.paidAt        && <div className="text-xs text-slate-400">{dateStr(inv.paidAt)}</div>}
+                              </div>
+                            ) : <span className="text-xs text-slate-300">—</span>}
+                          </td>
+                          {/* Actions */}
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <button onClick={() => setPreviewInv(inv)} title="Preview & Download"
+                                className="px-2.5 py-1.5 text-xs bg-indigo-50 text-indigo-600 rounded-lg font-semibold hover:bg-indigo-100 transition-colors whitespace-nowrap">PDF</button>
+
+                              {!['PAID','CANCELLED'].includes(inv.status) && (
+                                <button onClick={() => setPaidInv(inv)} title="Mark Paid"
+                                  className="px-2.5 py-1.5 text-xs bg-emerald-50 text-emerald-600 rounded-lg font-semibold hover:bg-emerald-100 transition-colors whitespace-nowrap">Paid</button>
+                              )}
+
+                              {inv.status !== 'CANCELLED' && (
+                                <button onClick={() => setEditInv(inv)} title="Edit"
+                                  className="px-2.5 py-1.5 text-xs bg-slate-50 text-slate-600 rounded-lg font-semibold hover:bg-slate-100 transition-colors">Edit</button>
+                              )}
+
+                              {!['PAID','CANCELLED'].includes(inv.status) && (
+                                <button onClick={() => setCancelInv(inv)} title="Cancel"
+                                  className="px-2.5 py-1.5 text-xs bg-red-50 text-red-500 rounded-lg font-semibold hover:bg-red-100 transition-colors">Cancel</button>
+                              )}
                             </div>
-                          ) : <span className="text-xs text-slate-300">—</span>}
-                        </td>
-                        {/* Actions */}
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <button onClick={() => setPreviewInv(inv)} title="Preview & Download"
-                              className="px-2.5 py-1.5 text-xs bg-indigo-50 text-indigo-600 rounded-lg font-semibold hover:bg-indigo-100 transition-colors whitespace-nowrap">PDF</button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </Card>
 
-                            {!['PAID','CANCELLED'].includes(inv.status) && (
-                              <button onClick={() => setPaidInv(inv)} title="Mark Paid"
-                                className="px-2.5 py-1.5 text-xs bg-emerald-50 text-emerald-600 rounded-lg font-semibold hover:bg-emerald-100 transition-colors whitespace-nowrap">Paid</button>
-                            )}
-
-                            {inv.status !== 'CANCELLED' && (
-                              <button onClick={() => setEditInv(inv)} title="Edit"
-                                className="px-2.5 py-1.5 text-xs bg-slate-50 text-slate-600 rounded-lg font-semibold hover:bg-slate-100 transition-colors">Edit</button>
-                            )}
-
-                            {!['PAID','CANCELLED'].includes(inv.status) && (
-                              <button onClick={() => setCancelInv(inv)} title="Cancel"
-                                className="px-2.5 py-1.5 text-xs bg-red-50 text-red-500 rounded-lg font-semibold hover:bg-red-100 transition-colors">Cancel</button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+          {/* Analytics hint */}
+          {allInvoices.length > 0 && (
+            <div className="flex items-center justify-between bg-indigo-50 border border-indigo-100 rounded-xl px-4 py-3">
+              <div className="text-xs text-indigo-700 font-medium">View FY-wise revenue, client breakdown, GST analysis, and download reports</div>
+              <button onClick={() => setViewMode('analytics')}
+                className="text-xs font-semibold text-indigo-600 bg-white border border-indigo-200 rounded-lg px-3 py-1.5 hover:bg-indigo-50 transition-colors whitespace-nowrap">
+                Open Analytics →
+              </button>
             </div>
           )}
-        </Card>
-      </div>
+
+        </div>
+      )}
 
       {/* ── Modals ── */}
       {previewInv && <PdfModal    inv={previewInv} cid={cid} onClose={() => setPreviewInv(null)} />}
@@ -765,7 +1320,9 @@ export default function InvoicesPage() {
             <div className="flex justify-end mt-2">
               <div className="w-56 text-xs">
                 <div className="flex justify-between py-1.5 border-b border-slate-100 text-slate-500"><span>Subtotal</span><span className="font-medium">{inr(subtotal)}</span></div>
-                <div className="flex justify-between py-1.5 border-b border-slate-100 text-slate-500"><span>GST Total</span><span className="font-medium">{inr(gstTotal)}</span></div>
+                {Object.entries(formGstByRate).filter(([, amt]) => (amt as number) > 0).map(([rate, amt]) => (
+                  <div key={rate} className="flex justify-between py-1.5 border-b border-slate-100 text-slate-500"><span>GST @ {rate}%</span><span className="font-medium">{inr(amt as number)}</span></div>
+                ))}
                 <div className="flex justify-between py-2.5 px-3 mt-1.5 rounded-xl text-white font-bold text-sm" style={{ background: 'linear-gradient(135deg,#3199d4,#1f293f)' }}><span>Grand Total</span><span>{inr(grandTotal)}</span></div>
               </div>
             </div>
