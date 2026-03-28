@@ -19,6 +19,13 @@ export default function SettingsPage() {
     bankName:'', accountNumber:'', ifsc:'', accountName:'', upiId:'', paymentTerms:'Net 30'
   });
   const [general, setGeneral] = useState({ currency:'INR', timezone:'Asia/Kolkata', gstRate:'18', invoicePrefix:'INV', quotationPrefix:'QT' });
+  const [integrations, setIntegrations] = useState({
+    gaTrackingId: '',     // GA4 Measurement ID  e.g. G-XXXXXXXXXX
+    gaPropertyId: '',     // GA4 Property ID     e.g. 123456789
+    gscSiteUrl:   '',     // Search Console URL  e.g. https://example.com
+    fbPixelId:    '',     // Facebook Pixel ID
+    razorpayKeyId:'',     // Razorpay Key ID
+  });
 
   const loadCos = async () => {
     try { const d=await companyApi.list({limit:'20'}); const cos=d.companies||[]; setCompanies(cos); if(cos[0]) setCid(cos[0].companyId); } catch {}
@@ -36,6 +43,13 @@ export default function SettingsPage() {
       setProfile({ name:d.name||'', logo:d.logo||'', phone:d.phone||'', email:d.email||'', website:d.website||'', gst:d.gst||'', address:{line1:a.line1||'',city:a.city||'',state:a.state||'',pincode:a.pincode||'',country:a.country||'India'} });
       setBank({ bankName:bd.bankName||'', accountNumber:bd.accountNumber||'', ifsc:bd.ifsc||'', accountName:bd.accountName||'', upiId:bd.upiId||'', paymentTerms:bd.paymentTerms||'Net 30' });
       setGeneral({ currency:s.currency||'INR', timezone:s.timezone||'Asia/Kolkata', gstRate:String(s.gstRate||18), invoicePrefix:s.invoicePrefix||'INV', quotationPrefix:s.quotationPrefix||'QT' });
+      setIntegrations({
+        gaTrackingId:  s.gaTrackingId  || '',
+        gaPropertyId:  s.gaPropertyId  || '',
+        gscSiteUrl:    s.gscSiteUrl    || '',
+        fbPixelId:     s.fbPixelId     || '',
+        razorpayKeyId: s.razorpayKeyId || '',
+      });
     } catch {}
   };
   useEffect(() => { load(); }, [cid]);
@@ -59,6 +73,12 @@ export default function SettingsPage() {
   const saveGeneral = async () => {
     setSaving(true);
     try { await companyApi.updateSettings(cid, { ...general, gstRate: +general.gstRate }); toast('Settings saved!'); }
+    catch(e:any){ toast(e.message,'err'); } finally { setSaving(false); }
+  };
+
+  const saveIntegrations = async () => {
+    setSaving(true);
+    try { await companyApi.updateSettings(cid, { ...integrations }); toast('Integration settings saved!'); }
     catch(e:any){ toast(e.message,'err'); } finally { setSaving(false); }
   };
 
@@ -90,18 +110,23 @@ export default function SettingsPage() {
         <div className="w-52 flex-shrink-0 flex flex-col gap-1.5">
           {TABS.map(t => (
             <button key={t.key} onClick={() => setTab(t.key as any)}
-              className={`text-left px-4 py-3 rounded-xl transition-all ${tab===t.key?'bg-indigo-600 text-white shadow-md':'bg-white border border-slate-200 hover:border-indigo-300'}`}>
+              className="text-left px-4 py-3 rounded-xl transition-all"
+              style={{
+                background: tab===t.key ? '#3199d4' : '#ffffff',
+                border: `1px solid ${tab===t.key ? '#3199d4' : '#e2eaf2'}`,
+                boxShadow: tab===t.key ? '0 4px 12px rgba(49,153,212,0.25)' : 'none',
+              }}>
               <div className="flex items-center gap-2 mb-0.5">
                 <span>{t.icon}</span>
-                <span className={`text-xs font-bold ${tab===t.key?'text-white':'text-slate-900'}`}>{t.label}</span>
+                <span style={{ fontSize: 12.5, fontWeight: 700, color: tab===t.key ? '#ffffff' : '#192b3f' }}>{t.label}</span>
               </div>
-              <div className={`text-xs ${tab===t.key?'text-indigo-200':'text-slate-400'}`}>{t.desc}</div>
+              <div style={{ fontSize: 11, color: tab===t.key ? 'rgba(255,255,255,0.75)' : '#7a9baf' }}>{t.desc}</div>
             </button>
           ))}
-          <div className="mt-3 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-xl p-4 text-white">
-            <div className="text-xs opacity-70 mb-0.5">Current Plan</div>
-            <div className="text-xl font-bold">{coData?.plan || 'STARTER'}</div>
-            <button className="mt-3 w-full text-xs bg-white/20 hover:bg-white/30 font-semibold py-1.5 rounded-lg transition-colors">Upgrade Plan</button>
+          <div className="mt-3 rounded-xl p-4 text-white" style={{ background: 'linear-gradient(135deg, #192b3f 0%, #2d5c7b 100%)' }}>
+            <div style={{ fontSize: 11, opacity: 0.6, marginBottom: 2 }}>Current Plan</div>
+            <div style={{ fontSize: 20, fontWeight: 800 }}>{coData?.plan || 'STARTER'}</div>
+            <button className="mt-3 w-full text-xs font-semibold py-1.5 rounded-lg transition-colors" style={{ background: 'rgba(49,153,212,0.3)', color: '#ffffff' }}>Upgrade Plan</button>
           </div>
         </div>
 
@@ -262,27 +287,157 @@ export default function SettingsPage() {
 
           {/* ── INTEGRATIONS ── */}
           {tab === 'integrations' && (
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { name:'WhatsApp Business', icon:'💬', desc:'Meta Cloud API for messages',       color:'bg-green-50'  },
-                { name:'Razorpay',          icon:'💳', desc:'Payment links on invoices',        color:'bg-indigo-50' },
-                { name:'Google Analytics',  icon:'📊', desc:'Sessions and conversion data',     color:'bg-blue-50'   },
-                { name:'Google Search Console',icon:'🔍',desc:'Rankings, clicks, impressions', color:'bg-orange-50' },
-                { name:'SendGrid',          icon:'📧', desc:'Transactional email delivery',     color:'bg-cyan-50'   },
-                { name:'Facebook Lead Ads', icon:'📘', desc:'Auto-import leads from campaigns', color:'bg-blue-50'   },
-              ].map((int, i) => (
-                <Card key={i} className="flex flex-col gap-3">
-                  <div className={`w-12 h-12 rounded-xl ${int.color} flex items-center justify-center text-2xl`}>{int.icon}</div>
+            <div className="flex flex-col gap-4">
+
+              {/* ── Google Analytics GA4 ── */}
+              <Card>
+                <div className="flex items-start gap-4 pb-4 mb-4" style={{ borderBottom: '1px solid #f0f5fa' }}>
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: '#e8f4fd' }}>
+                    <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none">
+                      <path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z" fill="#F57C00"/>
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span style={{ fontSize: 14, fontWeight: 700, color: '#192b3f' }}>Google Analytics 4</span>
+                      {integrations.gaTrackingId
+                        ? <span style={{ fontSize: 11, fontWeight: 600, background: '#d1fae5', color: '#047857', padding: '2px 8px', borderRadius: 9999 }}>● Connected</span>
+                        : <span style={{ fontSize: 11, fontWeight: 600, background: '#f0f5fa', color: '#7a9baf', padding: '2px 8px', borderRadius: 9999 }}>Not connected</span>
+                      }
+                    </div>
+                    <p style={{ fontSize: 12.5, color: '#7a9baf' }}>Track website visitors, conversions, and traffic sources per company domain.</p>
+                  </div>
+                </div>
+
+                <div style={{ background: '#f8fbfd', border: '1px solid #e2eaf2', borderRadius: 10, padding: '12px 14px', marginBottom: 16 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#3199d4', marginBottom: 6 }}>Setup Instructions</div>
+                  <ol style={{ fontSize: 12, color: '#64748b', paddingLeft: 16, lineHeight: 1.8, margin: 0 }}>
+                    <li>Go to <strong>analytics.google.com</strong> → Admin → Create Property</li>
+                    <li>Copy your <strong>Measurement ID</strong> (format: <code style={{ background: '#e2eaf2', padding: '1px 5px', borderRadius: 4 }}>G-XXXXXXXXXX</code>)</li>
+                    <li>Copy your <strong>Property ID</strong> (numeric, e.g. <code style={{ background: '#e2eaf2', padding: '1px 5px', borderRadius: 4 }}>123456789</code>)</li>
+                    <li>Paste both below and click Save — tracking activates immediately in this CRM</li>
+                  </ol>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 mb-4">
                   <div>
-                    <div className="font-bold text-slate-800 text-sm">{int.name}</div>
-                    <div className="text-xs text-slate-400 mt-0.5">{int.desc}</div>
+                    <Input
+                      label="GA4 Measurement ID *"
+                      value={integrations.gaTrackingId}
+                      onChange={e => setIntegrations(i => ({ ...i, gaTrackingId: e.target.value }))}
+                      placeholder="G-XXXXXXXXXX"
+                    />
+                    <p style={{ fontSize: 11, color: '#7a9baf', marginTop: 4 }}>Found in GA4 Admin → Data Streams</p>
                   </div>
-                  <div className="flex items-center justify-between mt-auto">
-                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">Not connected</span>
-                    <Btn variant="primary" size="sm">Connect</Btn>
+                  <div>
+                    <Input
+                      label="GA4 Property ID (for API reports)"
+                      value={integrations.gaPropertyId}
+                      onChange={e => setIntegrations(i => ({ ...i, gaPropertyId: e.target.value }))}
+                      placeholder="123456789"
+                    />
+                    <p style={{ fontSize: 11, color: '#7a9baf', marginTop: 4 }}>Found in GA4 Admin → Property Settings</p>
                   </div>
+                </div>
+
+                {/* Live preview of tracking script */}
+                {integrations.gaTrackingId && (
+                  <div style={{ background: '#0f172a', borderRadius: 10, padding: '12px 16px', marginBottom: 16, overflowX: 'auto' }}>
+                    <div style={{ fontSize: 10.5, color: '#64748b', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Generated Tracking Snippet</div>
+                    <code style={{ fontSize: 11.5, color: '#7dd3fc', fontFamily: 'monospace', whiteSpace: 'pre' }}>
+{`<!-- Google Analytics 4 — Auto-injected by Raulji CRM -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=${integrations.gaTrackingId}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', '${integrations.gaTrackingId}');
+</script>`}
+                    </code>
+                  </div>
+                )}
+              </Card>
+
+              {/* ── Google Search Console ── */}
+              <Card>
+                <div className="flex items-start gap-4 pb-4 mb-4" style={{ borderBottom: '1px solid #f0f5fa' }}>
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: '#fff3e0' }}>
+                    <svg viewBox="0 0 24 24" className="w-6 h-6">
+                      <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" fill="#E65100"/>
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span style={{ fontSize: 14, fontWeight: 700, color: '#192b3f' }}>Google Search Console</span>
+                      {integrations.gscSiteUrl
+                        ? <span style={{ fontSize: 11, fontWeight: 600, background: '#d1fae5', color: '#047857', padding: '2px 8px', borderRadius: 9999 }}>● Connected</span>
+                        : <span style={{ fontSize: 11, fontWeight: 600, background: '#f0f5fa', color: '#7a9baf', padding: '2px 8px', borderRadius: 9999 }}>Not connected</span>
+                      }
+                    </div>
+                    <p style={{ fontSize: 12.5, color: '#7a9baf' }}>Track SEO rankings, organic clicks, impressions, and keyword performance.</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div className="col-span-2">
+                    <Input
+                      label="Search Console Site URL"
+                      value={integrations.gscSiteUrl}
+                      onChange={e => setIntegrations(i => ({ ...i, gscSiteUrl: e.target.value }))}
+                      placeholder="https://rauljitechnologies.com"
+                    />
+                    <p style={{ fontSize: 11, color: '#7a9baf', marginTop: 4 }}>Must match exactly the property URL in Search Console (including https://)</p>
+                  </div>
+                </div>
+                <div style={{ background: '#f8fbfd', border: '1px solid #e2eaf2', borderRadius: 10, padding: '12px 14px' }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#3199d4', marginBottom: 4 }}>How to verify ownership</div>
+                  <p style={{ fontSize: 12, color: '#64748b', margin: 0, lineHeight: 1.7 }}>
+                    Go to <strong>search.google.com/search-console</strong> → Add Property → enter your domain → verify via HTML tag or Google Analytics. Once verified, your SEO data flows into the Analytics page.
+                  </p>
+                </div>
+              </Card>
+
+              {/* ── Facebook Pixel + Razorpay row ── */}
+              <div className="grid grid-cols-2 gap-4">
+                <Card>
+                  <div className="flex items-center gap-3 mb-4" style={{ borderBottom: '1px solid #f0f5fa', paddingBottom: 14 }}>
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: '#ebf0fb' }}>
+                      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 13.5, fontWeight: 700, color: '#192b3f' }}>Facebook Pixel</div>
+                      <p style={{ fontSize: 12, color: '#7a9baf', margin: 0 }}>Track ad conversions & retargeting</p>
+                    </div>
+                  </div>
+                  <Input
+                    label="Pixel ID"
+                    value={integrations.fbPixelId}
+                    onChange={e => setIntegrations(i => ({ ...i, fbPixelId: e.target.value }))}
+                    placeholder="1234567890123456"
+                  />
                 </Card>
-              ))}
+
+                <Card>
+                  <div className="flex items-center gap-3 mb-4" style={{ borderBottom: '1px solid #f0f5fa', paddingBottom: 14 }}>
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: '#f0eafb' }}>
+                      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="#528FF0"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm.48 18.32l-3.36-5.36h-.04v5.36H6.96V5.68h2.12v5.08h.04l3.24-5.08H14.8l-3.56 5.28 3.72 7.36h-2.48z"/></svg>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 13.5, fontWeight: 700, color: '#192b3f' }}>Razorpay</div>
+                      <p style={{ fontSize: 12, color: '#7a9baf', margin: 0 }}>Payment links on invoices</p>
+                    </div>
+                  </div>
+                  <Input
+                    label="Razorpay Key ID"
+                    value={integrations.razorpayKeyId}
+                    onChange={e => setIntegrations(i => ({ ...i, razorpayKeyId: e.target.value }))}
+                    placeholder="rzp_live_XXXXXXXXXX"
+                  />
+                </Card>
+              </div>
+
+              <div className="flex justify-end">
+                <Btn variant="primary" loading={saving} onClick={saveIntegrations}>Save All Integrations</Btn>
+              </div>
             </div>
           )}
 

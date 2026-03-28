@@ -30,13 +30,14 @@ function Badge({ s }: { s: string }) {
 
 // ─── PDF Preview + Download modal ────────────────────────────
 function PdfModal({ inv, cid, onClose }: { inv: any; cid: string; onClose: () => void }) {
-  const [loading,   setLoading]   = useState(false);
-  const [iframeSrc, setIframeSrc] = useState('');
-  const [iframeLoading, setIframeLoading] = useState(true);
+  const isDraft = inv.status === 'DRAFT';
+  const [loading,      setLoading]      = useState(false);
+  const [iframeSrc,    setIframeSrc]    = useState('');
+  const [iframeLoading,setIframeLoading]= useState(true);
   const blobUrlRef = useRef('');
   const viewUrl = `${API}/companies/${cid}/invoices/${inv.invoiceId}/view`;
 
-  // Fetch invoice HTML with auth token → blob URL for iframe (bypasses auth on iframe)
+  // Always load preview — drafts get a banner, not a block
   useEffect(() => {
     setIframeLoading(true);
     fetch(viewUrl, { headers: { Authorization: `Bearer ${tok()}` } })
@@ -80,13 +81,14 @@ function PdfModal({ inv, cid, onClose }: { inv: any; cid: string; onClose: () =>
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3" onClick={onClose}>
       <div className="bg-white rounded-2xl w-full flex flex-col shadow-2xl overflow-hidden" style={{ maxWidth: 860, height: '93vh' }} onClick={e => e.stopPropagation()}>
+
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200 bg-white flex-shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 font-bold text-sm flex-shrink-0">₹</div>
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0" style={{ background: '#e8f5fd', color: '#1a72a3' }}>₹</div>
             <div>
-              <div className="font-bold text-slate-900 text-sm">{inv.invoiceNumber}</div>
-              <div className="text-xs text-slate-400">{inv.clientName} · {inr(inv.grandTotal)}</div>
+              <div className="font-bold text-sm" style={{ color: '#192b3f' }}>{inv.invoiceNumber}</div>
+              <div className="text-xs" style={{ color: '#7a9baf' }}>{inv.clientName} · {inr(inv.grandTotal)}</div>
             </div>
             <Badge s={inv.status} />
           </div>
@@ -96,11 +98,24 @@ function PdfModal({ inv, cid, onClose }: { inv: any; cid: string; onClose: () =>
             <button onClick={onClose} className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors text-sm font-bold">✕</button>
           </div>
         </div>
+
+        {/* Draft banner */}
+        {isDraft && (
+          <div className="flex items-center gap-2 px-5 py-2 flex-shrink-0" style={{ background: '#fffbeb', borderBottom: '1px solid #fde68a' }}>
+            <span style={{ fontSize: 14 }}>📝</span>
+            <span style={{ fontSize: 12.5, fontWeight: 600, color: '#92400e' }}>Draft — </span>
+            <span style={{ fontSize: 12.5, color: '#b45309' }}>This is a preview of your draft invoice. Send or mark as paid to finalise.</span>
+          </div>
+        )}
+
         {/* Preview */}
         <div className="flex-1 overflow-hidden bg-slate-200 relative">
           {iframeLoading && (
             <div className="absolute inset-0 flex items-center justify-center bg-slate-100 z-10">
-              <svg className="animate-spin w-6 h-6 text-blue-500" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" opacity=".3"/><path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/></svg>
+              <svg className="animate-spin w-6 h-6" style={{ color: '#3199d4' }} viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" opacity=".3"/>
+                <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
+              </svg>
             </div>
           )}
           {iframeSrc
@@ -108,6 +123,7 @@ function PdfModal({ inv, cid, onClose }: { inv: any; cid: string; onClose: () =>
             : !iframeLoading && <div className="flex items-center justify-center h-full text-slate-400 text-sm">Unable to load preview</div>
           }
         </div>
+
       </div>
     </div>
   );
@@ -196,6 +212,7 @@ function EditModal({ inv, cid, onClose, onDone }: any) {
     clientPhone:  inv.clientPhone  || '',
     clientGst:    inv.clientGst    || '',
     clientAddress:inv.clientAddress|| '',
+    invoiceDate:  inv.invoiceDate  ? new Date(inv.invoiceDate).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
     dueDate:      inv.dueDate      ? new Date(inv.dueDate).toISOString().slice(0, 10) : '',
     paymentTerms: inv.paymentTerms || 'Net 30',
     notes:        inv.notes        || '',
@@ -207,10 +224,14 @@ function EditModal({ inv, cid, onClose, onDone }: any) {
 
   const updItem = (i: number, k: string, v: any) => setF(p => ({ ...p, items: p.items.map((it: any, idx: number) => idx === i ? { ...it, [k]: v } : it) }));
   const subtotal   = f.items.reduce((a: number, it: any) => a + it.quantity * it.unitPrice - (it.discount || 0), 0);
-  const gstTotal   = f.items.reduce((a: number, it: any) => a + Math.round((it.quantity * it.unitPrice - (it.discount || 0)) * it.gstPercent / 100), 0);
+  const gstTotal   = f.items.reduce((a: number, it: any) => {
+    if (it.gstPercent == null) return a;
+    return a + Math.round((it.quantity * it.unitPrice - (it.discount || 0)) * it.gstPercent / 100);
+  }, 0);
   const grandTotal = subtotal + gstTotal;
   const gstByRate: Record<number, number> = {};
   f.items.forEach((it: any) => {
+    if (it.gstPercent == null) return;
     const taxable = it.quantity * it.unitPrice - (it.discount || 0);
     const tax = Math.round(taxable * it.gstPercent / 100);
     gstByRate[it.gstPercent] = (gstByRate[it.gstPercent] || 0) + tax;
@@ -250,7 +271,8 @@ function EditModal({ inv, cid, onClose, onDone }: any) {
               </div>
             </div>
             {/* Dates */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
+              <Input label="Invoice Date" type="date" value={f.invoiceDate} onChange={e => setF(p => ({ ...p, invoiceDate: e.target.value }))} />
               <Input label="Due Date" type="date" value={f.dueDate} onChange={e => setF(p => ({ ...p, dueDate: e.target.value }))} />
               <Sel label="Payment Terms" value={f.paymentTerms} onChange={e => setF(p => ({ ...p, paymentTerms: e.target.value }))}
                 options={[{value:'Net 30',label:'Net 30'},{value:'Net 15',label:'Net 15'},{value:'Net 7',label:'Net 7'},{value:'Due on Receipt',label:'Due on Receipt'}]} />
@@ -270,18 +292,18 @@ function EditModal({ inv, cid, onClose, onDone }: any) {
                   <tbody>
                     {f.items.map((it: any, i: number) => {
                       const after = it.quantity * it.unitPrice - (it.discount || 0);
-                      const gst   = Math.round(after * it.gstPercent / 100);
+                      const gst   = it.gstPercent != null ? Math.round(after * it.gstPercent / 100) : 0;
                       return (
                         <tr key={i} className="border-b border-slate-50 last:border-none">
                           <td className="px-2 py-1.5"><input className="w-full text-xs border border-slate-200 rounded-lg px-2 py-1.5 focus:border-blue-400 outline-none" value={it.description} onChange={e => updItem(i,'description',e.target.value)} placeholder="Item"/></td>
                           <td className="px-2 py-1.5"><input className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 font-mono focus:border-blue-400 outline-none" value={it.hsnCode||''} onChange={e => updItem(i,'hsnCode',e.target.value)} placeholder="998311"/></td>
                           <td className="px-2 py-1.5"><input type="number" min="1" className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 text-center focus:border-blue-400 outline-none" value={it.quantity} onChange={e => updItem(i,'quantity',+e.target.value||1)}/></td>
                           <td className="px-2 py-1.5"><input type="number" min="0" className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 text-right focus:border-blue-400 outline-none" value={it.unitPrice} onChange={e => updItem(i,'unitPrice',+e.target.value||0)}/></td>
-                          <td className="px-2 py-1.5"><select className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 outline-none" value={it.gstPercent} onChange={e => updItem(i,'gstPercent',+e.target.value)}>{[0,5,12,18,28].map(r=><option key={r} value={r}>{r}%</option>)}</select></td>
+                          <td className="px-2 py-1.5"><select className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 outline-none" value={it.gstPercent ?? ''} onChange={e => updItem(i,'gstPercent', e.target.value === '' ? null : +e.target.value)}><option value="">No GST</option>{[0,5,12,18,28].map(r=><option key={r} value={r}>{r}%</option>)}</select></td>
                           <td className="px-2 py-1.5"><input type="number" min="0" className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 text-right focus:border-blue-400 outline-none" value={it.discount||0} onChange={e => updItem(i,'discount',+e.target.value||0)}/></td>
                           <td className="px-2 py-1.5 text-right">
                             <div className="text-xs font-bold text-slate-800">{inr(after+gst)}</div>
-                            <div className="text-xs text-slate-400">+{inr(gst)} GST</div>
+                            {gst > 0 && <div className="text-xs text-slate-400">+{inr(gst)} GST</div>}
                           </td>
                           <td className="px-2 py-1.5 text-center">
                             {f.items.length > 1 && <button onClick={() => setF(p => ({ ...p, items: p.items.filter((_: any, idx: number) => idx !== i) }))} className="w-5 h-5 rounded-full bg-red-50 text-red-400 hover:bg-red-100 text-xs flex items-center justify-center">×</button>}
@@ -503,7 +525,7 @@ function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
   // FY map (all active)
   const fyMapAll: Record<string, { subtotal: number; tax: number; grand: number; paid: number; count: number }> = {};
   activeInvs.forEach(i => {
-    const fy = getFY(i.createdAt);
+    const fy = getFY(i.invoiceDate || i.createdAt);
     if (!fyMapAll[fy]) fyMapAll[fy] = { subtotal: 0, tax: 0, grand: 0, paid: 0, count: 0 };
     fyMapAll[fy].subtotal += i.subtotal || 0;
     fyMapAll[fy].tax      += i.totalGst || 0;
@@ -516,12 +538,12 @@ function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
   const fyChartGroups = fyChartData.map(d => ({ vals: d.vals }));
 
   // Filtered invoices (by FY)
-  const filteredInvs = fyFilter === 'ALL' ? activeInvs : activeInvs.filter(i => getFY(i.createdAt) === fyFilter);
+  const filteredInvs = fyFilter === 'ALL' ? activeInvs : activeInvs.filter(i => getFY(i.invoiceDate || i.createdAt) === fyFilter);
 
   // Monthly data
   const monthMap: Record<string, { grand: number; paid: number; label: string }> = {};
   filteredInvs.forEach(i => {
-    const d   = new Date(i.createdAt);
+    const d   = new Date(i.invoiceDate || i.createdAt);
     const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
     const lbl = d.toLocaleDateString('en-IN', { month: 'short', year: '2-digit' });
     if (!monthMap[key]) monthMap[key] = { grand: 0, paid: 0, label: lbl };
@@ -573,7 +595,7 @@ function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
     const hdr = ['Invoice #','Date','Due Date','Client','Client GST','Status','Subtotal (₹)','GST (₹)','Grand Total (₹)','Paid Amount (₹)','Balance (₹)'];
     const rows = allInvoices.map(i => [
       i.invoiceNumber,
-      new Date(i.createdAt).toLocaleDateString('en-IN'),
+      new Date(i.invoiceDate || i.createdAt).toLocaleDateString('en-IN'),
       i.dueDate ? new Date(i.dueDate).toLocaleDateString('en-IN') : '',
       i.clientName || '', i.clientGst || '', i.status,
       i.subtotal || 0, i.totalGst || 0, i.grandTotal || 0,
@@ -596,7 +618,7 @@ function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
       const bal = Math.max(0, (i.grandTotal || 0) - (i.paidAmount || 0));
       return `<tr>
         <td>${i.invoiceNumber}</td>
-        <td>${new Date(i.createdAt).toLocaleDateString('en-IN')}</td>
+        <td>${new Date(i.invoiceDate || i.createdAt).toLocaleDateString('en-IN')}</td>
         <td>${i.clientName || ''}</td>
         <td><span style="background:${SC_COLOR[i.status]||'#94a3b8'};color:white;padding:2px 8px;border-radius:4px;font-size:10px">${i.status}</span></td>
         <td style="text-align:right">${fmtInr(i.subtotal||0)}</td>
@@ -829,6 +851,7 @@ function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
 function emptyForm() {
   return {
     clientName: '', clientEmail: '', clientPhone: '', clientGst: '', clientAddress: '',
+    invoiceDate: new Date().toISOString().slice(0, 10),
     dueDate: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10),
     paymentTerms: 'Net 30', notes: '',
     bankDetails: { bankName: '', accountNumber: '', ifsc: '', accountName: '', upiId: '' },
@@ -842,20 +865,31 @@ export default function InvoicesPage() {
   const [cid,         setCid]         = useState('');
   const [coProfile,   setCoProfile]   = useState<any>({});
   const [allInvoices, setAllInvoices] = useState<any[]>([]);
-  const [loading,     setLoading]     = useState(false);
-  const [tab,         setTab]         = useState('ALL');
-  const [previewInv,  setPreviewInv]  = useState<any>(null);
-  const [paidInv,     setPaidInv]     = useState<any>(null);
-  const [editInv,     setEditInv]     = useState<any>(null);
-  const [cancelInv,   setCancelInv]   = useState<any>(null);
-  const [showCreate,  setShowCreate]  = useState(false);
-  const [saving,      setSaving]      = useState(false);
-  const [form,        setForm]        = useState(emptyForm());
-  const [clients,     setClients]     = useState<any[]>([]);
-  const [clientSearch,setClientSearch]= useState('');
+  const [loading,       setLoading]       = useState(false);
+  const [loadingMore,   setLoadingMore]   = useState(false);
+  const [hasMore,       setHasMore]       = useState(false);
+  const [tab,           setTab]           = useState('ALL');
+  const [previewInv,    setPreviewInv]    = useState<any>(null);
+  const [paidInv,       setPaidInv]       = useState<any>(null);
+  const [editInv,       setEditInv]       = useState<any>(null);
+  const [cancelInv,     setCancelInv]     = useState<any>(null);
+  const [showCreate,    setShowCreate]    = useState(false);
+  const [saving,        setSaving]        = useState(false);
+  const [form,          setForm]          = useState(emptyForm());
+  const [clients,       setClients]       = useState<any[]>([]);
+  const [clientSearch,  setClientSearch]  = useState('');
   const [showClientDrop,setShowClientDrop]= useState(false);
-  const [viewMode,    setViewMode]    = useState<'invoices' | 'analytics'>('invoices');
-  const { toast, ToastContainer }     = useToast();
+  const [viewMode,      setViewMode]      = useState<'invoices' | 'analytics'>('invoices');
+  // client history
+  const [clientFilter,  setClientFilter]  = useState<string | null>(null);
+  const [clientInvs,    setClientInvs]    = useState<any[]>([]);
+  const [clientLoading, setClientLoading] = useState(false);
+  const { toast, ToastContainer }         = useToast();
+  const scrollRef    = useRef<HTMLDivElement>(null);
+  const pageRef      = useRef(1);
+  const hasMoreRef   = useRef(false);
+  const loadingMoreRef = useRef(false);
+  const PAGE_SIZE    = 15;
 
   // Load companies
   const loadCos = useCallback(async () => {
@@ -894,12 +928,59 @@ export default function InvoicesPage() {
   const loadInvoices = async () => {
     if (!cid) return;
     setLoading(true);
+    pageRef.current = 1;
     try {
-      const d = await invoiceApi.list(cid, { limit: '100' });
-      setAllInvoices(d.invoices || []);
+      const d = await invoiceApi.list(cid, { limit: String(PAGE_SIZE), page: '1' });
+      const fetched = d.invoices || [];
+      setAllInvoices(fetched);
+      const total = d.pagination?.total || fetched.length;
+      const more = total > PAGE_SIZE;
+      hasMoreRef.current = more;
+      setHasMore(more);
     } catch (e: any) { toast(e.message, 'err'); }
     finally { setLoading(false); }
   };
+
+  const loadMore = async () => {
+    if (!cid || loadingMoreRef.current || !hasMoreRef.current) return;
+    loadingMoreRef.current = true;
+    setLoadingMore(true);
+    const nextPage = pageRef.current + 1;
+    try {
+      const d = await invoiceApi.list(cid, { limit: String(PAGE_SIZE), page: String(nextPage) });
+      const fetched = d.invoices || [];
+      setAllInvoices(prev => [...prev, ...fetched]);
+      pageRef.current = nextPage;
+      const total = d.pagination?.total || 0;
+      const more = total > nextPage * PAGE_SIZE;
+      hasMoreRef.current = more;
+      setHasMore(more);
+    } catch {}
+    finally { loadingMoreRef.current = false; setLoadingMore(false); }
+  };
+
+  const openClientHistory = async (name: string) => {
+    setClientFilter(name);
+    setClientLoading(true);
+    setClientInvs([]);
+    try {
+      const d = await invoiceApi.list(cid, { limit: '200', page: '1', clientName: name });
+      setClientInvs(d.invoices || []);
+    } catch {}
+    finally { setClientLoading(false); }
+  };
+
+  // Infinite scroll — fires loadMore when near bottom
+  useEffect(() => {
+    if (viewMode !== 'invoices' || clientFilter) return;
+    const el = scrollRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      if (el.scrollHeight - el.scrollTop - el.clientHeight < 200) loadMore();
+    };
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, [viewMode, clientFilter, cid]);
 
   // Tabs
   const TABS = [
@@ -929,10 +1010,14 @@ export default function InvoicesPage() {
   // Item helpers
   const updItem = (i: number, k: string, v: any) => setForm(f => ({ ...f, items: f.items.map((it: any, idx: number) => idx === i ? { ...it, [k]: v } : it) }));
   const subtotal   = form.items.reduce((a, it: any) => a + it.quantity * it.unitPrice - (it.discount || 0), 0);
-  const gstTotal   = form.items.reduce((a, it: any) => a + Math.round((it.quantity * it.unitPrice - (it.discount || 0)) * it.gstPercent / 100), 0);
+  const gstTotal   = form.items.reduce((a: number, it: any) => {
+    if (it.gstPercent == null) return a;
+    return a + Math.round((it.quantity * it.unitPrice - (it.discount || 0)) * it.gstPercent / 100);
+  }, 0);
   const grandTotal = subtotal + gstTotal;
   const formGstByRate: Record<number, number> = {};
   form.items.forEach((it: any) => {
+    if (it.gstPercent == null) return;
     const taxable = it.quantity * it.unitPrice - (it.discount || 0);
     const tax = Math.round(taxable * it.gstPercent / 100);
     formGstByRate[it.gstPercent] = (formGstByRate[it.gstPercent] || 0) + tax;
@@ -1005,7 +1090,8 @@ export default function InvoicesPage() {
       {viewMode === 'analytics' ? (
         <AnalyticsView allInvoices={allInvoices} />
       ) : (
-        <div className="flex-1 min-h-0 overflow-y-auto p-5 flex flex-col gap-4">
+        <div className="flex-1 min-h-0 overflow-y-auto" ref={scrollRef}>
+        <div className="p-5 flex flex-col gap-4">
 
           {/* Summary row 1 — status */}
           <div className="grid grid-cols-4 gap-3">
@@ -1068,7 +1154,7 @@ export default function InvoicesPage() {
           </div>
 
           {/* Table */}
-          <Card className="p-0 overflow-hidden">
+          <Card className="p-0">
             {loading ? (
               <div className="py-14 text-center flex flex-col items-center gap-2">
                 <svg className="animate-spin w-6 h-6 text-indigo-600" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" opacity=".3"/><path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/></svg>
@@ -1105,11 +1191,11 @@ export default function InvoicesPage() {
                           {/* Invoice # */}
                           <td className="px-4 py-3">
                             <button onClick={() => setPreviewInv(inv)} className="font-mono font-bold text-indigo-600 hover:underline">{inv.invoiceNumber}</button>
-                            <div className="text-xs text-slate-400 mt-0.5">{dateStr(inv.createdAt)}</div>
+                            <div className="text-xs text-slate-400 mt-0.5">{dateStr(inv.invoiceDate || inv.createdAt)}</div>
                           </td>
                           {/* Bill To */}
                           <td className="px-4 py-3" style={{ maxWidth: 180 }}>
-                            <div className="font-semibold text-slate-800 truncate">{inv.clientName}</div>
+                            <button onClick={() => openClientHistory(inv.clientName)} className="font-semibold text-slate-800 hover:text-indigo-600 truncate block text-left w-full transition-colors" title="View client history">{inv.clientName}</button>
                             {inv.clientGst   && <div className="text-xs text-slate-400 font-mono">GST: {inv.clientGst}</div>}
                             {inv.clientEmail && <div className="text-xs text-indigo-400 truncate">{inv.clientEmail}</div>}
                             {inv.clientPhone && <div className="text-xs text-slate-400">{inv.clientPhone}</div>}
@@ -1147,8 +1233,10 @@ export default function InvoicesPage() {
                           {/* Actions */}
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <button onClick={() => setPreviewInv(inv)} title="Preview & Download"
-                                className="px-2.5 py-1.5 text-xs bg-indigo-50 text-indigo-600 rounded-lg font-semibold hover:bg-indigo-100 transition-colors whitespace-nowrap">PDF</button>
+                              {inv.status !== 'DRAFT' && (
+                                <button onClick={() => setPreviewInv(inv)} title="Preview & Download"
+                                  className="px-2.5 py-1.5 text-xs bg-indigo-50 text-indigo-600 rounded-lg font-semibold hover:bg-indigo-100 transition-colors whitespace-nowrap">PDF</button>
+                              )}
 
                               {!['PAID','CANCELLED'].includes(inv.status) && (
                                 <button onClick={() => setPaidInv(inv)} title="Mark Paid"
@@ -1175,6 +1263,17 @@ export default function InvoicesPage() {
             )}
           </Card>
 
+          {/* Load-more indicator */}
+          {loadingMore && (
+            <div className="flex items-center justify-center gap-2 py-3">
+              <svg className="animate-spin w-4 h-4 text-indigo-500" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" opacity=".3"/><path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/></svg>
+              <span className="text-xs text-slate-400">Loading more invoices…</span>
+            </div>
+          )}
+          {!loadingMore && !hasMore && allInvoices.length > 0 && (
+            <div className="text-center text-xs text-slate-300 py-2">— All {allInvoices.length} invoices loaded —</div>
+          )}
+
           {/* Analytics hint */}
           {allInvoices.length > 0 && (
             <div className="flex items-center justify-between bg-indigo-50 border border-indigo-100 rounded-xl px-4 py-3">
@@ -1187,6 +1286,117 @@ export default function InvoicesPage() {
           )}
 
         </div>
+        </div>
+      )}
+
+      {/* ── Client History Panel ── */}
+      {clientFilter && (
+        <div className="fixed inset-0 z-40 flex" onClick={() => setClientFilter(null)}>
+          <div className="ml-auto w-full max-w-2xl h-full bg-white shadow-2xl flex flex-col" onClick={e => e.stopPropagation()}>
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 flex-shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold text-sm flex-shrink-0">
+                  {clientFilter.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase()}
+                </div>
+                <div>
+                  <div className="font-bold text-slate-900 text-sm">{clientFilter}</div>
+                  <div className="text-xs text-slate-400">Invoice History</div>
+                </div>
+              </div>
+              <button onClick={() => setClientFilter(null)} className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 text-sm font-bold transition-colors">✕</button>
+            </div>
+
+            {clientLoading ? (
+              <div className="flex-1 flex items-center justify-center gap-2">
+                <svg className="animate-spin w-5 h-5 text-indigo-500" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" opacity=".3"/><path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/></svg>
+                <span className="text-xs text-slate-400">Loading history…</span>
+              </div>
+            ) : (
+              <>
+                {/* Client stats */}
+                {clientInvs.length > 0 && (() => {
+                  const total   = clientInvs.reduce((a, i) => a + (i.grandTotal || 0), 0);
+                  const paid    = clientInvs.filter(i => i.status === 'PAID').reduce((a, i) => a + (i.grandTotal || 0), 0);
+                  const pending = clientInvs.filter(i => ['SENT','PARTIAL'].includes(i.status)).reduce((a, i) => a + (i.grandTotal || 0), 0);
+                  const sub     = clientInvs.reduce((a, i) => a + (i.subtotal || 0), 0);
+                  const gst     = clientInvs.reduce((a, i) => a + (i.totalGst || 0), 0);
+                  return (
+                    <div className="grid grid-cols-4 gap-3 px-6 py-4 border-b border-slate-50 flex-shrink-0">
+                      {[
+                        { label: 'Total Revenue', value: inr(total),   color: 'text-slate-800' },
+                        { label: 'Collected',      value: inr(paid),    color: 'text-emerald-600' },
+                        { label: 'Pending',        value: inr(pending), color: 'text-amber-600' },
+                        { label: 'Total GST',      value: inr(gst),     color: 'text-indigo-600' },
+                      ].map(s => (
+                        <div key={s.label} className="bg-slate-50 rounded-xl px-3 py-2.5">
+                          <div className="text-xs text-slate-400 mb-0.5">{s.label}</div>
+                          <div className={`text-sm font-bold ${s.color}`}>{s.value}</div>
+                        </div>
+                      ))}
+                      <div className="col-span-4 flex items-center gap-4 text-xs text-slate-400 pt-1">
+                        <span>{clientInvs.length} invoices</span>
+                        <span>Subtotal {inr(sub)}</span>
+                        <span>GST {inr(gst)}</span>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* Invoice list */}
+                <div className="flex-1 overflow-y-auto">
+                  {clientInvs.length === 0 ? (
+                    <div className="py-16 text-center text-slate-400 text-sm">No invoices found for this client</div>
+                  ) : (
+                    <table className="w-full text-xs border-collapse">
+                      <thead className="sticky top-0 bg-slate-50 z-10">
+                        <tr className="border-b border-slate-100">
+                          {['Invoice #','Date','Amount','Status','Due Date',''].map(h => (
+                            <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wide whitespace-nowrap">{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {clientInvs.map((inv: any) => {
+                          const isOverdue = inv.status === 'SENT' && inv.dueDate && new Date(inv.dueDate) < new Date();
+                          const displayS  = isOverdue ? 'OVERDUE' : inv.status;
+                          return (
+                            <tr key={inv.invoiceId} className="border-b border-slate-50 hover:bg-indigo-50/20 transition-colors">
+                              <td className="px-4 py-3">
+                                <button onClick={() => { setClientFilter(null); setTimeout(() => setPreviewInv(inv), 50); }} className="font-mono font-bold text-indigo-600 hover:underline">{inv.invoiceNumber}</button>
+                              </td>
+                              <td className="px-4 py-3 text-slate-500">{dateStr(inv.invoiceDate || inv.createdAt)}</td>
+                              <td className="px-4 py-3">
+                                <div className="font-bold text-slate-900">{inr(inv.grandTotal)}</div>
+                                {inv.totalGst > 0 && <div className="text-xs text-indigo-400">+GST {inr(inv.totalGst)}</div>}
+                              </td>
+                              <td className="px-4 py-3"><Badge s={displayS} /></td>
+                              <td className="px-4 py-3">
+                                <div className={`text-xs ${isOverdue ? 'text-red-600 font-bold' : 'text-slate-500'}`}>{dateStr(inv.dueDate)}</div>
+                              </td>
+                              <td className="px-4 py-3">
+                                <div className="flex gap-1.5">
+                                  {inv.status !== 'DRAFT' && (
+                                    <button onClick={() => { setClientFilter(null); setTimeout(() => setPreviewInv(inv), 50); }}
+                                      className="px-2 py-1 text-xs bg-indigo-50 text-indigo-600 rounded-lg font-semibold hover:bg-indigo-100 transition-colors">PDF</button>
+                                  )}
+                                  {!['PAID','CANCELLED'].includes(inv.status) && (
+                                    <button onClick={() => { setClientFilter(null); setTimeout(() => setPaidInv(inv), 50); }}
+                                      className="px-2 py-1 text-xs bg-emerald-50 text-emerald-600 rounded-lg font-semibold hover:bg-emerald-100 transition-colors">Paid</button>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
       )}
 
       {/* ── Modals ── */}
@@ -1196,7 +1406,7 @@ export default function InvoicesPage() {
       {cancelInv  && <CancelModal inv={cancelInv}  cid={cid} onClose={() => setCancelInv(null)} onDone={loadInvoices} />}
 
       {/* ── Create Invoice ── */}
-      <Modal open={showCreate} onClose={() => setShowCreate(false)} title="Create New Invoice" size="lg"
+      <Modal open={showCreate} onClose={() => setShowCreate(false)} title="Create New Invoice" size="xl"
         footer={<><Btn variant="secondary" onClick={() => setShowCreate(false)}>Cancel</Btn><Btn variant="primary" loading={saving} onClick={create}>Create Invoice</Btn></>}>
         <div className="flex flex-col gap-4">
 
@@ -1274,7 +1484,8 @@ export default function InvoicesPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
+            <Input label="Invoice Date" type="date" value={form.invoiceDate} onChange={e => setForm(f => ({ ...f, invoiceDate: e.target.value }))} />
             <Input label="Due Date" type="date" value={form.dueDate} onChange={e => setForm(f => ({ ...f, dueDate: e.target.value }))} />
             <Sel label="Payment Terms" value={form.paymentTerms} onChange={e => setForm(f => ({ ...f, paymentTerms: e.target.value }))}
               options={[{value:'Net 30',label:'Net 30'},{value:'Net 15',label:'Net 15'},{value:'Net 7',label:'Net 7'},{value:'Due on Receipt',label:'Due on Receipt'},{value:'50% Advance',label:'50% Advance'}]} />
@@ -1295,18 +1506,18 @@ export default function InvoicesPage() {
                 <tbody>
                   {form.items.map((it: any, i: number) => {
                     const after = it.quantity * it.unitPrice - (it.discount || 0);
-                    const gst   = Math.round(after * it.gstPercent / 100);
+                    const gst   = it.gstPercent != null ? Math.round(after * it.gstPercent / 100) : 0;
                     return (
                       <tr key={i} className="border-b border-slate-50 last:border-none">
                         <td className="px-2 py-1.5"><input className="w-full text-xs border border-slate-200 rounded-lg px-2 py-1.5 focus:border-blue-400 outline-none" value={it.description} onChange={e => updItem(i,'description',e.target.value)} placeholder="Item description"/></td>
                         <td className="px-2 py-1.5"><input className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 font-mono focus:border-blue-400 outline-none" value={it.hsnCode||''} onChange={e => updItem(i,'hsnCode',e.target.value)} placeholder="998311"/></td>
                         <td className="px-2 py-1.5"><input type="number" min="1" className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 text-center focus:border-blue-400 outline-none" value={it.quantity} onChange={e => updItem(i,'quantity',+e.target.value||1)}/></td>
                         <td className="px-2 py-1.5"><input type="number" min="0" className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 text-right focus:border-blue-400 outline-none" value={it.unitPrice} onChange={e => updItem(i,'unitPrice',+e.target.value||0)}/></td>
-                        <td className="px-2 py-1.5"><select className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 outline-none" value={it.gstPercent} onChange={e => updItem(i,'gstPercent',+e.target.value)}>{[0,5,12,18,28].map(r=><option key={r} value={r}>{r}%</option>)}</select></td>
+                        <td className="px-2 py-1.5"><select className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 outline-none" value={it.gstPercent ?? ''} onChange={e => updItem(i,'gstPercent', e.target.value === '' ? null : +e.target.value)}><option value="">No GST</option>{[0,5,12,18,28].map(r=><option key={r} value={r}>{r}%</option>)}</select></td>
                         <td className="px-2 py-1.5"><input type="number" min="0" className="w-full text-xs border border-slate-200 rounded-lg px-1 py-1.5 text-right focus:border-blue-400 outline-none" value={it.discount||0} onChange={e => updItem(i,'discount',+e.target.value||0)}/></td>
                         <td className="px-2 py-1.5 text-right">
                           <div className="text-xs font-bold text-slate-800">{inr(after+gst)}</div>
-                          <div className="text-xs text-slate-400">GST {inr(gst)}</div>
+                          {gst > 0 && <div className="text-xs text-slate-400">GST {inr(gst)}</div>}
                         </td>
                         <td className="px-2 py-1.5 text-center">
                           {form.items.length > 1 && <button onClick={() => setForm(f => ({ ...f, items: f.items.filter((_: any, idx: number) => idx !== i) }))} className="w-5 h-5 rounded-full bg-red-50 text-red-400 hover:bg-red-100 text-xs flex items-center justify-center">×</button>}

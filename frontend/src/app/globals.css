@@ -2,9 +2,72 @@
 @tailwind components;
 @tailwind utilities;
 
-* { box-sizing: border-box; }
-html { -webkit-font-smoothing: antialiased; }
-body { font-family: -apple-system, 'Segoe UI', sans-serif; }
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 9999px; }
-input,select,textarea { outline: none; }
+/* ── Brand Variables ─────────────────────────────────────────── */
+:root {
+  --primary:   #3199d4;
+  --primary-dark: #2689c0;
+  --primary-light: #e8f5fd;
+  --secondary: #192b3f;
+  --secondary-light: #223650;
+  --text-base: #1a2b3c;
+  --text-muted: #64748b;
+  --border: #e2eaf2;
+  --surface: #ffffff;
+  --bg: #f0f5fa;
+}
+
+/* ── Base Reset ──────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-size: 15px;
+}
+
+body {
+  font-family: var(--font-plus-jakarta, 'Plus Jakarta Sans'), var(--font-montserrat, 'Montserrat'), system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text-base);
+  background: var(--bg);
+  line-height: 1.6;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c8d8e8; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+/* ── Form Elements ───────────────────────────────────────────── */
+input, select, textarea {
+  outline: none;
+  font-family: inherit;
+}
+
+/* ── Focus Ring ──────────────────────────────────────────────── */
+*:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ── Selection ───────────────────────────────────────────────── */
+::selection { background: rgba(49,153,212,0.18); color: var(--secondary); }
+
+/* ── Transitions ─────────────────────────────────────────────── */
+a, button { transition: all 0.15s ease; }
+
+/* ── Typography Scale ────────────────────────────────────────── */
+.text-page-title  { font-size: 1.1rem;  font-weight: 700; line-height: 1.3; color: var(--secondary); }
+.text-section-title { font-size: 0.875rem; font-weight: 700; color: var(--secondary); }
+.text-label       { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); letter-spacing: 0.025em; }
+.text-body        { font-size: 0.8125rem; color: var(--text-base); line-height: 1.6; }
+.text-caption     { font-size: 0.6875rem; color: var(--text-muted); }
+
+/* ── Brand Gradient ──────────────────────────────────────────── */
+.brand-gradient {
+  background: linear-gradient(135deg, var(--primary) 0%, #1a72a3 100%);
+}
+.brand-gradient-soft {
+  background: linear-gradient(135deg, #e8f5fd 0%, #d0eaf8 100%);
+}

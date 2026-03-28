@@ -24,7 +24,7 @@ export default function LoginPage() {
       localStorage.setItem('accessToken',  data.accessToken);
       localStorage.setItem('refreshToken', data.refreshToken);
       localStorage.setItem('user',         JSON.stringify(data.user));
-      document.cookie = `accessToken=${data.accessToken}; path=/; max-age=3600`;
+      document.cookie = `accessToken=${data.accessToken}; path=/; max-age=604800`; // 7 days
       router.push('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Invalid email or password');
