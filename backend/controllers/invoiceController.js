@@ -17,23 +17,33 @@ const calcTotals = (items) => {
 };
 
 const nextInvNum = async (companyId) => {
-  const c = await prisma.invoice.count({ where: { companyId } });
-  return `INV-${new Date().getFullYear()}-${String(c + 1).padStart(4, '0')}`;
+  const [company, c] = await Promise.all([
+    prisma.company.findUnique({ where: { companyId }, select: { settings: true } }),
+    prisma.invoice.count({ where: { companyId } }),
+  ]);
+  const raw    = company?.settings?.invoicePrefix?.toUpperCase().trim() || 'INV';
+  const prefix = raw.replace(/[\/\-]+$/, '');          // strip any trailing / or -
+  const year   = new Date().getFullYear();
+  return `${prefix}/${year}-${String(c + 1).padStart(4, '0')}`;
 };
 
 // ── GET ALL ───────────────────────────────────────────────────
 exports.getInvoices = async (req, res) => {
   try {
     const { companyId } = req.params;
-    const { page = 1, limit = 100, status, search } = req.query;
+    const { page = 1, limit = 100, status, search, clientName } = req.query;
     const where = {
       companyId,
       ...(status && { status }),
-      ...(search && { OR: [
-        { invoiceNumber: { contains: search, mode: 'insensitive' } },
-        { clientName:    { contains: search, mode: 'insensitive' } },
-        { clientEmail:   { contains: search, mode: 'insensitive' } },
-      ]})
+      ...(clientName
+        ? { clientName: { equals: clientName, mode: 'insensitive' } }
+        : search
+          ? { OR: [
+              { invoiceNumber: { contains: search, mode: 'insensitive' } },
+              { clientName:    { contains: search, mode: 'insensitive' } },
+              { clientEmail:   { contains: search, mode: 'insensitive' } },
+            ]}
+          : {}),
     };
     const [invoices, total, summary] = await Promise.all([
       prisma.invoice.findMany({ where, orderBy: { createdAt: 'desc' }, skip: (page - 1) * +limit, take: +limit }),
@@ -42,7 +52,8 @@ exports.getInvoices = async (req, res) => {
     ]);
     const summaryMap = {};
     summary.forEach(s => { summaryMap[s.status.toLowerCase()] = { count: s._count.status, amount: s._sum.grandTotal || 0 }; });
-    return res.json({ success: true, data: { invoices, pagination: { total, page: +page, limit: +limit, pages: Math.ceil(total / limit) }, summary: summaryMap } });
+    const safeLimit = Math.max(+limit || 100, 1);
+    return res.json({ success: true, data: { invoices, pagination: { total, page: +page, limit: safeLimit, pages: Math.ceil(total / safeLimit) }, summary: summaryMap } });
   } catch (err) { return res.status(500).json({ success: false, error: { message: err.message } }); }
 };
 
@@ -64,7 +75,7 @@ exports.createInvoice = async (req, res) => {
     const { companyId } = req.params;
     const {
       leadId, clientName, clientEmail, clientPhone,
-      clientGst, clientAddress, dueDate,
+      clientGst, clientAddress, invoiceDate, dueDate,
       currency = 'INR', items = [],
       paymentTerms = 'Net 30', bankDetails, notes
     } = req.body;
@@ -81,6 +92,7 @@ exports.createInvoice = async (req, res) => {
         clientPhone:    clientPhone   || null,
         clientGst:      clientGst     || null,
         clientAddress:  clientAddress || null,
+        invoiceDate:    invoiceDate   ? new Date(invoiceDate) : new Date(),
         dueDate:        dueDate       ? new Date(dueDate) : new Date(Date.now() + 30 * 86400000),
         currency,
         items:          totals.items,
@@ -109,6 +121,7 @@ exports.updateInvoice = async (req, res) => {
     if (b.clientPhone   !== undefined) updateData.clientPhone   = b.clientPhone;
     if (b.clientGst     !== undefined) updateData.clientGst     = b.clientGst;
     if (b.clientAddress !== undefined) updateData.clientAddress = b.clientAddress;
+    if (b.invoiceDate   !== undefined) updateData.invoiceDate   = new Date(b.invoiceDate);
     if (b.dueDate       !== undefined) updateData.dueDate       = new Date(b.dueDate);
     if (b.paymentTerms  !== undefined) updateData.paymentTerms  = b.paymentTerms;
     if (b.notes         !== undefined) updateData.notes         = b.notes;

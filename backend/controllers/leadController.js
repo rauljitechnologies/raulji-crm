@@ -1,15 +1,18 @@
 
-const prisma = require('../lib/prisma');
+const prisma  = require('../lib/prisma');
+const { fireTrigger } = require('../services/automationEngine');
 
 exports.getLeads = async (req, res) => {
   try {
     const { companyId } = req.params;
-    const { page=1, limit=25, status, source, search, assignedTo, sortBy='createdAt', sortOrder='desc' } = req.query;
+    const { page=1, limit=25, status, source, service, country, search, assignedTo, sortBy='createdAt', sortOrder='desc' } = req.query;
     const where = {
       companyId,
       isDeleted: false,
       ...(status     && { status }),
       ...(source     && { source }),
+      ...(service    && { service: { equals: service, mode: 'insensitive' } }),
+      ...(country    && { country: { equals: country, mode: 'insensitive' } }),
       ...(assignedTo && { assignedToId: assignedTo }),
       ...(search && { OR:[
         { name:  { contains: search, mode: 'insensitive' } },
@@ -45,7 +48,7 @@ exports.getLead = async (req, res) => {
 exports.createLead = async (req, res) => {
   try {
     const { companyId } = req.params;
-    const { name, email, phone, city, source='MANUAL', status='NEW', priority='MEDIUM', dealValue, notes, assignedToId } = req.body;
+    const { name, email, phone, city, state, country, service, source='MANUAL', status='NEW', priority='MEDIUM', dealValue, notes, assignedToId } = req.body;
     if (!name || !phone) return res.status(400).json({ success:false, error:{ message:'Name and phone required.' } });
     if (email) {
       const exists = await prisma.lead.findFirst({ where: { companyId, email, isDeleted: false } });
@@ -57,6 +60,9 @@ exports.createLead = async (req, res) => {
         email:        email        || null,
         phone,
         city:         city         || null,
+        state:        state        || null,
+        country:      country      || null,
+        service:      service      || null,
         source, status, priority,
         dealValue:    dealValue    ? +dealValue : null,
         notes:        notes        || null,
@@ -65,6 +71,8 @@ exports.createLead = async (req, res) => {
       }
     });
     await prisma.activity.create({ data:{ companyId, leadId:lead.leadId, userId:req.user?.userId, type:'NOTE', description:`Lead created via ${source.toLowerCase()}` } });
+    // Fire automation triggers (async, non-blocking)
+    fireTrigger('LEAD_CREATED', lead, companyId).catch(() => {});
     return res.status(201).json({ success:true, data:lead });
   } catch (err) { return res.status(500).json({ success:false, error:{ message:err.message } }); }
 };
@@ -75,13 +83,16 @@ exports.updateLead = async (req, res) => {
     const old = await prisma.lead.findFirst({ where: { leadId, companyId } });
     if (!old) return res.status(404).json({ success:false, error:{ message:'Lead not found.' } });
 
-    const { name, email, phone, city, source, status, priority, dealValue, notes, assignedToId, nextFollowUpAt } = req.body;
+    const { name, email, phone, city, state, country, service, source, status, priority, dealValue, notes, assignedToId, nextFollowUpAt } = req.body;
 
     const data = { lastActivityAt: new Date() };
     if (name           !== undefined) data.name           = name;
     if (email          !== undefined) data.email          = email;
     if (phone          !== undefined) data.phone          = phone;
     if (city           !== undefined) data.city           = city;
+    if (state          !== undefined) data.state          = state;
+    if (country        !== undefined) data.country        = country;
+    if (service        !== undefined) data.service        = service;
     if (source         !== undefined) data.source         = source;
     if (status         !== undefined) data.status         = status;
     if (priority       !== undefined) data.priority       = priority;
@@ -94,6 +105,7 @@ exports.updateLead = async (req, res) => {
 
     if (status && status !== old.status) {
       await prisma.activity.create({ data:{ companyId, leadId, userId:req.user?.userId, type:'STATUS_CHANGE', description:`Status changed from ${old.status} to ${status}` } });
+      fireTrigger('STATUS_CHANGED', lead, companyId, { oldStatus: old.status, newStatus: status }).catch(() => {});
     }
     return res.json({ success:true, data:lead });
   } catch (err) { return res.status(500).json({ success:false, error:{ message:err.message } }); }
@@ -148,8 +160,8 @@ exports.exportLeads = async (req, res) => {
     const { companyId } = req.params;
     const leads = await prisma.lead.findMany({ where: { companyId, isDeleted: false }, orderBy: { createdAt: 'desc' } });
     const csv = [
-      'Name,Email,Phone,City,Source,Status,Score,Deal Value,Created',
-      ...leads.map(l => `"${l.name}","${l.email||''}","${l.phone}","${l.city||''}","${l.source}","${l.status}","${l.aiScore||''}","${l.dealValue||''}","${l.createdAt.toISOString()}"`)
+      'Name,Email,Phone,City,State,Country,Service,Source,Status,Score,Deal Value,Created',
+      ...leads.map(l => `"${(l.name||'').replace(/"/g,'""')}","${l.email||''}","${l.phone||''}","${l.city||''}","${l.state||''}","${l.country||''}","${l.service||''}","${l.source||''}","${l.status||''}","${l.aiScore||''}","${l.dealValue||''}","${l.createdAt.toISOString()}"`)
     ].join('\n');
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', 'attachment; filename=leads.csv');
@@ -160,7 +172,7 @@ exports.exportLeads = async (req, res) => {
 exports.createPublicLead = async (req, res) => {
   try {
     const companyId = req.companyId;
-    const { name, email, phone, city, source='WEBSITE_FORM', notes, customFields } = req.body;
+    const { name, email, phone, city, state, country, service, source='WEBSITE_FORM', notes, customFields } = req.body;
     if (!name || !phone) return res.status(400).json({ success:false, error:{ message:'Name and phone required.' } });
     const lead = await prisma.lead.create({
       data: {
@@ -168,12 +180,16 @@ exports.createPublicLead = async (req, res) => {
         email:        email        || null,
         phone,
         city:         city         || null,
+        state:        state        || null,
+        country:      country      || null,
+        service:      service      || null,
         source,
         notes:        notes        || null,
         customFields: customFields || null,
         lastActivityAt: new Date()
       }
     });
+    fireTrigger('LEAD_CREATED', lead, companyId).catch(() => {});
     return res.status(201).json({ success:true, data:{ leadId:lead.leadId, message:'Lead received.' } });
   } catch (err) { return res.status(500).json({ success:false, error:{ message:err.message } }); }
 };

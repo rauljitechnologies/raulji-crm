@@ -57,7 +57,7 @@ exports.createClient = async (req, res) => {
     });
     return res.status(201).json({ success: true, data: c });
   } catch (err) {
-    if (err.code === 'P2002') return res.status(409).json({ success: false, error: { message: 'Client with this email already exists.' } });
+    if (err.code === 'P2002' && err.meta?.target?.includes('email')) return res.status(409).json({ success: false, error: { message: 'Client with this email already exists.' } });
     return res.status(500).json({ success: false, error: { message: err.message } });
   }
 };

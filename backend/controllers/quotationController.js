@@ -6,7 +6,7 @@ const pdfSvc    = require('../services/pdfService');
 const calcTotals = (items) => {
   let subtotal = 0, totalGst = 0, totalDiscount = 0;
   const processed = items.map(item => {
-    const after   = item.quantity * item.unitPrice - (item.discount || 0);
+    const after   = (item.quantity || 0) * (item.unitPrice || 0) - (item.discount || 0);
     const gst     = Math.round(after * (item.gstPercent || 18) / 100);
     subtotal      += after;
     totalGst      += gst;
@@ -17,13 +17,25 @@ const calcTotals = (items) => {
 };
 
 const nextQtNum = async (companyId) => {
-  const c = await prisma.quotation.count({ where: { companyId } });
-  return `QT-${new Date().getFullYear()}-${String(c + 1).padStart(4, '0')}`;
+  const [company, c] = await Promise.all([
+    prisma.company.findUnique({ where: { companyId }, select: { settings: true } }),
+    prisma.quotation.count({ where: { companyId } }),
+  ]);
+  const raw    = company?.settings?.quotationPrefix?.toUpperCase().trim() || 'QT';
+  const prefix = raw.replace(/[\/\-]+$/, '');          // strip any trailing / or -
+  const year   = new Date().getFullYear();
+  return `${prefix}/${year}-${String(c + 1).padStart(4, '0')}`;
 };
 
 const nextInvNum = async (companyId) => {
-  const c = await prisma.invoice.count({ where: { companyId } });
-  return `INV-${new Date().getFullYear()}-${String(c + 1).padStart(4, '0')}`;
+  const [company, c] = await Promise.all([
+    prisma.company.findUnique({ where: { companyId }, select: { settings: true } }),
+    prisma.invoice.count({ where: { companyId } }),
+  ]);
+  const raw    = company?.settings?.invoicePrefix?.toUpperCase().trim() || 'INV';
+  const prefix = raw.replace(/[\/\-]+$/, '');
+  const year   = new Date().getFullYear();
+  return `${prefix}/${year}-${String(c + 1).padStart(4, '0')}`;
 };
 
 // ── GET ALL ───────────────────────────────────────────────────────────────────
@@ -121,7 +133,8 @@ exports.updateQuotation = async (req, res) => {
       updateData.totalDiscount = t.totalDiscount;
       updateData.grandTotal    = t.grandTotal;
     }
-    await prisma.quotation.updateMany({ where: { quotationId: id, companyId }, data: updateData });
+    const updated = await prisma.quotation.updateMany({ where: { quotationId: id, companyId }, data: updateData });
+    if (updated.count === 0) return res.status(404).json({ success: false, error: { message: 'Quotation not found.' } });
     return res.json({ success: true, message: 'Updated.' });
   } catch (err) { return res.status(500).json({ success: false, error: { message: err.message } }); }
 };

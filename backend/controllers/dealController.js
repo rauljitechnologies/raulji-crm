@@ -36,6 +36,7 @@ exports.createDeal = async (req, res) => {
   try {
     const { companyId } = req.params;
     const { leadId, name, value=0, currency='INR', stage='NEW_LEAD', probability=0, expectedCloseDate, assignedToId } = req.body;
+    if (!name?.trim()) return res.status(400).json({ success: false, error: { message: 'Deal name required.' } });
     const deal = await prisma.deal.create({
       data: {
         companyId,

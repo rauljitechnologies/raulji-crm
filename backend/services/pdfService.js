@@ -47,6 +47,9 @@ function buildHtml(data, type) {
   const coStateName     = coStateCode     ? (STATE_NAMES[coStateCode]     || '') : '';
   const clientStateName = clientStateCode ? (STATE_NAMES[clientStateCode] || '') : '';
   const taxLabel        = isIntraState ? 'CGST + SGST' : 'IGST';
+  // Detect if any items have GST (null gstPercent = No GST)
+  const hasGst = (data.items || []).some(item => item.gstPercent !== null && item.gstPercent !== undefined);
+  const lc     = hasGst ? 5 : 4; // label colspan in tfoot (cols before Discount+Amount)
 
   // ── Logo cell ─────────────────────────────────────────────
   const logoCell = co.logo
@@ -61,17 +64,18 @@ function buildHtml(data, type) {
 
   // ── Item rows ─────────────────────────────────────────────
   const rows = (data.items || []).map((item, i) => {
-    const base  = item.quantity * (item.unitPrice || 0);
-    const disc  = item.discount  || 0;
-    const after = base - disc;
-    const gst   = Math.round(after * (item.gstPercent || 18) / 100);
+    const base       = item.quantity * (item.unitPrice || 0);
+    const disc       = item.discount || 0;
+    const after      = base - disc;
+    const itemHasGst = item.gstPercent !== null && item.gstPercent !== undefined;
+    const gst        = itemHasGst ? Math.round(after * item.gstPercent / 100) : 0;
     return `
       <tr style="background:${i % 2 === 0 ? '#fff' : '#f8fafc'}">
         <td style="padding:11px 14px;border-bottom:1px solid #f1f5f9;font-size:13px;color:#1e293b">${item.description || ''}</td>
         <td style="padding:11px 14px;border-bottom:1px solid #f1f5f9;text-align:center;font-size:12px;color:#64748b;font-family:monospace">${item.hsnCode || '&#8212;'}</td>
         <td style="padding:11px 14px;border-bottom:1px solid #f1f5f9;text-align:center;font-size:13px;color:#64748b">${item.quantity}</td>
         <td style="padding:11px 14px;border-bottom:1px solid #f1f5f9;text-align:right;font-size:13px;color:#64748b">${inr(item.unitPrice)}</td>
-        <td style="padding:11px 14px;border-bottom:1px solid #f1f5f9;text-align:center;font-size:13px;color:#64748b">${item.gstPercent || 18}%</td>
+        ${hasGst ? `<td style="padding:11px 14px;border-bottom:1px solid #f1f5f9;text-align:center;font-size:13px;color:#64748b">${itemHasGst ? item.gstPercent + '%' : '&#8212;'}</td>` : ''}
         <td style="padding:11px 14px;border-bottom:1px solid #f1f5f9;text-align:right;font-size:13px;color:${disc > 0 ? '#ef4444' : '#cbd5e1'}">${disc > 0 ? '-' + inr(disc) : '&#8212;'}</td>
         <td style="padding:11px 14px;border-bottom:1px solid #f1f5f9;text-align:right;font-size:13px;font-weight:700;color:#0f172a">${inr(after + gst)}</td>
       </tr>`;
@@ -81,8 +85,9 @@ function buildHtml(data, type) {
   // Key: hsn__rate  so same HSN with different rates stays separate
   const hsnMap = {};
   (data.items || []).forEach(item => {
+    if (item.gstPercent === null || item.gstPercent === undefined) return;
     const hsn  = item.hsnCode || '';
-    const rate = item.gstPercent || 18;
+    const rate = item.gstPercent;
     const key  = `${hsn}__${rate}`;
     if (!hsnMap[key]) hsnMap[key] = { hsn, desc: item.description || '', rate, taxable: 0, tax: 0 };
     const base = (item.quantity * (item.unitPrice || 0)) - (item.discount || 0);
@@ -101,12 +106,12 @@ function buildHtml(data, type) {
   });
   const gstRows = Object.entries(rateMap).map(([rate, taxAmt]) => `
         <tr>
-          <td colspan="5" style="padding:4px 14px;text-align:right;font-size:12px;color:#64748b">GST @ ${rate}%</td>
+          <td colspan="${lc}" style="padding:4px 14px;text-align:right;font-size:12px;color:#64748b">GST @ ${rate}%</td>
           <td colspan="2" style="padding:4px 14px;text-align:right;font-size:12px;color:#475569">${inr(taxAmt)}</td>
         </tr>`).join('');
 
   // ── Tax Summary block (HSN-wise) ───────────────────────────
-  const taxSummaryBlock = hsnEntries.length > 0 ? (() => {
+  const taxSummaryBlock = hasGst && hsnEntries.length > 0 ? (() => {
     if (isIntraState) {
       const hsnRows = hsnEntries.map(e => `
         <tr style="border-bottom:1px solid #f1f5f9">
@@ -193,11 +198,11 @@ function buildHtml(data, type) {
   const balance = Math.max(0, (data.grandTotal || 0) - paidAmt);
   const paidRows = isInv && paidAmt > 0 ? `
     <tr style="background:#f0fdf4">
-      <td colspan="5" style="padding:8px 14px;text-align:right;font-size:13px;color:#16a34a;font-weight:600">Amount Paid</td>
+      <td colspan="${lc}" style="padding:8px 14px;text-align:right;font-size:13px;color:#16a34a;font-weight:600">Amount Paid</td>
       <td colspan="2" style="padding:8px 14px;text-align:right;font-size:13px;color:#16a34a;font-weight:700">${inr(paidAmt)}</td>
     </tr>
     <tr style="background:#fef2f2">
-      <td colspan="5" style="padding:8px 14px;text-align:right;font-size:13px;color:#dc2626;font-weight:600">Balance Due</td>
+      <td colspan="${lc}" style="padding:8px 14px;text-align:right;font-size:13px;color:#dc2626;font-weight:600">Balance Due</td>
       <td colspan="2" style="padding:8px 14px;text-align:right;font-size:13px;color:#dc2626;font-weight:700">${inr(balance)}</td>
     </tr>` : '';
 
@@ -236,10 +241,37 @@ function buildHtml(data, type) {
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; color: #1e293b; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  @media print { @page { size: A4; margin: 0; } }
+  @media print { @page { size: A4; margin: 0 0 18mm 0; } }
+  .no-break { page-break-inside: avoid; }
+  /* ── Fixed footer — rendered on every page by Puppeteer ── */
+  .pdf-footer {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 16mm;
+    background: #ffffff;
+    border-top: 2px solid #3199d4;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+    font-size: 10px;
+    color: #94a3b8;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  /* Push body content up so it never hides behind footer */
+  .page-wrap { padding-bottom: 20mm; }
 </style>
 </head>
 <body>
+<!-- Fixed footer rendered on every page -->
+<div class="pdf-footer">
+  <span style="flex:1">Thank you for your business!</span>
+  <span style="flex:1;text-align:center;font-weight:600;color:#64748b">${docLbl} #${docNum}&nbsp;&nbsp;·&nbsp;&nbsp;${co.name || ''}</span>
+  <span style="flex:1;text-align:right">${co.website || ''}</span>
+</div>
+
+<div class="page-wrap">
 <div style="max-width:794px;margin:0 auto;background:#fff">
 
 <!-- TOP BAR -->
@@ -265,16 +297,16 @@ function buildHtml(data, type) {
       <div style="font-size:34px;font-weight:900;color:#3199d4;letter-spacing:-1px;line-height:1">${docLbl}</div>
       <div style="font-size:15px;font-weight:700;color:#1e293b;margin-top:6px">#${docNum}</div>
       <!-- Tax type badge -->
-      <div style="display:inline-block;margin-top:6px;padding:3px 12px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:0.5px;background:${isIntraState ? '#e8f4fb' : '#fef3c7'};color:${isIntraState ? '#3199d4' : '#d97706'};border:1px solid ${isIntraState ? '#bae0f5' : '#fcd34d'}">
+      ${hasGst ? `<div style="display:inline-block;margin-top:6px;padding:3px 12px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:0.5px;background:${isIntraState ? '#e8f4fb' : '#fef3c7'};color:${isIntraState ? '#3199d4' : '#d97706'};border:1px solid ${isIntraState ? '#bae0f5' : '#fcd34d'}">
         ${isIntraState ? 'INTRA-STATE &nbsp;&#183;&nbsp; CGST + SGST' : 'INTER-STATE &nbsp;&#183;&nbsp; IGST'}
-      </div>
+      </div>` : ''}
       <div style="display:inline-block;margin-top:6px;margin-left:6px;padding:3px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:0.5px;background:${sClr}22;color:${sClr};border:1px solid ${sClr}44">
         ${data.status || 'DRAFT'}
       </div>
       <table cellpadding="0" cellspacing="0" style="margin-top:14px;margin-left:auto;font-size:12px">
         <tr>
           <td style="color:#94a3b8;padding:3px 12px 3px 0;text-align:right">Date</td>
-          <td style="font-weight:600;color:#1e293b">${dt(data.createdAt)}</td>
+          <td style="font-weight:600;color:#1e293b">${dt(data.invoiceDate || data.createdAt)}</td>
         </tr>
         ${isInv ? `
         <tr>
@@ -327,7 +359,7 @@ function buildHtml(data, type) {
         <th style="padding:12px 14px;text-align:center;font-size:11px;font-weight:700;color:#fff">HSN/SAC</th>
         <th style="padding:12px 14px;text-align:center;font-size:11px;font-weight:700;color:#fff">QTY</th>
         <th style="padding:12px 14px;text-align:right;font-size:11px;font-weight:700;color:#fff">RATE</th>
-        <th style="padding:12px 14px;text-align:center;font-size:11px;font-weight:700;color:#fff">GST%</th>
+        ${hasGst ? '<th style="padding:12px 14px;text-align:center;font-size:11px;font-weight:700;color:#fff">GST%</th>' : ''}
         <th style="padding:12px 14px;text-align:right;font-size:11px;font-weight:700;color:#fff">DISCOUNT</th>
         <th style="padding:12px 14px;text-align:right;font-size:11px;font-weight:700;color:#fff">AMOUNT</th>
       </tr>
@@ -337,18 +369,18 @@ function buildHtml(data, type) {
     </tbody>
     <tfoot>
       <tr style="background:#f8fafc">
-        <td colspan="5" style="padding:10px 14px;text-align:right;font-size:13px;color:#64748b;font-weight:500;border-top:2px solid #e2e8f0">Subtotal (Taxable)</td>
+        <td colspan="${lc}" style="padding:10px 14px;text-align:right;font-size:13px;color:#64748b;font-weight:500;border-top:2px solid #e2e8f0">Subtotal (Taxable)</td>
         <td colspan="2" style="padding:10px 14px;text-align:right;font-size:13px;color:#1e293b;font-weight:600;border-top:2px solid #e2e8f0">${inr(data.subtotal)}</td>
       </tr>
       ${gstRows}
       ${(data.totalDiscount || 0) > 0 ? `
       <tr style="background:#fff7ed">
-        <td colspan="5" style="padding:7px 14px;text-align:right;font-size:13px;color:#ea580c;font-weight:500">Total Discount</td>
+        <td colspan="${lc}" style="padding:7px 14px;text-align:right;font-size:13px;color:#ea580c;font-weight:500">Total Discount</td>
         <td colspan="2" style="padding:7px 14px;text-align:right;font-size:13px;color:#ea580c;font-weight:600">-${inr(data.totalDiscount)}</td>
       </tr>` : ''}
       ${paidRows}
       <tr style="background:linear-gradient(135deg,#3199d4,#1f293f)">
-        <td colspan="5" style="padding:14px;text-align:right;font-size:15px;font-weight:800;color:#fff">
+        <td colspan="${lc}" style="padding:14px;text-align:right;font-size:15px;font-weight:800;color:#fff">
           ${isInv && paidAmt > 0 && balance > 0 ? 'BALANCE DUE' : 'GRAND TOTAL'}
         </td>
         <td colspan="2" style="padding:14px;text-align:right;font-size:19px;font-weight:900;color:#fff">
@@ -385,16 +417,9 @@ ${taxSummaryBlock}
 <!-- BANK DETAILS -->
 ${bankBlock ? `<div style="padding:0 40px 20px">${bankBlock}</div>` : ''}
 
-<!-- FOOTER -->
-<table cellpadding="0" cellspacing="0" style="width:100%;padding:14px 40px;border-top:1px solid #e2e8f0;margin-top:24px">
-  <tr>
-    <td style="font-size:11px;color:#94a3b8">Thank you for your business!</td>
-    <td style="font-size:11px;color:#94a3b8;text-align:center">${co.name || ''} &#183; Raulji CRM</td>
-    <td style="font-size:11px;color:#94a3b8;text-align:right">${docNum}</td>
-  </tr>
-</table>
 
-</div>
+</div><!-- /max-width wrapper -->
+</div><!-- /page-wrap -->
 </body>
 </html>`;
 }
@@ -404,7 +429,7 @@ async function generatePdf(html, filename) {
     const htmlPdf = require('html-pdf-node');
     const buffer  = await htmlPdf.generatePdf({ content: html }, {
       format: 'A4', printBackground: true,
-      margin: { top: '0', bottom: '0', left: '0', right: '0' }
+      margin: { top: '0', bottom: '18mm', left: '0', right: '0' }
     });
     return { buffer, html };
   } catch {
