@@ -195,7 +195,9 @@ exports.Prisma.LeadScalarFieldEnum = {
   nextFollowUpAt: 'nextFollowUpAt',
   isDeleted: 'isDeleted',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  country: 'country',
+  service: 'service'
 };
 
 exports.Prisma.ActivityScalarFieldEnum = {
@@ -316,6 +318,115 @@ exports.Prisma.WebhookScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.MessageTemplateScalarFieldEnum = {
+  templateId: 'templateId',
+  companyId: 'companyId',
+  name: 'name',
+  category: 'category',
+  channel: 'channel',
+  subject: 'subject',
+  body: 'body',
+  variables: 'variables',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AutomationRuleScalarFieldEnum = {
+  ruleId: 'ruleId',
+  companyId: 'companyId',
+  name: 'name',
+  isActive: 'isActive',
+  trigger: 'trigger',
+  triggerValue: 'triggerValue',
+  channel: 'channel',
+  templateId: 'templateId',
+  delayMinutes: 'delayMinutes',
+  conditions: 'conditions',
+  executionCount: 'executionCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AutomationJobScalarFieldEnum = {
+  jobId: 'jobId',
+  ruleId: 'ruleId',
+  leadId: 'leadId',
+  companyId: 'companyId',
+  status: 'status',
+  scheduledAt: 'scheduledAt',
+  executedAt: 'executedAt',
+  error: 'error',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.CommunicationScalarFieldEnum = {
+  commId: 'commId',
+  companyId: 'companyId',
+  leadId: 'leadId',
+  channel: 'channel',
+  direction: 'direction',
+  status: 'status',
+  fromNumber: 'fromNumber',
+  toNumber: 'toNumber',
+  templateId: 'templateId',
+  subject: 'subject',
+  body: 'body',
+  watiMessageId: 'watiMessageId',
+  metadata: 'metadata',
+  sentAt: 'sentAt',
+  deliveredAt: 'deliveredAt',
+  readAt: 'readAt',
+  userId: 'userId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.AutoReplyRuleScalarFieldEnum = {
+  replyRuleId: 'replyRuleId',
+  companyId: 'companyId',
+  keyword: 'keyword',
+  matchType: 'matchType',
+  replyBody: 'replyBody',
+  isActive: 'isActive',
+  priority: 'priority',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CampaignScalarFieldEnum = {
+  campaignId: 'campaignId',
+  companyId: 'companyId',
+  name: 'name',
+  description: 'description',
+  channel: 'channel',
+  status: 'status',
+  templateId: 'templateId',
+  subject: 'subject',
+  body: 'body',
+  filters: 'filters',
+  scheduledAt: 'scheduledAt',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  totalLeads: 'totalLeads',
+  sentCount: 'sentCount',
+  deliveredCount: 'deliveredCount',
+  failedCount: 'failedCount',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CampaignLeadScalarFieldEnum = {
+  id: 'id',
+  campaignId: 'campaignId',
+  leadId: 'leadId',
+  status: 'status',
+  sentAt: 'sentAt',
+  deliveredAt: 'deliveredAt',
+  error: 'error',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -369,7 +480,14 @@ exports.Prisma.ModelName = {
   Quotation: 'Quotation',
   Invoice: 'Invoice',
   Client: 'Client',
-  Webhook: 'Webhook'
+  Webhook: 'Webhook',
+  MessageTemplate: 'MessageTemplate',
+  AutomationRule: 'AutomationRule',
+  AutomationJob: 'AutomationJob',
+  Communication: 'Communication',
+  AutoReplyRule: 'AutoReplyRule',
+  Campaign: 'Campaign',
+  CampaignLead: 'CampaignLead'
 };
 
 /**

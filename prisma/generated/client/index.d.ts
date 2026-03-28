@@ -63,6 +63,41 @@ export type Client = $Result.DefaultSelection<Prisma.$ClientPayload>
  * 
  */
 export type Webhook = $Result.DefaultSelection<Prisma.$WebhookPayload>
+/**
+ * Model MessageTemplate
+ * 
+ */
+export type MessageTemplate = $Result.DefaultSelection<Prisma.$MessageTemplatePayload>
+/**
+ * Model AutomationRule
+ * 
+ */
+export type AutomationRule = $Result.DefaultSelection<Prisma.$AutomationRulePayload>
+/**
+ * Model AutomationJob
+ * 
+ */
+export type AutomationJob = $Result.DefaultSelection<Prisma.$AutomationJobPayload>
+/**
+ * Model Communication
+ * 
+ */
+export type Communication = $Result.DefaultSelection<Prisma.$CommunicationPayload>
+/**
+ * Model AutoReplyRule
+ * 
+ */
+export type AutoReplyRule = $Result.DefaultSelection<Prisma.$AutoReplyRulePayload>
+/**
+ * Model Campaign
+ * 
+ */
+export type Campaign = $Result.DefaultSelection<Prisma.$CampaignPayload>
+/**
+ * Model CampaignLead
+ * 
+ */
+export type CampaignLead = $Result.DefaultSelection<Prisma.$CampaignLeadPayload>
 
 /**
  * Enums
@@ -319,6 +354,76 @@ export class PrismaClient<
     * ```
     */
   get webhook(): Prisma.WebhookDelegate<ExtArgs>;
+
+  /**
+   * `prisma.messageTemplate`: Exposes CRUD operations for the **MessageTemplate** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more MessageTemplates
+    * const messageTemplates = await prisma.messageTemplate.findMany()
+    * ```
+    */
+  get messageTemplate(): Prisma.MessageTemplateDelegate<ExtArgs>;
+
+  /**
+   * `prisma.automationRule`: Exposes CRUD operations for the **AutomationRule** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AutomationRules
+    * const automationRules = await prisma.automationRule.findMany()
+    * ```
+    */
+  get automationRule(): Prisma.AutomationRuleDelegate<ExtArgs>;
+
+  /**
+   * `prisma.automationJob`: Exposes CRUD operations for the **AutomationJob** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AutomationJobs
+    * const automationJobs = await prisma.automationJob.findMany()
+    * ```
+    */
+  get automationJob(): Prisma.AutomationJobDelegate<ExtArgs>;
+
+  /**
+   * `prisma.communication`: Exposes CRUD operations for the **Communication** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Communications
+    * const communications = await prisma.communication.findMany()
+    * ```
+    */
+  get communication(): Prisma.CommunicationDelegate<ExtArgs>;
+
+  /**
+   * `prisma.autoReplyRule`: Exposes CRUD operations for the **AutoReplyRule** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AutoReplyRules
+    * const autoReplyRules = await prisma.autoReplyRule.findMany()
+    * ```
+    */
+  get autoReplyRule(): Prisma.AutoReplyRuleDelegate<ExtArgs>;
+
+  /**
+   * `prisma.campaign`: Exposes CRUD operations for the **Campaign** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Campaigns
+    * const campaigns = await prisma.campaign.findMany()
+    * ```
+    */
+  get campaign(): Prisma.CampaignDelegate<ExtArgs>;
+
+  /**
+   * `prisma.campaignLead`: Exposes CRUD operations for the **CampaignLead** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CampaignLeads
+    * const campaignLeads = await prisma.campaignLead.findMany()
+    * ```
+    */
+  get campaignLead(): Prisma.CampaignLeadDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -769,7 +874,14 @@ export namespace Prisma {
     Quotation: 'Quotation',
     Invoice: 'Invoice',
     Client: 'Client',
-    Webhook: 'Webhook'
+    Webhook: 'Webhook',
+    MessageTemplate: 'MessageTemplate',
+    AutomationRule: 'AutomationRule',
+    AutomationJob: 'AutomationJob',
+    Communication: 'Communication',
+    AutoReplyRule: 'AutoReplyRule',
+    Campaign: 'Campaign',
+    CampaignLead: 'CampaignLead'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -785,7 +897,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "company" | "user" | "refreshToken" | "lead" | "activity" | "deal" | "quotation" | "invoice" | "client" | "webhook"
+      modelProps: "company" | "user" | "refreshToken" | "lead" | "activity" | "deal" | "quotation" | "invoice" | "client" | "webhook" | "messageTemplate" | "automationRule" | "automationJob" | "communication" | "autoReplyRule" | "campaign" | "campaignLead"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1489,6 +1601,496 @@ export namespace Prisma {
           }
         }
       }
+      MessageTemplate: {
+        payload: Prisma.$MessageTemplatePayload<ExtArgs>
+        fields: Prisma.MessageTemplateFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.MessageTemplateFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageTemplatePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.MessageTemplateFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageTemplatePayload>
+          }
+          findFirst: {
+            args: Prisma.MessageTemplateFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageTemplatePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.MessageTemplateFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageTemplatePayload>
+          }
+          findMany: {
+            args: Prisma.MessageTemplateFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageTemplatePayload>[]
+          }
+          create: {
+            args: Prisma.MessageTemplateCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageTemplatePayload>
+          }
+          createMany: {
+            args: Prisma.MessageTemplateCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.MessageTemplateCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageTemplatePayload>[]
+          }
+          delete: {
+            args: Prisma.MessageTemplateDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageTemplatePayload>
+          }
+          update: {
+            args: Prisma.MessageTemplateUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageTemplatePayload>
+          }
+          deleteMany: {
+            args: Prisma.MessageTemplateDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.MessageTemplateUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.MessageTemplateUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MessageTemplatePayload>
+          }
+          aggregate: {
+            args: Prisma.MessageTemplateAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateMessageTemplate>
+          }
+          groupBy: {
+            args: Prisma.MessageTemplateGroupByArgs<ExtArgs>
+            result: $Utils.Optional<MessageTemplateGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.MessageTemplateCountArgs<ExtArgs>
+            result: $Utils.Optional<MessageTemplateCountAggregateOutputType> | number
+          }
+        }
+      }
+      AutomationRule: {
+        payload: Prisma.$AutomationRulePayload<ExtArgs>
+        fields: Prisma.AutomationRuleFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AutomationRuleFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutomationRulePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AutomationRuleFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutomationRulePayload>
+          }
+          findFirst: {
+            args: Prisma.AutomationRuleFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutomationRulePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AutomationRuleFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutomationRulePayload>
+          }
+          findMany: {
+            args: Prisma.AutomationRuleFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutomationRulePayload>[]
+          }
+          create: {
+            args: Prisma.AutomationRuleCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutomationRulePayload>
+          }
+          createMany: {
+            args: Prisma.AutomationRuleCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AutomationRuleCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutomationRulePayload>[]
+          }
+          delete: {
+            args: Prisma.AutomationRuleDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutomationRulePayload>
+          }
+          update: {
+            args: Prisma.AutomationRuleUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutomationRulePayload>
+          }
+          deleteMany: {
+            args: Prisma.AutomationRuleDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AutomationRuleUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.AutomationRuleUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutomationRulePayload>
+          }
+          aggregate: {
+            args: Prisma.AutomationRuleAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAutomationRule>
+          }
+          groupBy: {
+            args: Prisma.AutomationRuleGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AutomationRuleGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AutomationRuleCountArgs<ExtArgs>
+            result: $Utils.Optional<AutomationRuleCountAggregateOutputType> | number
+          }
+        }
+      }
+      AutomationJob: {
+        payload: Prisma.$AutomationJobPayload<ExtArgs>
+        fields: Prisma.AutomationJobFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AutomationJobFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutomationJobPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AutomationJobFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutomationJobPayload>
+          }
+          findFirst: {
+            args: Prisma.AutomationJobFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutomationJobPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AutomationJobFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutomationJobPayload>
+          }
+          findMany: {
+            args: Prisma.AutomationJobFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutomationJobPayload>[]
+          }
+          create: {
+            args: Prisma.AutomationJobCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutomationJobPayload>
+          }
+          createMany: {
+            args: Prisma.AutomationJobCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AutomationJobCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutomationJobPayload>[]
+          }
+          delete: {
+            args: Prisma.AutomationJobDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutomationJobPayload>
+          }
+          update: {
+            args: Prisma.AutomationJobUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutomationJobPayload>
+          }
+          deleteMany: {
+            args: Prisma.AutomationJobDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AutomationJobUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.AutomationJobUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutomationJobPayload>
+          }
+          aggregate: {
+            args: Prisma.AutomationJobAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAutomationJob>
+          }
+          groupBy: {
+            args: Prisma.AutomationJobGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AutomationJobGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AutomationJobCountArgs<ExtArgs>
+            result: $Utils.Optional<AutomationJobCountAggregateOutputType> | number
+          }
+        }
+      }
+      Communication: {
+        payload: Prisma.$CommunicationPayload<ExtArgs>
+        fields: Prisma.CommunicationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CommunicationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunicationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CommunicationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunicationPayload>
+          }
+          findFirst: {
+            args: Prisma.CommunicationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunicationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CommunicationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunicationPayload>
+          }
+          findMany: {
+            args: Prisma.CommunicationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunicationPayload>[]
+          }
+          create: {
+            args: Prisma.CommunicationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunicationPayload>
+          }
+          createMany: {
+            args: Prisma.CommunicationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CommunicationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunicationPayload>[]
+          }
+          delete: {
+            args: Prisma.CommunicationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunicationPayload>
+          }
+          update: {
+            args: Prisma.CommunicationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunicationPayload>
+          }
+          deleteMany: {
+            args: Prisma.CommunicationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CommunicationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.CommunicationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunicationPayload>
+          }
+          aggregate: {
+            args: Prisma.CommunicationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCommunication>
+          }
+          groupBy: {
+            args: Prisma.CommunicationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CommunicationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CommunicationCountArgs<ExtArgs>
+            result: $Utils.Optional<CommunicationCountAggregateOutputType> | number
+          }
+        }
+      }
+      AutoReplyRule: {
+        payload: Prisma.$AutoReplyRulePayload<ExtArgs>
+        fields: Prisma.AutoReplyRuleFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AutoReplyRuleFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutoReplyRulePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AutoReplyRuleFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutoReplyRulePayload>
+          }
+          findFirst: {
+            args: Prisma.AutoReplyRuleFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutoReplyRulePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AutoReplyRuleFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutoReplyRulePayload>
+          }
+          findMany: {
+            args: Prisma.AutoReplyRuleFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutoReplyRulePayload>[]
+          }
+          create: {
+            args: Prisma.AutoReplyRuleCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutoReplyRulePayload>
+          }
+          createMany: {
+            args: Prisma.AutoReplyRuleCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AutoReplyRuleCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutoReplyRulePayload>[]
+          }
+          delete: {
+            args: Prisma.AutoReplyRuleDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutoReplyRulePayload>
+          }
+          update: {
+            args: Prisma.AutoReplyRuleUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutoReplyRulePayload>
+          }
+          deleteMany: {
+            args: Prisma.AutoReplyRuleDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AutoReplyRuleUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.AutoReplyRuleUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AutoReplyRulePayload>
+          }
+          aggregate: {
+            args: Prisma.AutoReplyRuleAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAutoReplyRule>
+          }
+          groupBy: {
+            args: Prisma.AutoReplyRuleGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AutoReplyRuleGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AutoReplyRuleCountArgs<ExtArgs>
+            result: $Utils.Optional<AutoReplyRuleCountAggregateOutputType> | number
+          }
+        }
+      }
+      Campaign: {
+        payload: Prisma.$CampaignPayload<ExtArgs>
+        fields: Prisma.CampaignFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CampaignFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CampaignPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CampaignFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CampaignPayload>
+          }
+          findFirst: {
+            args: Prisma.CampaignFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CampaignPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CampaignFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CampaignPayload>
+          }
+          findMany: {
+            args: Prisma.CampaignFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CampaignPayload>[]
+          }
+          create: {
+            args: Prisma.CampaignCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CampaignPayload>
+          }
+          createMany: {
+            args: Prisma.CampaignCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CampaignCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CampaignPayload>[]
+          }
+          delete: {
+            args: Prisma.CampaignDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CampaignPayload>
+          }
+          update: {
+            args: Prisma.CampaignUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CampaignPayload>
+          }
+          deleteMany: {
+            args: Prisma.CampaignDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CampaignUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.CampaignUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CampaignPayload>
+          }
+          aggregate: {
+            args: Prisma.CampaignAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCampaign>
+          }
+          groupBy: {
+            args: Prisma.CampaignGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CampaignGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CampaignCountArgs<ExtArgs>
+            result: $Utils.Optional<CampaignCountAggregateOutputType> | number
+          }
+        }
+      }
+      CampaignLead: {
+        payload: Prisma.$CampaignLeadPayload<ExtArgs>
+        fields: Prisma.CampaignLeadFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CampaignLeadFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CampaignLeadPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CampaignLeadFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CampaignLeadPayload>
+          }
+          findFirst: {
+            args: Prisma.CampaignLeadFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CampaignLeadPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CampaignLeadFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CampaignLeadPayload>
+          }
+          findMany: {
+            args: Prisma.CampaignLeadFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CampaignLeadPayload>[]
+          }
+          create: {
+            args: Prisma.CampaignLeadCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CampaignLeadPayload>
+          }
+          createMany: {
+            args: Prisma.CampaignLeadCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CampaignLeadCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CampaignLeadPayload>[]
+          }
+          delete: {
+            args: Prisma.CampaignLeadDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CampaignLeadPayload>
+          }
+          update: {
+            args: Prisma.CampaignLeadUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CampaignLeadPayload>
+          }
+          deleteMany: {
+            args: Prisma.CampaignLeadDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CampaignLeadUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.CampaignLeadUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CampaignLeadPayload>
+          }
+          aggregate: {
+            args: Prisma.CampaignLeadAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCampaignLead>
+          }
+          groupBy: {
+            args: Prisma.CampaignLeadGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CampaignLeadGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CampaignLeadCountArgs<ExtArgs>
+            result: $Utils.Optional<CampaignLeadCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1657,6 +2259,10 @@ export namespace Prisma {
     invoices: number
     webhooks: number
     clients: number
+    messageTemplates: number
+    automationRules: number
+    campaigns: number
+    autoReplyRules: number
   }
 
   export type CompanyCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1667,6 +2273,10 @@ export namespace Prisma {
     invoices?: boolean | CompanyCountOutputTypeCountInvoicesArgs
     webhooks?: boolean | CompanyCountOutputTypeCountWebhooksArgs
     clients?: boolean | CompanyCountOutputTypeCountClientsArgs
+    messageTemplates?: boolean | CompanyCountOutputTypeCountMessageTemplatesArgs
+    automationRules?: boolean | CompanyCountOutputTypeCountAutomationRulesArgs
+    campaigns?: boolean | CompanyCountOutputTypeCountCampaignsArgs
+    autoReplyRules?: boolean | CompanyCountOutputTypeCountAutoReplyRulesArgs
   }
 
   // Custom InputTypes
@@ -1729,6 +2339,34 @@ export namespace Prisma {
     where?: ClientWhereInput
   }
 
+  /**
+   * CompanyCountOutputType without action
+   */
+  export type CompanyCountOutputTypeCountMessageTemplatesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MessageTemplateWhereInput
+  }
+
+  /**
+   * CompanyCountOutputType without action
+   */
+  export type CompanyCountOutputTypeCountAutomationRulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AutomationRuleWhereInput
+  }
+
+  /**
+   * CompanyCountOutputType without action
+   */
+  export type CompanyCountOutputTypeCountCampaignsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CampaignWhereInput
+  }
+
+  /**
+   * CompanyCountOutputType without action
+   */
+  export type CompanyCountOutputTypeCountAutoReplyRulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AutoReplyRuleWhereInput
+  }
+
 
   /**
    * Count Type UserCountOutputType
@@ -1788,6 +2426,8 @@ export namespace Prisma {
     deals: number
     quotations: number
     invoices: number
+    communications: number
+    campaignLeads: number
   }
 
   export type LeadCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1795,6 +2435,8 @@ export namespace Prisma {
     deals?: boolean | LeadCountOutputTypeCountDealsArgs
     quotations?: boolean | LeadCountOutputTypeCountQuotationsArgs
     invoices?: boolean | LeadCountOutputTypeCountInvoicesArgs
+    communications?: boolean | LeadCountOutputTypeCountCommunicationsArgs
+    campaignLeads?: boolean | LeadCountOutputTypeCountCampaignLeadsArgs
   }
 
   // Custom InputTypes
@@ -1836,6 +2478,20 @@ export namespace Prisma {
     where?: InvoiceWhereInput
   }
 
+  /**
+   * LeadCountOutputType without action
+   */
+  export type LeadCountOutputTypeCountCommunicationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CommunicationWhereInput
+  }
+
+  /**
+   * LeadCountOutputType without action
+   */
+  export type LeadCountOutputTypeCountCampaignLeadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CampaignLeadWhereInput
+  }
+
 
   /**
    * Count Type DealCountOutputType
@@ -1865,6 +2521,108 @@ export namespace Prisma {
    */
   export type DealCountOutputTypeCountQuotationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: QuotationWhereInput
+  }
+
+
+  /**
+   * Count Type MessageTemplateCountOutputType
+   */
+
+  export type MessageTemplateCountOutputType = {
+    automationRules: number
+    communications: number
+  }
+
+  export type MessageTemplateCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    automationRules?: boolean | MessageTemplateCountOutputTypeCountAutomationRulesArgs
+    communications?: boolean | MessageTemplateCountOutputTypeCountCommunicationsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * MessageTemplateCountOutputType without action
+   */
+  export type MessageTemplateCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplateCountOutputType
+     */
+    select?: MessageTemplateCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * MessageTemplateCountOutputType without action
+   */
+  export type MessageTemplateCountOutputTypeCountAutomationRulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AutomationRuleWhereInput
+  }
+
+  /**
+   * MessageTemplateCountOutputType without action
+   */
+  export type MessageTemplateCountOutputTypeCountCommunicationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CommunicationWhereInput
+  }
+
+
+  /**
+   * Count Type AutomationRuleCountOutputType
+   */
+
+  export type AutomationRuleCountOutputType = {
+    jobs: number
+  }
+
+  export type AutomationRuleCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    jobs?: boolean | AutomationRuleCountOutputTypeCountJobsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * AutomationRuleCountOutputType without action
+   */
+  export type AutomationRuleCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationRuleCountOutputType
+     */
+    select?: AutomationRuleCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * AutomationRuleCountOutputType without action
+   */
+  export type AutomationRuleCountOutputTypeCountJobsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AutomationJobWhereInput
+  }
+
+
+  /**
+   * Count Type CampaignCountOutputType
+   */
+
+  export type CampaignCountOutputType = {
+    campaignLeads: number
+  }
+
+  export type CampaignCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    campaignLeads?: boolean | CampaignCountOutputTypeCountCampaignLeadsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * CampaignCountOutputType without action
+   */
+  export type CampaignCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CampaignCountOutputType
+     */
+    select?: CampaignCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * CampaignCountOutputType without action
+   */
+  export type CampaignCountOutputTypeCountCampaignLeadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CampaignLeadWhereInput
   }
 
 
@@ -2151,6 +2909,10 @@ export namespace Prisma {
     invoices?: boolean | Company$invoicesArgs<ExtArgs>
     webhooks?: boolean | Company$webhooksArgs<ExtArgs>
     clients?: boolean | Company$clientsArgs<ExtArgs>
+    messageTemplates?: boolean | Company$messageTemplatesArgs<ExtArgs>
+    automationRules?: boolean | Company$automationRulesArgs<ExtArgs>
+    campaigns?: boolean | Company$campaignsArgs<ExtArgs>
+    autoReplyRules?: boolean | Company$autoReplyRulesArgs<ExtArgs>
     _count?: boolean | CompanyCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["company"]>
 
@@ -2208,6 +2970,10 @@ export namespace Prisma {
     invoices?: boolean | Company$invoicesArgs<ExtArgs>
     webhooks?: boolean | Company$webhooksArgs<ExtArgs>
     clients?: boolean | Company$clientsArgs<ExtArgs>
+    messageTemplates?: boolean | Company$messageTemplatesArgs<ExtArgs>
+    automationRules?: boolean | Company$automationRulesArgs<ExtArgs>
+    campaigns?: boolean | Company$campaignsArgs<ExtArgs>
+    autoReplyRules?: boolean | Company$autoReplyRulesArgs<ExtArgs>
     _count?: boolean | CompanyCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CompanyIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2222,6 +2988,10 @@ export namespace Prisma {
       invoices: Prisma.$InvoicePayload<ExtArgs>[]
       webhooks: Prisma.$WebhookPayload<ExtArgs>[]
       clients: Prisma.$ClientPayload<ExtArgs>[]
+      messageTemplates: Prisma.$MessageTemplatePayload<ExtArgs>[]
+      automationRules: Prisma.$AutomationRulePayload<ExtArgs>[]
+      campaigns: Prisma.$CampaignPayload<ExtArgs>[]
+      autoReplyRules: Prisma.$AutoReplyRulePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       companyId: string
@@ -2615,6 +3385,10 @@ export namespace Prisma {
     invoices<T extends Company$invoicesArgs<ExtArgs> = {}>(args?: Subset<T, Company$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany"> | Null>
     webhooks<T extends Company$webhooksArgs<ExtArgs> = {}>(args?: Subset<T, Company$webhooksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WebhookPayload<ExtArgs>, T, "findMany"> | Null>
     clients<T extends Company$clientsArgs<ExtArgs> = {}>(args?: Subset<T, Company$clientsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findMany"> | Null>
+    messageTemplates<T extends Company$messageTemplatesArgs<ExtArgs> = {}>(args?: Subset<T, Company$messageTemplatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "findMany"> | Null>
+    automationRules<T extends Company$automationRulesArgs<ExtArgs> = {}>(args?: Subset<T, Company$automationRulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AutomationRulePayload<ExtArgs>, T, "findMany"> | Null>
+    campaigns<T extends Company$campaignsArgs<ExtArgs> = {}>(args?: Subset<T, Company$campaignsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CampaignPayload<ExtArgs>, T, "findMany"> | Null>
+    autoReplyRules<T extends Company$autoReplyRulesArgs<ExtArgs> = {}>(args?: Subset<T, Company$autoReplyRulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AutoReplyRulePayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3115,6 +3889,86 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ClientScalarFieldEnum | ClientScalarFieldEnum[]
+  }
+
+  /**
+   * Company.messageTemplates
+   */
+  export type Company$messageTemplatesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateInclude<ExtArgs> | null
+    where?: MessageTemplateWhereInput
+    orderBy?: MessageTemplateOrderByWithRelationInput | MessageTemplateOrderByWithRelationInput[]
+    cursor?: MessageTemplateWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MessageTemplateScalarFieldEnum | MessageTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * Company.automationRules
+   */
+  export type Company$automationRulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationRule
+     */
+    select?: AutomationRuleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationRuleInclude<ExtArgs> | null
+    where?: AutomationRuleWhereInput
+    orderBy?: AutomationRuleOrderByWithRelationInput | AutomationRuleOrderByWithRelationInput[]
+    cursor?: AutomationRuleWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AutomationRuleScalarFieldEnum | AutomationRuleScalarFieldEnum[]
+  }
+
+  /**
+   * Company.campaigns
+   */
+  export type Company$campaignsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Campaign
+     */
+    select?: CampaignSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignInclude<ExtArgs> | null
+    where?: CampaignWhereInput
+    orderBy?: CampaignOrderByWithRelationInput | CampaignOrderByWithRelationInput[]
+    cursor?: CampaignWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CampaignScalarFieldEnum | CampaignScalarFieldEnum[]
+  }
+
+  /**
+   * Company.autoReplyRules
+   */
+  export type Company$autoReplyRulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutoReplyRule
+     */
+    select?: AutoReplyRuleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutoReplyRuleInclude<ExtArgs> | null
+    where?: AutoReplyRuleWhereInput
+    orderBy?: AutoReplyRuleOrderByWithRelationInput | AutoReplyRuleOrderByWithRelationInput[]
+    cursor?: AutoReplyRuleWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AutoReplyRuleScalarFieldEnum | AutoReplyRuleScalarFieldEnum[]
   }
 
   /**
@@ -5258,6 +6112,8 @@ export namespace Prisma {
     isDeleted: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
+    country: string | null
+    service: string | null
   }
 
   export type LeadMaxAggregateOutputType = {
@@ -5281,6 +6137,8 @@ export namespace Prisma {
     isDeleted: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
+    country: string | null
+    service: string | null
   }
 
   export type LeadCountAggregateOutputType = {
@@ -5307,6 +6165,8 @@ export namespace Prisma {
     isDeleted: number
     createdAt: number
     updatedAt: number
+    country: number
+    service: number
     _all: number
   }
 
@@ -5342,6 +6202,8 @@ export namespace Prisma {
     isDeleted?: true
     createdAt?: true
     updatedAt?: true
+    country?: true
+    service?: true
   }
 
   export type LeadMaxAggregateInputType = {
@@ -5365,6 +6227,8 @@ export namespace Prisma {
     isDeleted?: true
     createdAt?: true
     updatedAt?: true
+    country?: true
+    service?: true
   }
 
   export type LeadCountAggregateInputType = {
@@ -5391,6 +6255,8 @@ export namespace Prisma {
     isDeleted?: true
     createdAt?: true
     updatedAt?: true
+    country?: true
+    service?: true
     _all?: true
   }
 
@@ -5504,6 +6370,8 @@ export namespace Prisma {
     isDeleted: boolean
     createdAt: Date
     updatedAt: Date
+    country: string | null
+    service: string | null
     _count: LeadCountAggregateOutputType | null
     _avg: LeadAvgAggregateOutputType | null
     _sum: LeadSumAggregateOutputType | null
@@ -5549,12 +6417,16 @@ export namespace Prisma {
     isDeleted?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    country?: boolean
+    service?: boolean
     company?: boolean | CompanyDefaultArgs<ExtArgs>
     assignedTo?: boolean | Lead$assignedToArgs<ExtArgs>
     activities?: boolean | Lead$activitiesArgs<ExtArgs>
     deals?: boolean | Lead$dealsArgs<ExtArgs>
     quotations?: boolean | Lead$quotationsArgs<ExtArgs>
     invoices?: boolean | Lead$invoicesArgs<ExtArgs>
+    communications?: boolean | Lead$communicationsArgs<ExtArgs>
+    campaignLeads?: boolean | Lead$campaignLeadsArgs<ExtArgs>
     _count?: boolean | LeadCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["lead"]>
 
@@ -5582,6 +6454,8 @@ export namespace Prisma {
     isDeleted?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    country?: boolean
+    service?: boolean
     company?: boolean | CompanyDefaultArgs<ExtArgs>
     assignedTo?: boolean | Lead$assignedToArgs<ExtArgs>
   }, ExtArgs["result"]["lead"]>
@@ -5610,6 +6484,8 @@ export namespace Prisma {
     isDeleted?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    country?: boolean
+    service?: boolean
   }
 
   export type LeadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5619,6 +6495,8 @@ export namespace Prisma {
     deals?: boolean | Lead$dealsArgs<ExtArgs>
     quotations?: boolean | Lead$quotationsArgs<ExtArgs>
     invoices?: boolean | Lead$invoicesArgs<ExtArgs>
+    communications?: boolean | Lead$communicationsArgs<ExtArgs>
+    campaignLeads?: boolean | Lead$campaignLeadsArgs<ExtArgs>
     _count?: boolean | LeadCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type LeadIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5635,6 +6513,8 @@ export namespace Prisma {
       deals: Prisma.$DealPayload<ExtArgs>[]
       quotations: Prisma.$QuotationPayload<ExtArgs>[]
       invoices: Prisma.$InvoicePayload<ExtArgs>[]
+      communications: Prisma.$CommunicationPayload<ExtArgs>[]
+      campaignLeads: Prisma.$CampaignLeadPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       leadId: string
@@ -5660,6 +6540,8 @@ export namespace Prisma {
       isDeleted: boolean
       createdAt: Date
       updatedAt: Date
+      country: string | null
+      service: string | null
     }, ExtArgs["result"]["lead"]>
     composites: {}
   }
@@ -6030,6 +6912,8 @@ export namespace Prisma {
     deals<T extends Lead$dealsArgs<ExtArgs> = {}>(args?: Subset<T, Lead$dealsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, "findMany"> | Null>
     quotations<T extends Lead$quotationsArgs<ExtArgs> = {}>(args?: Subset<T, Lead$quotationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$QuotationPayload<ExtArgs>, T, "findMany"> | Null>
     invoices<T extends Lead$invoicesArgs<ExtArgs> = {}>(args?: Subset<T, Lead$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany"> | Null>
+    communications<T extends Lead$communicationsArgs<ExtArgs> = {}>(args?: Subset<T, Lead$communicationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommunicationPayload<ExtArgs>, T, "findMany"> | Null>
+    campaignLeads<T extends Lead$campaignLeadsArgs<ExtArgs> = {}>(args?: Subset<T, Lead$campaignLeadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CampaignLeadPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6082,6 +6966,8 @@ export namespace Prisma {
     readonly isDeleted: FieldRef<"Lead", 'Boolean'>
     readonly createdAt: FieldRef<"Lead", 'DateTime'>
     readonly updatedAt: FieldRef<"Lead", 'DateTime'>
+    readonly country: FieldRef<"Lead", 'String'>
+    readonly service: FieldRef<"Lead", 'String'>
   }
     
 
@@ -6492,6 +7378,46 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: InvoiceScalarFieldEnum | InvoiceScalarFieldEnum[]
+  }
+
+  /**
+   * Lead.communications
+   */
+  export type Lead$communicationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Communication
+     */
+    select?: CommunicationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommunicationInclude<ExtArgs> | null
+    where?: CommunicationWhereInput
+    orderBy?: CommunicationOrderByWithRelationInput | CommunicationOrderByWithRelationInput[]
+    cursor?: CommunicationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CommunicationScalarFieldEnum | CommunicationScalarFieldEnum[]
+  }
+
+  /**
+   * Lead.campaignLeads
+   */
+  export type Lead$campaignLeadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CampaignLead
+     */
+    select?: CampaignLeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignLeadInclude<ExtArgs> | null
+    where?: CampaignLeadWhereInput
+    orderBy?: CampaignLeadOrderByWithRelationInput | CampaignLeadOrderByWithRelationInput[]
+    cursor?: CampaignLeadWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CampaignLeadScalarFieldEnum | CampaignLeadScalarFieldEnum[]
   }
 
   /**
@@ -13204,6 +14130,7425 @@ export namespace Prisma {
 
 
   /**
+   * Model MessageTemplate
+   */
+
+  export type AggregateMessageTemplate = {
+    _count: MessageTemplateCountAggregateOutputType | null
+    _min: MessageTemplateMinAggregateOutputType | null
+    _max: MessageTemplateMaxAggregateOutputType | null
+  }
+
+  export type MessageTemplateMinAggregateOutputType = {
+    templateId: string | null
+    companyId: string | null
+    name: string | null
+    category: string | null
+    channel: string | null
+    subject: string | null
+    body: string | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type MessageTemplateMaxAggregateOutputType = {
+    templateId: string | null
+    companyId: string | null
+    name: string | null
+    category: string | null
+    channel: string | null
+    subject: string | null
+    body: string | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type MessageTemplateCountAggregateOutputType = {
+    templateId: number
+    companyId: number
+    name: number
+    category: number
+    channel: number
+    subject: number
+    body: number
+    variables: number
+    isActive: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type MessageTemplateMinAggregateInputType = {
+    templateId?: true
+    companyId?: true
+    name?: true
+    category?: true
+    channel?: true
+    subject?: true
+    body?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type MessageTemplateMaxAggregateInputType = {
+    templateId?: true
+    companyId?: true
+    name?: true
+    category?: true
+    channel?: true
+    subject?: true
+    body?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type MessageTemplateCountAggregateInputType = {
+    templateId?: true
+    companyId?: true
+    name?: true
+    category?: true
+    channel?: true
+    subject?: true
+    body?: true
+    variables?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type MessageTemplateAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MessageTemplate to aggregate.
+     */
+    where?: MessageTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MessageTemplates to fetch.
+     */
+    orderBy?: MessageTemplateOrderByWithRelationInput | MessageTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: MessageTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MessageTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MessageTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned MessageTemplates
+    **/
+    _count?: true | MessageTemplateCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: MessageTemplateMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: MessageTemplateMaxAggregateInputType
+  }
+
+  export type GetMessageTemplateAggregateType<T extends MessageTemplateAggregateArgs> = {
+        [P in keyof T & keyof AggregateMessageTemplate]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateMessageTemplate[P]>
+      : GetScalarType<T[P], AggregateMessageTemplate[P]>
+  }
+
+
+
+
+  export type MessageTemplateGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MessageTemplateWhereInput
+    orderBy?: MessageTemplateOrderByWithAggregationInput | MessageTemplateOrderByWithAggregationInput[]
+    by: MessageTemplateScalarFieldEnum[] | MessageTemplateScalarFieldEnum
+    having?: MessageTemplateScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: MessageTemplateCountAggregateInputType | true
+    _min?: MessageTemplateMinAggregateInputType
+    _max?: MessageTemplateMaxAggregateInputType
+  }
+
+  export type MessageTemplateGroupByOutputType = {
+    templateId: string
+    companyId: string
+    name: string
+    category: string
+    channel: string
+    subject: string | null
+    body: string
+    variables: string[]
+    isActive: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: MessageTemplateCountAggregateOutputType | null
+    _min: MessageTemplateMinAggregateOutputType | null
+    _max: MessageTemplateMaxAggregateOutputType | null
+  }
+
+  type GetMessageTemplateGroupByPayload<T extends MessageTemplateGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<MessageTemplateGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof MessageTemplateGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], MessageTemplateGroupByOutputType[P]>
+            : GetScalarType<T[P], MessageTemplateGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type MessageTemplateSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    templateId?: boolean
+    companyId?: boolean
+    name?: boolean
+    category?: boolean
+    channel?: boolean
+    subject?: boolean
+    body?: boolean
+    variables?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+    automationRules?: boolean | MessageTemplate$automationRulesArgs<ExtArgs>
+    communications?: boolean | MessageTemplate$communicationsArgs<ExtArgs>
+    _count?: boolean | MessageTemplateCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["messageTemplate"]>
+
+  export type MessageTemplateSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    templateId?: boolean
+    companyId?: boolean
+    name?: boolean
+    category?: boolean
+    channel?: boolean
+    subject?: boolean
+    body?: boolean
+    variables?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["messageTemplate"]>
+
+  export type MessageTemplateSelectScalar = {
+    templateId?: boolean
+    companyId?: boolean
+    name?: boolean
+    category?: boolean
+    channel?: boolean
+    subject?: boolean
+    body?: boolean
+    variables?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type MessageTemplateInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+    automationRules?: boolean | MessageTemplate$automationRulesArgs<ExtArgs>
+    communications?: boolean | MessageTemplate$communicationsArgs<ExtArgs>
+    _count?: boolean | MessageTemplateCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type MessageTemplateIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+  }
+
+  export type $MessageTemplatePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "MessageTemplate"
+    objects: {
+      company: Prisma.$CompanyPayload<ExtArgs>
+      automationRules: Prisma.$AutomationRulePayload<ExtArgs>[]
+      communications: Prisma.$CommunicationPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      templateId: string
+      companyId: string
+      name: string
+      category: string
+      channel: string
+      subject: string | null
+      body: string
+      variables: string[]
+      isActive: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["messageTemplate"]>
+    composites: {}
+  }
+
+  type MessageTemplateGetPayload<S extends boolean | null | undefined | MessageTemplateDefaultArgs> = $Result.GetResult<Prisma.$MessageTemplatePayload, S>
+
+  type MessageTemplateCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<MessageTemplateFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: MessageTemplateCountAggregateInputType | true
+    }
+
+  export interface MessageTemplateDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['MessageTemplate'], meta: { name: 'MessageTemplate' } }
+    /**
+     * Find zero or one MessageTemplate that matches the filter.
+     * @param {MessageTemplateFindUniqueArgs} args - Arguments to find a MessageTemplate
+     * @example
+     * // Get one MessageTemplate
+     * const messageTemplate = await prisma.messageTemplate.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends MessageTemplateFindUniqueArgs>(args: SelectSubset<T, MessageTemplateFindUniqueArgs<ExtArgs>>): Prisma__MessageTemplateClient<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one MessageTemplate that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {MessageTemplateFindUniqueOrThrowArgs} args - Arguments to find a MessageTemplate
+     * @example
+     * // Get one MessageTemplate
+     * const messageTemplate = await prisma.messageTemplate.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends MessageTemplateFindUniqueOrThrowArgs>(args: SelectSubset<T, MessageTemplateFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MessageTemplateClient<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first MessageTemplate that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageTemplateFindFirstArgs} args - Arguments to find a MessageTemplate
+     * @example
+     * // Get one MessageTemplate
+     * const messageTemplate = await prisma.messageTemplate.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends MessageTemplateFindFirstArgs>(args?: SelectSubset<T, MessageTemplateFindFirstArgs<ExtArgs>>): Prisma__MessageTemplateClient<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first MessageTemplate that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageTemplateFindFirstOrThrowArgs} args - Arguments to find a MessageTemplate
+     * @example
+     * // Get one MessageTemplate
+     * const messageTemplate = await prisma.messageTemplate.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends MessageTemplateFindFirstOrThrowArgs>(args?: SelectSubset<T, MessageTemplateFindFirstOrThrowArgs<ExtArgs>>): Prisma__MessageTemplateClient<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more MessageTemplates that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageTemplateFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all MessageTemplates
+     * const messageTemplates = await prisma.messageTemplate.findMany()
+     * 
+     * // Get first 10 MessageTemplates
+     * const messageTemplates = await prisma.messageTemplate.findMany({ take: 10 })
+     * 
+     * // Only select the `templateId`
+     * const messageTemplateWithTemplateIdOnly = await prisma.messageTemplate.findMany({ select: { templateId: true } })
+     * 
+     */
+    findMany<T extends MessageTemplateFindManyArgs>(args?: SelectSubset<T, MessageTemplateFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a MessageTemplate.
+     * @param {MessageTemplateCreateArgs} args - Arguments to create a MessageTemplate.
+     * @example
+     * // Create one MessageTemplate
+     * const MessageTemplate = await prisma.messageTemplate.create({
+     *   data: {
+     *     // ... data to create a MessageTemplate
+     *   }
+     * })
+     * 
+     */
+    create<T extends MessageTemplateCreateArgs>(args: SelectSubset<T, MessageTemplateCreateArgs<ExtArgs>>): Prisma__MessageTemplateClient<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many MessageTemplates.
+     * @param {MessageTemplateCreateManyArgs} args - Arguments to create many MessageTemplates.
+     * @example
+     * // Create many MessageTemplates
+     * const messageTemplate = await prisma.messageTemplate.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends MessageTemplateCreateManyArgs>(args?: SelectSubset<T, MessageTemplateCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many MessageTemplates and returns the data saved in the database.
+     * @param {MessageTemplateCreateManyAndReturnArgs} args - Arguments to create many MessageTemplates.
+     * @example
+     * // Create many MessageTemplates
+     * const messageTemplate = await prisma.messageTemplate.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many MessageTemplates and only return the `templateId`
+     * const messageTemplateWithTemplateIdOnly = await prisma.messageTemplate.createManyAndReturn({ 
+     *   select: { templateId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends MessageTemplateCreateManyAndReturnArgs>(args?: SelectSubset<T, MessageTemplateCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a MessageTemplate.
+     * @param {MessageTemplateDeleteArgs} args - Arguments to delete one MessageTemplate.
+     * @example
+     * // Delete one MessageTemplate
+     * const MessageTemplate = await prisma.messageTemplate.delete({
+     *   where: {
+     *     // ... filter to delete one MessageTemplate
+     *   }
+     * })
+     * 
+     */
+    delete<T extends MessageTemplateDeleteArgs>(args: SelectSubset<T, MessageTemplateDeleteArgs<ExtArgs>>): Prisma__MessageTemplateClient<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one MessageTemplate.
+     * @param {MessageTemplateUpdateArgs} args - Arguments to update one MessageTemplate.
+     * @example
+     * // Update one MessageTemplate
+     * const messageTemplate = await prisma.messageTemplate.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends MessageTemplateUpdateArgs>(args: SelectSubset<T, MessageTemplateUpdateArgs<ExtArgs>>): Prisma__MessageTemplateClient<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more MessageTemplates.
+     * @param {MessageTemplateDeleteManyArgs} args - Arguments to filter MessageTemplates to delete.
+     * @example
+     * // Delete a few MessageTemplates
+     * const { count } = await prisma.messageTemplate.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends MessageTemplateDeleteManyArgs>(args?: SelectSubset<T, MessageTemplateDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MessageTemplates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageTemplateUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many MessageTemplates
+     * const messageTemplate = await prisma.messageTemplate.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends MessageTemplateUpdateManyArgs>(args: SelectSubset<T, MessageTemplateUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one MessageTemplate.
+     * @param {MessageTemplateUpsertArgs} args - Arguments to update or create a MessageTemplate.
+     * @example
+     * // Update or create a MessageTemplate
+     * const messageTemplate = await prisma.messageTemplate.upsert({
+     *   create: {
+     *     // ... data to create a MessageTemplate
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the MessageTemplate we want to update
+     *   }
+     * })
+     */
+    upsert<T extends MessageTemplateUpsertArgs>(args: SelectSubset<T, MessageTemplateUpsertArgs<ExtArgs>>): Prisma__MessageTemplateClient<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of MessageTemplates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageTemplateCountArgs} args - Arguments to filter MessageTemplates to count.
+     * @example
+     * // Count the number of MessageTemplates
+     * const count = await prisma.messageTemplate.count({
+     *   where: {
+     *     // ... the filter for the MessageTemplates we want to count
+     *   }
+     * })
+    **/
+    count<T extends MessageTemplateCountArgs>(
+      args?: Subset<T, MessageTemplateCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], MessageTemplateCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a MessageTemplate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageTemplateAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends MessageTemplateAggregateArgs>(args: Subset<T, MessageTemplateAggregateArgs>): Prisma.PrismaPromise<GetMessageTemplateAggregateType<T>>
+
+    /**
+     * Group by MessageTemplate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageTemplateGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends MessageTemplateGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: MessageTemplateGroupByArgs['orderBy'] }
+        : { orderBy?: MessageTemplateGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, MessageTemplateGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetMessageTemplateGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the MessageTemplate model
+   */
+  readonly fields: MessageTemplateFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for MessageTemplate.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__MessageTemplateClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    company<T extends CompanyDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CompanyDefaultArgs<ExtArgs>>): Prisma__CompanyClient<$Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    automationRules<T extends MessageTemplate$automationRulesArgs<ExtArgs> = {}>(args?: Subset<T, MessageTemplate$automationRulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AutomationRulePayload<ExtArgs>, T, "findMany"> | Null>
+    communications<T extends MessageTemplate$communicationsArgs<ExtArgs> = {}>(args?: Subset<T, MessageTemplate$communicationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommunicationPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the MessageTemplate model
+   */ 
+  interface MessageTemplateFieldRefs {
+    readonly templateId: FieldRef<"MessageTemplate", 'String'>
+    readonly companyId: FieldRef<"MessageTemplate", 'String'>
+    readonly name: FieldRef<"MessageTemplate", 'String'>
+    readonly category: FieldRef<"MessageTemplate", 'String'>
+    readonly channel: FieldRef<"MessageTemplate", 'String'>
+    readonly subject: FieldRef<"MessageTemplate", 'String'>
+    readonly body: FieldRef<"MessageTemplate", 'String'>
+    readonly variables: FieldRef<"MessageTemplate", 'String[]'>
+    readonly isActive: FieldRef<"MessageTemplate", 'Boolean'>
+    readonly createdAt: FieldRef<"MessageTemplate", 'DateTime'>
+    readonly updatedAt: FieldRef<"MessageTemplate", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * MessageTemplate findUnique
+   */
+  export type MessageTemplateFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which MessageTemplate to fetch.
+     */
+    where: MessageTemplateWhereUniqueInput
+  }
+
+  /**
+   * MessageTemplate findUniqueOrThrow
+   */
+  export type MessageTemplateFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which MessageTemplate to fetch.
+     */
+    where: MessageTemplateWhereUniqueInput
+  }
+
+  /**
+   * MessageTemplate findFirst
+   */
+  export type MessageTemplateFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which MessageTemplate to fetch.
+     */
+    where?: MessageTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MessageTemplates to fetch.
+     */
+    orderBy?: MessageTemplateOrderByWithRelationInput | MessageTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MessageTemplates.
+     */
+    cursor?: MessageTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MessageTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MessageTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MessageTemplates.
+     */
+    distinct?: MessageTemplateScalarFieldEnum | MessageTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * MessageTemplate findFirstOrThrow
+   */
+  export type MessageTemplateFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which MessageTemplate to fetch.
+     */
+    where?: MessageTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MessageTemplates to fetch.
+     */
+    orderBy?: MessageTemplateOrderByWithRelationInput | MessageTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MessageTemplates.
+     */
+    cursor?: MessageTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MessageTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MessageTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MessageTemplates.
+     */
+    distinct?: MessageTemplateScalarFieldEnum | MessageTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * MessageTemplate findMany
+   */
+  export type MessageTemplateFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which MessageTemplates to fetch.
+     */
+    where?: MessageTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MessageTemplates to fetch.
+     */
+    orderBy?: MessageTemplateOrderByWithRelationInput | MessageTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing MessageTemplates.
+     */
+    cursor?: MessageTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MessageTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MessageTemplates.
+     */
+    skip?: number
+    distinct?: MessageTemplateScalarFieldEnum | MessageTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * MessageTemplate create
+   */
+  export type MessageTemplateCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateInclude<ExtArgs> | null
+    /**
+     * The data needed to create a MessageTemplate.
+     */
+    data: XOR<MessageTemplateCreateInput, MessageTemplateUncheckedCreateInput>
+  }
+
+  /**
+   * MessageTemplate createMany
+   */
+  export type MessageTemplateCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many MessageTemplates.
+     */
+    data: MessageTemplateCreateManyInput | MessageTemplateCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * MessageTemplate createManyAndReturn
+   */
+  export type MessageTemplateCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many MessageTemplates.
+     */
+    data: MessageTemplateCreateManyInput | MessageTemplateCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * MessageTemplate update
+   */
+  export type MessageTemplateUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateInclude<ExtArgs> | null
+    /**
+     * The data needed to update a MessageTemplate.
+     */
+    data: XOR<MessageTemplateUpdateInput, MessageTemplateUncheckedUpdateInput>
+    /**
+     * Choose, which MessageTemplate to update.
+     */
+    where: MessageTemplateWhereUniqueInput
+  }
+
+  /**
+   * MessageTemplate updateMany
+   */
+  export type MessageTemplateUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update MessageTemplates.
+     */
+    data: XOR<MessageTemplateUpdateManyMutationInput, MessageTemplateUncheckedUpdateManyInput>
+    /**
+     * Filter which MessageTemplates to update
+     */
+    where?: MessageTemplateWhereInput
+  }
+
+  /**
+   * MessageTemplate upsert
+   */
+  export type MessageTemplateUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateInclude<ExtArgs> | null
+    /**
+     * The filter to search for the MessageTemplate to update in case it exists.
+     */
+    where: MessageTemplateWhereUniqueInput
+    /**
+     * In case the MessageTemplate found by the `where` argument doesn't exist, create a new MessageTemplate with this data.
+     */
+    create: XOR<MessageTemplateCreateInput, MessageTemplateUncheckedCreateInput>
+    /**
+     * In case the MessageTemplate was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<MessageTemplateUpdateInput, MessageTemplateUncheckedUpdateInput>
+  }
+
+  /**
+   * MessageTemplate delete
+   */
+  export type MessageTemplateDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateInclude<ExtArgs> | null
+    /**
+     * Filter which MessageTemplate to delete.
+     */
+    where: MessageTemplateWhereUniqueInput
+  }
+
+  /**
+   * MessageTemplate deleteMany
+   */
+  export type MessageTemplateDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MessageTemplates to delete
+     */
+    where?: MessageTemplateWhereInput
+  }
+
+  /**
+   * MessageTemplate.automationRules
+   */
+  export type MessageTemplate$automationRulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationRule
+     */
+    select?: AutomationRuleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationRuleInclude<ExtArgs> | null
+    where?: AutomationRuleWhereInput
+    orderBy?: AutomationRuleOrderByWithRelationInput | AutomationRuleOrderByWithRelationInput[]
+    cursor?: AutomationRuleWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AutomationRuleScalarFieldEnum | AutomationRuleScalarFieldEnum[]
+  }
+
+  /**
+   * MessageTemplate.communications
+   */
+  export type MessageTemplate$communicationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Communication
+     */
+    select?: CommunicationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommunicationInclude<ExtArgs> | null
+    where?: CommunicationWhereInput
+    orderBy?: CommunicationOrderByWithRelationInput | CommunicationOrderByWithRelationInput[]
+    cursor?: CommunicationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CommunicationScalarFieldEnum | CommunicationScalarFieldEnum[]
+  }
+
+  /**
+   * MessageTemplate without action
+   */
+  export type MessageTemplateDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AutomationRule
+   */
+
+  export type AggregateAutomationRule = {
+    _count: AutomationRuleCountAggregateOutputType | null
+    _avg: AutomationRuleAvgAggregateOutputType | null
+    _sum: AutomationRuleSumAggregateOutputType | null
+    _min: AutomationRuleMinAggregateOutputType | null
+    _max: AutomationRuleMaxAggregateOutputType | null
+  }
+
+  export type AutomationRuleAvgAggregateOutputType = {
+    delayMinutes: number | null
+    executionCount: number | null
+  }
+
+  export type AutomationRuleSumAggregateOutputType = {
+    delayMinutes: number | null
+    executionCount: number | null
+  }
+
+  export type AutomationRuleMinAggregateOutputType = {
+    ruleId: string | null
+    companyId: string | null
+    name: string | null
+    isActive: boolean | null
+    trigger: string | null
+    triggerValue: string | null
+    channel: string | null
+    templateId: string | null
+    delayMinutes: number | null
+    executionCount: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AutomationRuleMaxAggregateOutputType = {
+    ruleId: string | null
+    companyId: string | null
+    name: string | null
+    isActive: boolean | null
+    trigger: string | null
+    triggerValue: string | null
+    channel: string | null
+    templateId: string | null
+    delayMinutes: number | null
+    executionCount: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AutomationRuleCountAggregateOutputType = {
+    ruleId: number
+    companyId: number
+    name: number
+    isActive: number
+    trigger: number
+    triggerValue: number
+    channel: number
+    templateId: number
+    delayMinutes: number
+    conditions: number
+    executionCount: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type AutomationRuleAvgAggregateInputType = {
+    delayMinutes?: true
+    executionCount?: true
+  }
+
+  export type AutomationRuleSumAggregateInputType = {
+    delayMinutes?: true
+    executionCount?: true
+  }
+
+  export type AutomationRuleMinAggregateInputType = {
+    ruleId?: true
+    companyId?: true
+    name?: true
+    isActive?: true
+    trigger?: true
+    triggerValue?: true
+    channel?: true
+    templateId?: true
+    delayMinutes?: true
+    executionCount?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AutomationRuleMaxAggregateInputType = {
+    ruleId?: true
+    companyId?: true
+    name?: true
+    isActive?: true
+    trigger?: true
+    triggerValue?: true
+    channel?: true
+    templateId?: true
+    delayMinutes?: true
+    executionCount?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AutomationRuleCountAggregateInputType = {
+    ruleId?: true
+    companyId?: true
+    name?: true
+    isActive?: true
+    trigger?: true
+    triggerValue?: true
+    channel?: true
+    templateId?: true
+    delayMinutes?: true
+    conditions?: true
+    executionCount?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type AutomationRuleAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AutomationRule to aggregate.
+     */
+    where?: AutomationRuleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AutomationRules to fetch.
+     */
+    orderBy?: AutomationRuleOrderByWithRelationInput | AutomationRuleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AutomationRuleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AutomationRules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AutomationRules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AutomationRules
+    **/
+    _count?: true | AutomationRuleCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AutomationRuleAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AutomationRuleSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AutomationRuleMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AutomationRuleMaxAggregateInputType
+  }
+
+  export type GetAutomationRuleAggregateType<T extends AutomationRuleAggregateArgs> = {
+        [P in keyof T & keyof AggregateAutomationRule]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAutomationRule[P]>
+      : GetScalarType<T[P], AggregateAutomationRule[P]>
+  }
+
+
+
+
+  export type AutomationRuleGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AutomationRuleWhereInput
+    orderBy?: AutomationRuleOrderByWithAggregationInput | AutomationRuleOrderByWithAggregationInput[]
+    by: AutomationRuleScalarFieldEnum[] | AutomationRuleScalarFieldEnum
+    having?: AutomationRuleScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AutomationRuleCountAggregateInputType | true
+    _avg?: AutomationRuleAvgAggregateInputType
+    _sum?: AutomationRuleSumAggregateInputType
+    _min?: AutomationRuleMinAggregateInputType
+    _max?: AutomationRuleMaxAggregateInputType
+  }
+
+  export type AutomationRuleGroupByOutputType = {
+    ruleId: string
+    companyId: string
+    name: string
+    isActive: boolean
+    trigger: string
+    triggerValue: string | null
+    channel: string
+    templateId: string
+    delayMinutes: number
+    conditions: JsonValue | null
+    executionCount: number
+    createdAt: Date
+    updatedAt: Date
+    _count: AutomationRuleCountAggregateOutputType | null
+    _avg: AutomationRuleAvgAggregateOutputType | null
+    _sum: AutomationRuleSumAggregateOutputType | null
+    _min: AutomationRuleMinAggregateOutputType | null
+    _max: AutomationRuleMaxAggregateOutputType | null
+  }
+
+  type GetAutomationRuleGroupByPayload<T extends AutomationRuleGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AutomationRuleGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AutomationRuleGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AutomationRuleGroupByOutputType[P]>
+            : GetScalarType<T[P], AutomationRuleGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AutomationRuleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    ruleId?: boolean
+    companyId?: boolean
+    name?: boolean
+    isActive?: boolean
+    trigger?: boolean
+    triggerValue?: boolean
+    channel?: boolean
+    templateId?: boolean
+    delayMinutes?: boolean
+    conditions?: boolean
+    executionCount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+    template?: boolean | MessageTemplateDefaultArgs<ExtArgs>
+    jobs?: boolean | AutomationRule$jobsArgs<ExtArgs>
+    _count?: boolean | AutomationRuleCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["automationRule"]>
+
+  export type AutomationRuleSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    ruleId?: boolean
+    companyId?: boolean
+    name?: boolean
+    isActive?: boolean
+    trigger?: boolean
+    triggerValue?: boolean
+    channel?: boolean
+    templateId?: boolean
+    delayMinutes?: boolean
+    conditions?: boolean
+    executionCount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+    template?: boolean | MessageTemplateDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["automationRule"]>
+
+  export type AutomationRuleSelectScalar = {
+    ruleId?: boolean
+    companyId?: boolean
+    name?: boolean
+    isActive?: boolean
+    trigger?: boolean
+    triggerValue?: boolean
+    channel?: boolean
+    templateId?: boolean
+    delayMinutes?: boolean
+    conditions?: boolean
+    executionCount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type AutomationRuleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+    template?: boolean | MessageTemplateDefaultArgs<ExtArgs>
+    jobs?: boolean | AutomationRule$jobsArgs<ExtArgs>
+    _count?: boolean | AutomationRuleCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type AutomationRuleIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+    template?: boolean | MessageTemplateDefaultArgs<ExtArgs>
+  }
+
+  export type $AutomationRulePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AutomationRule"
+    objects: {
+      company: Prisma.$CompanyPayload<ExtArgs>
+      template: Prisma.$MessageTemplatePayload<ExtArgs>
+      jobs: Prisma.$AutomationJobPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      ruleId: string
+      companyId: string
+      name: string
+      isActive: boolean
+      trigger: string
+      triggerValue: string | null
+      channel: string
+      templateId: string
+      delayMinutes: number
+      conditions: Prisma.JsonValue | null
+      executionCount: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["automationRule"]>
+    composites: {}
+  }
+
+  type AutomationRuleGetPayload<S extends boolean | null | undefined | AutomationRuleDefaultArgs> = $Result.GetResult<Prisma.$AutomationRulePayload, S>
+
+  type AutomationRuleCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<AutomationRuleFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: AutomationRuleCountAggregateInputType | true
+    }
+
+  export interface AutomationRuleDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AutomationRule'], meta: { name: 'AutomationRule' } }
+    /**
+     * Find zero or one AutomationRule that matches the filter.
+     * @param {AutomationRuleFindUniqueArgs} args - Arguments to find a AutomationRule
+     * @example
+     * // Get one AutomationRule
+     * const automationRule = await prisma.automationRule.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AutomationRuleFindUniqueArgs>(args: SelectSubset<T, AutomationRuleFindUniqueArgs<ExtArgs>>): Prisma__AutomationRuleClient<$Result.GetResult<Prisma.$AutomationRulePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one AutomationRule that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {AutomationRuleFindUniqueOrThrowArgs} args - Arguments to find a AutomationRule
+     * @example
+     * // Get one AutomationRule
+     * const automationRule = await prisma.automationRule.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AutomationRuleFindUniqueOrThrowArgs>(args: SelectSubset<T, AutomationRuleFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AutomationRuleClient<$Result.GetResult<Prisma.$AutomationRulePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first AutomationRule that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AutomationRuleFindFirstArgs} args - Arguments to find a AutomationRule
+     * @example
+     * // Get one AutomationRule
+     * const automationRule = await prisma.automationRule.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AutomationRuleFindFirstArgs>(args?: SelectSubset<T, AutomationRuleFindFirstArgs<ExtArgs>>): Prisma__AutomationRuleClient<$Result.GetResult<Prisma.$AutomationRulePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first AutomationRule that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AutomationRuleFindFirstOrThrowArgs} args - Arguments to find a AutomationRule
+     * @example
+     * // Get one AutomationRule
+     * const automationRule = await prisma.automationRule.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AutomationRuleFindFirstOrThrowArgs>(args?: SelectSubset<T, AutomationRuleFindFirstOrThrowArgs<ExtArgs>>): Prisma__AutomationRuleClient<$Result.GetResult<Prisma.$AutomationRulePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more AutomationRules that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AutomationRuleFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AutomationRules
+     * const automationRules = await prisma.automationRule.findMany()
+     * 
+     * // Get first 10 AutomationRules
+     * const automationRules = await prisma.automationRule.findMany({ take: 10 })
+     * 
+     * // Only select the `ruleId`
+     * const automationRuleWithRuleIdOnly = await prisma.automationRule.findMany({ select: { ruleId: true } })
+     * 
+     */
+    findMany<T extends AutomationRuleFindManyArgs>(args?: SelectSubset<T, AutomationRuleFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AutomationRulePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a AutomationRule.
+     * @param {AutomationRuleCreateArgs} args - Arguments to create a AutomationRule.
+     * @example
+     * // Create one AutomationRule
+     * const AutomationRule = await prisma.automationRule.create({
+     *   data: {
+     *     // ... data to create a AutomationRule
+     *   }
+     * })
+     * 
+     */
+    create<T extends AutomationRuleCreateArgs>(args: SelectSubset<T, AutomationRuleCreateArgs<ExtArgs>>): Prisma__AutomationRuleClient<$Result.GetResult<Prisma.$AutomationRulePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many AutomationRules.
+     * @param {AutomationRuleCreateManyArgs} args - Arguments to create many AutomationRules.
+     * @example
+     * // Create many AutomationRules
+     * const automationRule = await prisma.automationRule.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AutomationRuleCreateManyArgs>(args?: SelectSubset<T, AutomationRuleCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AutomationRules and returns the data saved in the database.
+     * @param {AutomationRuleCreateManyAndReturnArgs} args - Arguments to create many AutomationRules.
+     * @example
+     * // Create many AutomationRules
+     * const automationRule = await prisma.automationRule.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AutomationRules and only return the `ruleId`
+     * const automationRuleWithRuleIdOnly = await prisma.automationRule.createManyAndReturn({ 
+     *   select: { ruleId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AutomationRuleCreateManyAndReturnArgs>(args?: SelectSubset<T, AutomationRuleCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AutomationRulePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a AutomationRule.
+     * @param {AutomationRuleDeleteArgs} args - Arguments to delete one AutomationRule.
+     * @example
+     * // Delete one AutomationRule
+     * const AutomationRule = await prisma.automationRule.delete({
+     *   where: {
+     *     // ... filter to delete one AutomationRule
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AutomationRuleDeleteArgs>(args: SelectSubset<T, AutomationRuleDeleteArgs<ExtArgs>>): Prisma__AutomationRuleClient<$Result.GetResult<Prisma.$AutomationRulePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one AutomationRule.
+     * @param {AutomationRuleUpdateArgs} args - Arguments to update one AutomationRule.
+     * @example
+     * // Update one AutomationRule
+     * const automationRule = await prisma.automationRule.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AutomationRuleUpdateArgs>(args: SelectSubset<T, AutomationRuleUpdateArgs<ExtArgs>>): Prisma__AutomationRuleClient<$Result.GetResult<Prisma.$AutomationRulePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more AutomationRules.
+     * @param {AutomationRuleDeleteManyArgs} args - Arguments to filter AutomationRules to delete.
+     * @example
+     * // Delete a few AutomationRules
+     * const { count } = await prisma.automationRule.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AutomationRuleDeleteManyArgs>(args?: SelectSubset<T, AutomationRuleDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AutomationRules.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AutomationRuleUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AutomationRules
+     * const automationRule = await prisma.automationRule.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AutomationRuleUpdateManyArgs>(args: SelectSubset<T, AutomationRuleUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one AutomationRule.
+     * @param {AutomationRuleUpsertArgs} args - Arguments to update or create a AutomationRule.
+     * @example
+     * // Update or create a AutomationRule
+     * const automationRule = await prisma.automationRule.upsert({
+     *   create: {
+     *     // ... data to create a AutomationRule
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AutomationRule we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AutomationRuleUpsertArgs>(args: SelectSubset<T, AutomationRuleUpsertArgs<ExtArgs>>): Prisma__AutomationRuleClient<$Result.GetResult<Prisma.$AutomationRulePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of AutomationRules.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AutomationRuleCountArgs} args - Arguments to filter AutomationRules to count.
+     * @example
+     * // Count the number of AutomationRules
+     * const count = await prisma.automationRule.count({
+     *   where: {
+     *     // ... the filter for the AutomationRules we want to count
+     *   }
+     * })
+    **/
+    count<T extends AutomationRuleCountArgs>(
+      args?: Subset<T, AutomationRuleCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AutomationRuleCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AutomationRule.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AutomationRuleAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AutomationRuleAggregateArgs>(args: Subset<T, AutomationRuleAggregateArgs>): Prisma.PrismaPromise<GetAutomationRuleAggregateType<T>>
+
+    /**
+     * Group by AutomationRule.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AutomationRuleGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AutomationRuleGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AutomationRuleGroupByArgs['orderBy'] }
+        : { orderBy?: AutomationRuleGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AutomationRuleGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAutomationRuleGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AutomationRule model
+   */
+  readonly fields: AutomationRuleFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AutomationRule.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AutomationRuleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    company<T extends CompanyDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CompanyDefaultArgs<ExtArgs>>): Prisma__CompanyClient<$Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    template<T extends MessageTemplateDefaultArgs<ExtArgs> = {}>(args?: Subset<T, MessageTemplateDefaultArgs<ExtArgs>>): Prisma__MessageTemplateClient<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    jobs<T extends AutomationRule$jobsArgs<ExtArgs> = {}>(args?: Subset<T, AutomationRule$jobsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AutomationJobPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AutomationRule model
+   */ 
+  interface AutomationRuleFieldRefs {
+    readonly ruleId: FieldRef<"AutomationRule", 'String'>
+    readonly companyId: FieldRef<"AutomationRule", 'String'>
+    readonly name: FieldRef<"AutomationRule", 'String'>
+    readonly isActive: FieldRef<"AutomationRule", 'Boolean'>
+    readonly trigger: FieldRef<"AutomationRule", 'String'>
+    readonly triggerValue: FieldRef<"AutomationRule", 'String'>
+    readonly channel: FieldRef<"AutomationRule", 'String'>
+    readonly templateId: FieldRef<"AutomationRule", 'String'>
+    readonly delayMinutes: FieldRef<"AutomationRule", 'Int'>
+    readonly conditions: FieldRef<"AutomationRule", 'Json'>
+    readonly executionCount: FieldRef<"AutomationRule", 'Int'>
+    readonly createdAt: FieldRef<"AutomationRule", 'DateTime'>
+    readonly updatedAt: FieldRef<"AutomationRule", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AutomationRule findUnique
+   */
+  export type AutomationRuleFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationRule
+     */
+    select?: AutomationRuleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationRuleInclude<ExtArgs> | null
+    /**
+     * Filter, which AutomationRule to fetch.
+     */
+    where: AutomationRuleWhereUniqueInput
+  }
+
+  /**
+   * AutomationRule findUniqueOrThrow
+   */
+  export type AutomationRuleFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationRule
+     */
+    select?: AutomationRuleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationRuleInclude<ExtArgs> | null
+    /**
+     * Filter, which AutomationRule to fetch.
+     */
+    where: AutomationRuleWhereUniqueInput
+  }
+
+  /**
+   * AutomationRule findFirst
+   */
+  export type AutomationRuleFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationRule
+     */
+    select?: AutomationRuleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationRuleInclude<ExtArgs> | null
+    /**
+     * Filter, which AutomationRule to fetch.
+     */
+    where?: AutomationRuleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AutomationRules to fetch.
+     */
+    orderBy?: AutomationRuleOrderByWithRelationInput | AutomationRuleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AutomationRules.
+     */
+    cursor?: AutomationRuleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AutomationRules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AutomationRules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AutomationRules.
+     */
+    distinct?: AutomationRuleScalarFieldEnum | AutomationRuleScalarFieldEnum[]
+  }
+
+  /**
+   * AutomationRule findFirstOrThrow
+   */
+  export type AutomationRuleFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationRule
+     */
+    select?: AutomationRuleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationRuleInclude<ExtArgs> | null
+    /**
+     * Filter, which AutomationRule to fetch.
+     */
+    where?: AutomationRuleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AutomationRules to fetch.
+     */
+    orderBy?: AutomationRuleOrderByWithRelationInput | AutomationRuleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AutomationRules.
+     */
+    cursor?: AutomationRuleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AutomationRules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AutomationRules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AutomationRules.
+     */
+    distinct?: AutomationRuleScalarFieldEnum | AutomationRuleScalarFieldEnum[]
+  }
+
+  /**
+   * AutomationRule findMany
+   */
+  export type AutomationRuleFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationRule
+     */
+    select?: AutomationRuleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationRuleInclude<ExtArgs> | null
+    /**
+     * Filter, which AutomationRules to fetch.
+     */
+    where?: AutomationRuleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AutomationRules to fetch.
+     */
+    orderBy?: AutomationRuleOrderByWithRelationInput | AutomationRuleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AutomationRules.
+     */
+    cursor?: AutomationRuleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AutomationRules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AutomationRules.
+     */
+    skip?: number
+    distinct?: AutomationRuleScalarFieldEnum | AutomationRuleScalarFieldEnum[]
+  }
+
+  /**
+   * AutomationRule create
+   */
+  export type AutomationRuleCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationRule
+     */
+    select?: AutomationRuleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationRuleInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AutomationRule.
+     */
+    data: XOR<AutomationRuleCreateInput, AutomationRuleUncheckedCreateInput>
+  }
+
+  /**
+   * AutomationRule createMany
+   */
+  export type AutomationRuleCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AutomationRules.
+     */
+    data: AutomationRuleCreateManyInput | AutomationRuleCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AutomationRule createManyAndReturn
+   */
+  export type AutomationRuleCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationRule
+     */
+    select?: AutomationRuleSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many AutomationRules.
+     */
+    data: AutomationRuleCreateManyInput | AutomationRuleCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationRuleIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AutomationRule update
+   */
+  export type AutomationRuleUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationRule
+     */
+    select?: AutomationRuleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationRuleInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AutomationRule.
+     */
+    data: XOR<AutomationRuleUpdateInput, AutomationRuleUncheckedUpdateInput>
+    /**
+     * Choose, which AutomationRule to update.
+     */
+    where: AutomationRuleWhereUniqueInput
+  }
+
+  /**
+   * AutomationRule updateMany
+   */
+  export type AutomationRuleUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AutomationRules.
+     */
+    data: XOR<AutomationRuleUpdateManyMutationInput, AutomationRuleUncheckedUpdateManyInput>
+    /**
+     * Filter which AutomationRules to update
+     */
+    where?: AutomationRuleWhereInput
+  }
+
+  /**
+   * AutomationRule upsert
+   */
+  export type AutomationRuleUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationRule
+     */
+    select?: AutomationRuleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationRuleInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AutomationRule to update in case it exists.
+     */
+    where: AutomationRuleWhereUniqueInput
+    /**
+     * In case the AutomationRule found by the `where` argument doesn't exist, create a new AutomationRule with this data.
+     */
+    create: XOR<AutomationRuleCreateInput, AutomationRuleUncheckedCreateInput>
+    /**
+     * In case the AutomationRule was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AutomationRuleUpdateInput, AutomationRuleUncheckedUpdateInput>
+  }
+
+  /**
+   * AutomationRule delete
+   */
+  export type AutomationRuleDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationRule
+     */
+    select?: AutomationRuleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationRuleInclude<ExtArgs> | null
+    /**
+     * Filter which AutomationRule to delete.
+     */
+    where: AutomationRuleWhereUniqueInput
+  }
+
+  /**
+   * AutomationRule deleteMany
+   */
+  export type AutomationRuleDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AutomationRules to delete
+     */
+    where?: AutomationRuleWhereInput
+  }
+
+  /**
+   * AutomationRule.jobs
+   */
+  export type AutomationRule$jobsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationJob
+     */
+    select?: AutomationJobSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationJobInclude<ExtArgs> | null
+    where?: AutomationJobWhereInput
+    orderBy?: AutomationJobOrderByWithRelationInput | AutomationJobOrderByWithRelationInput[]
+    cursor?: AutomationJobWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AutomationJobScalarFieldEnum | AutomationJobScalarFieldEnum[]
+  }
+
+  /**
+   * AutomationRule without action
+   */
+  export type AutomationRuleDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationRule
+     */
+    select?: AutomationRuleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationRuleInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AutomationJob
+   */
+
+  export type AggregateAutomationJob = {
+    _count: AutomationJobCountAggregateOutputType | null
+    _min: AutomationJobMinAggregateOutputType | null
+    _max: AutomationJobMaxAggregateOutputType | null
+  }
+
+  export type AutomationJobMinAggregateOutputType = {
+    jobId: string | null
+    ruleId: string | null
+    leadId: string | null
+    companyId: string | null
+    status: string | null
+    scheduledAt: Date | null
+    executedAt: Date | null
+    error: string | null
+    createdAt: Date | null
+  }
+
+  export type AutomationJobMaxAggregateOutputType = {
+    jobId: string | null
+    ruleId: string | null
+    leadId: string | null
+    companyId: string | null
+    status: string | null
+    scheduledAt: Date | null
+    executedAt: Date | null
+    error: string | null
+    createdAt: Date | null
+  }
+
+  export type AutomationJobCountAggregateOutputType = {
+    jobId: number
+    ruleId: number
+    leadId: number
+    companyId: number
+    status: number
+    scheduledAt: number
+    executedAt: number
+    error: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type AutomationJobMinAggregateInputType = {
+    jobId?: true
+    ruleId?: true
+    leadId?: true
+    companyId?: true
+    status?: true
+    scheduledAt?: true
+    executedAt?: true
+    error?: true
+    createdAt?: true
+  }
+
+  export type AutomationJobMaxAggregateInputType = {
+    jobId?: true
+    ruleId?: true
+    leadId?: true
+    companyId?: true
+    status?: true
+    scheduledAt?: true
+    executedAt?: true
+    error?: true
+    createdAt?: true
+  }
+
+  export type AutomationJobCountAggregateInputType = {
+    jobId?: true
+    ruleId?: true
+    leadId?: true
+    companyId?: true
+    status?: true
+    scheduledAt?: true
+    executedAt?: true
+    error?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type AutomationJobAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AutomationJob to aggregate.
+     */
+    where?: AutomationJobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AutomationJobs to fetch.
+     */
+    orderBy?: AutomationJobOrderByWithRelationInput | AutomationJobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AutomationJobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AutomationJobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AutomationJobs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AutomationJobs
+    **/
+    _count?: true | AutomationJobCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AutomationJobMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AutomationJobMaxAggregateInputType
+  }
+
+  export type GetAutomationJobAggregateType<T extends AutomationJobAggregateArgs> = {
+        [P in keyof T & keyof AggregateAutomationJob]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAutomationJob[P]>
+      : GetScalarType<T[P], AggregateAutomationJob[P]>
+  }
+
+
+
+
+  export type AutomationJobGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AutomationJobWhereInput
+    orderBy?: AutomationJobOrderByWithAggregationInput | AutomationJobOrderByWithAggregationInput[]
+    by: AutomationJobScalarFieldEnum[] | AutomationJobScalarFieldEnum
+    having?: AutomationJobScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AutomationJobCountAggregateInputType | true
+    _min?: AutomationJobMinAggregateInputType
+    _max?: AutomationJobMaxAggregateInputType
+  }
+
+  export type AutomationJobGroupByOutputType = {
+    jobId: string
+    ruleId: string
+    leadId: string
+    companyId: string
+    status: string
+    scheduledAt: Date
+    executedAt: Date | null
+    error: string | null
+    createdAt: Date
+    _count: AutomationJobCountAggregateOutputType | null
+    _min: AutomationJobMinAggregateOutputType | null
+    _max: AutomationJobMaxAggregateOutputType | null
+  }
+
+  type GetAutomationJobGroupByPayload<T extends AutomationJobGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AutomationJobGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AutomationJobGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AutomationJobGroupByOutputType[P]>
+            : GetScalarType<T[P], AutomationJobGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AutomationJobSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    jobId?: boolean
+    ruleId?: boolean
+    leadId?: boolean
+    companyId?: boolean
+    status?: boolean
+    scheduledAt?: boolean
+    executedAt?: boolean
+    error?: boolean
+    createdAt?: boolean
+    rule?: boolean | AutomationRuleDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["automationJob"]>
+
+  export type AutomationJobSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    jobId?: boolean
+    ruleId?: boolean
+    leadId?: boolean
+    companyId?: boolean
+    status?: boolean
+    scheduledAt?: boolean
+    executedAt?: boolean
+    error?: boolean
+    createdAt?: boolean
+    rule?: boolean | AutomationRuleDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["automationJob"]>
+
+  export type AutomationJobSelectScalar = {
+    jobId?: boolean
+    ruleId?: boolean
+    leadId?: boolean
+    companyId?: boolean
+    status?: boolean
+    scheduledAt?: boolean
+    executedAt?: boolean
+    error?: boolean
+    createdAt?: boolean
+  }
+
+  export type AutomationJobInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    rule?: boolean | AutomationRuleDefaultArgs<ExtArgs>
+  }
+  export type AutomationJobIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    rule?: boolean | AutomationRuleDefaultArgs<ExtArgs>
+  }
+
+  export type $AutomationJobPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AutomationJob"
+    objects: {
+      rule: Prisma.$AutomationRulePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      jobId: string
+      ruleId: string
+      leadId: string
+      companyId: string
+      status: string
+      scheduledAt: Date
+      executedAt: Date | null
+      error: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["automationJob"]>
+    composites: {}
+  }
+
+  type AutomationJobGetPayload<S extends boolean | null | undefined | AutomationJobDefaultArgs> = $Result.GetResult<Prisma.$AutomationJobPayload, S>
+
+  type AutomationJobCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<AutomationJobFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: AutomationJobCountAggregateInputType | true
+    }
+
+  export interface AutomationJobDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AutomationJob'], meta: { name: 'AutomationJob' } }
+    /**
+     * Find zero or one AutomationJob that matches the filter.
+     * @param {AutomationJobFindUniqueArgs} args - Arguments to find a AutomationJob
+     * @example
+     * // Get one AutomationJob
+     * const automationJob = await prisma.automationJob.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AutomationJobFindUniqueArgs>(args: SelectSubset<T, AutomationJobFindUniqueArgs<ExtArgs>>): Prisma__AutomationJobClient<$Result.GetResult<Prisma.$AutomationJobPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one AutomationJob that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {AutomationJobFindUniqueOrThrowArgs} args - Arguments to find a AutomationJob
+     * @example
+     * // Get one AutomationJob
+     * const automationJob = await prisma.automationJob.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AutomationJobFindUniqueOrThrowArgs>(args: SelectSubset<T, AutomationJobFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AutomationJobClient<$Result.GetResult<Prisma.$AutomationJobPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first AutomationJob that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AutomationJobFindFirstArgs} args - Arguments to find a AutomationJob
+     * @example
+     * // Get one AutomationJob
+     * const automationJob = await prisma.automationJob.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AutomationJobFindFirstArgs>(args?: SelectSubset<T, AutomationJobFindFirstArgs<ExtArgs>>): Prisma__AutomationJobClient<$Result.GetResult<Prisma.$AutomationJobPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first AutomationJob that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AutomationJobFindFirstOrThrowArgs} args - Arguments to find a AutomationJob
+     * @example
+     * // Get one AutomationJob
+     * const automationJob = await prisma.automationJob.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AutomationJobFindFirstOrThrowArgs>(args?: SelectSubset<T, AutomationJobFindFirstOrThrowArgs<ExtArgs>>): Prisma__AutomationJobClient<$Result.GetResult<Prisma.$AutomationJobPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more AutomationJobs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AutomationJobFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AutomationJobs
+     * const automationJobs = await prisma.automationJob.findMany()
+     * 
+     * // Get first 10 AutomationJobs
+     * const automationJobs = await prisma.automationJob.findMany({ take: 10 })
+     * 
+     * // Only select the `jobId`
+     * const automationJobWithJobIdOnly = await prisma.automationJob.findMany({ select: { jobId: true } })
+     * 
+     */
+    findMany<T extends AutomationJobFindManyArgs>(args?: SelectSubset<T, AutomationJobFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AutomationJobPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a AutomationJob.
+     * @param {AutomationJobCreateArgs} args - Arguments to create a AutomationJob.
+     * @example
+     * // Create one AutomationJob
+     * const AutomationJob = await prisma.automationJob.create({
+     *   data: {
+     *     // ... data to create a AutomationJob
+     *   }
+     * })
+     * 
+     */
+    create<T extends AutomationJobCreateArgs>(args: SelectSubset<T, AutomationJobCreateArgs<ExtArgs>>): Prisma__AutomationJobClient<$Result.GetResult<Prisma.$AutomationJobPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many AutomationJobs.
+     * @param {AutomationJobCreateManyArgs} args - Arguments to create many AutomationJobs.
+     * @example
+     * // Create many AutomationJobs
+     * const automationJob = await prisma.automationJob.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AutomationJobCreateManyArgs>(args?: SelectSubset<T, AutomationJobCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AutomationJobs and returns the data saved in the database.
+     * @param {AutomationJobCreateManyAndReturnArgs} args - Arguments to create many AutomationJobs.
+     * @example
+     * // Create many AutomationJobs
+     * const automationJob = await prisma.automationJob.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AutomationJobs and only return the `jobId`
+     * const automationJobWithJobIdOnly = await prisma.automationJob.createManyAndReturn({ 
+     *   select: { jobId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AutomationJobCreateManyAndReturnArgs>(args?: SelectSubset<T, AutomationJobCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AutomationJobPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a AutomationJob.
+     * @param {AutomationJobDeleteArgs} args - Arguments to delete one AutomationJob.
+     * @example
+     * // Delete one AutomationJob
+     * const AutomationJob = await prisma.automationJob.delete({
+     *   where: {
+     *     // ... filter to delete one AutomationJob
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AutomationJobDeleteArgs>(args: SelectSubset<T, AutomationJobDeleteArgs<ExtArgs>>): Prisma__AutomationJobClient<$Result.GetResult<Prisma.$AutomationJobPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one AutomationJob.
+     * @param {AutomationJobUpdateArgs} args - Arguments to update one AutomationJob.
+     * @example
+     * // Update one AutomationJob
+     * const automationJob = await prisma.automationJob.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AutomationJobUpdateArgs>(args: SelectSubset<T, AutomationJobUpdateArgs<ExtArgs>>): Prisma__AutomationJobClient<$Result.GetResult<Prisma.$AutomationJobPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more AutomationJobs.
+     * @param {AutomationJobDeleteManyArgs} args - Arguments to filter AutomationJobs to delete.
+     * @example
+     * // Delete a few AutomationJobs
+     * const { count } = await prisma.automationJob.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AutomationJobDeleteManyArgs>(args?: SelectSubset<T, AutomationJobDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AutomationJobs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AutomationJobUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AutomationJobs
+     * const automationJob = await prisma.automationJob.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AutomationJobUpdateManyArgs>(args: SelectSubset<T, AutomationJobUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one AutomationJob.
+     * @param {AutomationJobUpsertArgs} args - Arguments to update or create a AutomationJob.
+     * @example
+     * // Update or create a AutomationJob
+     * const automationJob = await prisma.automationJob.upsert({
+     *   create: {
+     *     // ... data to create a AutomationJob
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AutomationJob we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AutomationJobUpsertArgs>(args: SelectSubset<T, AutomationJobUpsertArgs<ExtArgs>>): Prisma__AutomationJobClient<$Result.GetResult<Prisma.$AutomationJobPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of AutomationJobs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AutomationJobCountArgs} args - Arguments to filter AutomationJobs to count.
+     * @example
+     * // Count the number of AutomationJobs
+     * const count = await prisma.automationJob.count({
+     *   where: {
+     *     // ... the filter for the AutomationJobs we want to count
+     *   }
+     * })
+    **/
+    count<T extends AutomationJobCountArgs>(
+      args?: Subset<T, AutomationJobCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AutomationJobCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AutomationJob.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AutomationJobAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AutomationJobAggregateArgs>(args: Subset<T, AutomationJobAggregateArgs>): Prisma.PrismaPromise<GetAutomationJobAggregateType<T>>
+
+    /**
+     * Group by AutomationJob.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AutomationJobGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AutomationJobGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AutomationJobGroupByArgs['orderBy'] }
+        : { orderBy?: AutomationJobGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AutomationJobGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAutomationJobGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AutomationJob model
+   */
+  readonly fields: AutomationJobFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AutomationJob.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AutomationJobClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    rule<T extends AutomationRuleDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AutomationRuleDefaultArgs<ExtArgs>>): Prisma__AutomationRuleClient<$Result.GetResult<Prisma.$AutomationRulePayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AutomationJob model
+   */ 
+  interface AutomationJobFieldRefs {
+    readonly jobId: FieldRef<"AutomationJob", 'String'>
+    readonly ruleId: FieldRef<"AutomationJob", 'String'>
+    readonly leadId: FieldRef<"AutomationJob", 'String'>
+    readonly companyId: FieldRef<"AutomationJob", 'String'>
+    readonly status: FieldRef<"AutomationJob", 'String'>
+    readonly scheduledAt: FieldRef<"AutomationJob", 'DateTime'>
+    readonly executedAt: FieldRef<"AutomationJob", 'DateTime'>
+    readonly error: FieldRef<"AutomationJob", 'String'>
+    readonly createdAt: FieldRef<"AutomationJob", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AutomationJob findUnique
+   */
+  export type AutomationJobFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationJob
+     */
+    select?: AutomationJobSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationJobInclude<ExtArgs> | null
+    /**
+     * Filter, which AutomationJob to fetch.
+     */
+    where: AutomationJobWhereUniqueInput
+  }
+
+  /**
+   * AutomationJob findUniqueOrThrow
+   */
+  export type AutomationJobFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationJob
+     */
+    select?: AutomationJobSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationJobInclude<ExtArgs> | null
+    /**
+     * Filter, which AutomationJob to fetch.
+     */
+    where: AutomationJobWhereUniqueInput
+  }
+
+  /**
+   * AutomationJob findFirst
+   */
+  export type AutomationJobFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationJob
+     */
+    select?: AutomationJobSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationJobInclude<ExtArgs> | null
+    /**
+     * Filter, which AutomationJob to fetch.
+     */
+    where?: AutomationJobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AutomationJobs to fetch.
+     */
+    orderBy?: AutomationJobOrderByWithRelationInput | AutomationJobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AutomationJobs.
+     */
+    cursor?: AutomationJobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AutomationJobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AutomationJobs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AutomationJobs.
+     */
+    distinct?: AutomationJobScalarFieldEnum | AutomationJobScalarFieldEnum[]
+  }
+
+  /**
+   * AutomationJob findFirstOrThrow
+   */
+  export type AutomationJobFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationJob
+     */
+    select?: AutomationJobSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationJobInclude<ExtArgs> | null
+    /**
+     * Filter, which AutomationJob to fetch.
+     */
+    where?: AutomationJobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AutomationJobs to fetch.
+     */
+    orderBy?: AutomationJobOrderByWithRelationInput | AutomationJobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AutomationJobs.
+     */
+    cursor?: AutomationJobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AutomationJobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AutomationJobs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AutomationJobs.
+     */
+    distinct?: AutomationJobScalarFieldEnum | AutomationJobScalarFieldEnum[]
+  }
+
+  /**
+   * AutomationJob findMany
+   */
+  export type AutomationJobFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationJob
+     */
+    select?: AutomationJobSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationJobInclude<ExtArgs> | null
+    /**
+     * Filter, which AutomationJobs to fetch.
+     */
+    where?: AutomationJobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AutomationJobs to fetch.
+     */
+    orderBy?: AutomationJobOrderByWithRelationInput | AutomationJobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AutomationJobs.
+     */
+    cursor?: AutomationJobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AutomationJobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AutomationJobs.
+     */
+    skip?: number
+    distinct?: AutomationJobScalarFieldEnum | AutomationJobScalarFieldEnum[]
+  }
+
+  /**
+   * AutomationJob create
+   */
+  export type AutomationJobCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationJob
+     */
+    select?: AutomationJobSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationJobInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AutomationJob.
+     */
+    data: XOR<AutomationJobCreateInput, AutomationJobUncheckedCreateInput>
+  }
+
+  /**
+   * AutomationJob createMany
+   */
+  export type AutomationJobCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AutomationJobs.
+     */
+    data: AutomationJobCreateManyInput | AutomationJobCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AutomationJob createManyAndReturn
+   */
+  export type AutomationJobCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationJob
+     */
+    select?: AutomationJobSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many AutomationJobs.
+     */
+    data: AutomationJobCreateManyInput | AutomationJobCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationJobIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AutomationJob update
+   */
+  export type AutomationJobUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationJob
+     */
+    select?: AutomationJobSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationJobInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AutomationJob.
+     */
+    data: XOR<AutomationJobUpdateInput, AutomationJobUncheckedUpdateInput>
+    /**
+     * Choose, which AutomationJob to update.
+     */
+    where: AutomationJobWhereUniqueInput
+  }
+
+  /**
+   * AutomationJob updateMany
+   */
+  export type AutomationJobUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AutomationJobs.
+     */
+    data: XOR<AutomationJobUpdateManyMutationInput, AutomationJobUncheckedUpdateManyInput>
+    /**
+     * Filter which AutomationJobs to update
+     */
+    where?: AutomationJobWhereInput
+  }
+
+  /**
+   * AutomationJob upsert
+   */
+  export type AutomationJobUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationJob
+     */
+    select?: AutomationJobSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationJobInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AutomationJob to update in case it exists.
+     */
+    where: AutomationJobWhereUniqueInput
+    /**
+     * In case the AutomationJob found by the `where` argument doesn't exist, create a new AutomationJob with this data.
+     */
+    create: XOR<AutomationJobCreateInput, AutomationJobUncheckedCreateInput>
+    /**
+     * In case the AutomationJob was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AutomationJobUpdateInput, AutomationJobUncheckedUpdateInput>
+  }
+
+  /**
+   * AutomationJob delete
+   */
+  export type AutomationJobDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationJob
+     */
+    select?: AutomationJobSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationJobInclude<ExtArgs> | null
+    /**
+     * Filter which AutomationJob to delete.
+     */
+    where: AutomationJobWhereUniqueInput
+  }
+
+  /**
+   * AutomationJob deleteMany
+   */
+  export type AutomationJobDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AutomationJobs to delete
+     */
+    where?: AutomationJobWhereInput
+  }
+
+  /**
+   * AutomationJob without action
+   */
+  export type AutomationJobDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutomationJob
+     */
+    select?: AutomationJobSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutomationJobInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Communication
+   */
+
+  export type AggregateCommunication = {
+    _count: CommunicationCountAggregateOutputType | null
+    _min: CommunicationMinAggregateOutputType | null
+    _max: CommunicationMaxAggregateOutputType | null
+  }
+
+  export type CommunicationMinAggregateOutputType = {
+    commId: string | null
+    companyId: string | null
+    leadId: string | null
+    channel: string | null
+    direction: string | null
+    status: string | null
+    fromNumber: string | null
+    toNumber: string | null
+    templateId: string | null
+    subject: string | null
+    body: string | null
+    watiMessageId: string | null
+    sentAt: Date | null
+    deliveredAt: Date | null
+    readAt: Date | null
+    userId: string | null
+    createdAt: Date | null
+  }
+
+  export type CommunicationMaxAggregateOutputType = {
+    commId: string | null
+    companyId: string | null
+    leadId: string | null
+    channel: string | null
+    direction: string | null
+    status: string | null
+    fromNumber: string | null
+    toNumber: string | null
+    templateId: string | null
+    subject: string | null
+    body: string | null
+    watiMessageId: string | null
+    sentAt: Date | null
+    deliveredAt: Date | null
+    readAt: Date | null
+    userId: string | null
+    createdAt: Date | null
+  }
+
+  export type CommunicationCountAggregateOutputType = {
+    commId: number
+    companyId: number
+    leadId: number
+    channel: number
+    direction: number
+    status: number
+    fromNumber: number
+    toNumber: number
+    templateId: number
+    subject: number
+    body: number
+    watiMessageId: number
+    metadata: number
+    sentAt: number
+    deliveredAt: number
+    readAt: number
+    userId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type CommunicationMinAggregateInputType = {
+    commId?: true
+    companyId?: true
+    leadId?: true
+    channel?: true
+    direction?: true
+    status?: true
+    fromNumber?: true
+    toNumber?: true
+    templateId?: true
+    subject?: true
+    body?: true
+    watiMessageId?: true
+    sentAt?: true
+    deliveredAt?: true
+    readAt?: true
+    userId?: true
+    createdAt?: true
+  }
+
+  export type CommunicationMaxAggregateInputType = {
+    commId?: true
+    companyId?: true
+    leadId?: true
+    channel?: true
+    direction?: true
+    status?: true
+    fromNumber?: true
+    toNumber?: true
+    templateId?: true
+    subject?: true
+    body?: true
+    watiMessageId?: true
+    sentAt?: true
+    deliveredAt?: true
+    readAt?: true
+    userId?: true
+    createdAt?: true
+  }
+
+  export type CommunicationCountAggregateInputType = {
+    commId?: true
+    companyId?: true
+    leadId?: true
+    channel?: true
+    direction?: true
+    status?: true
+    fromNumber?: true
+    toNumber?: true
+    templateId?: true
+    subject?: true
+    body?: true
+    watiMessageId?: true
+    metadata?: true
+    sentAt?: true
+    deliveredAt?: true
+    readAt?: true
+    userId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type CommunicationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Communication to aggregate.
+     */
+    where?: CommunicationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Communications to fetch.
+     */
+    orderBy?: CommunicationOrderByWithRelationInput | CommunicationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CommunicationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Communications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Communications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Communications
+    **/
+    _count?: true | CommunicationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CommunicationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CommunicationMaxAggregateInputType
+  }
+
+  export type GetCommunicationAggregateType<T extends CommunicationAggregateArgs> = {
+        [P in keyof T & keyof AggregateCommunication]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCommunication[P]>
+      : GetScalarType<T[P], AggregateCommunication[P]>
+  }
+
+
+
+
+  export type CommunicationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CommunicationWhereInput
+    orderBy?: CommunicationOrderByWithAggregationInput | CommunicationOrderByWithAggregationInput[]
+    by: CommunicationScalarFieldEnum[] | CommunicationScalarFieldEnum
+    having?: CommunicationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CommunicationCountAggregateInputType | true
+    _min?: CommunicationMinAggregateInputType
+    _max?: CommunicationMaxAggregateInputType
+  }
+
+  export type CommunicationGroupByOutputType = {
+    commId: string
+    companyId: string
+    leadId: string | null
+    channel: string
+    direction: string
+    status: string
+    fromNumber: string | null
+    toNumber: string | null
+    templateId: string | null
+    subject: string | null
+    body: string
+    watiMessageId: string | null
+    metadata: JsonValue | null
+    sentAt: Date | null
+    deliveredAt: Date | null
+    readAt: Date | null
+    userId: string | null
+    createdAt: Date
+    _count: CommunicationCountAggregateOutputType | null
+    _min: CommunicationMinAggregateOutputType | null
+    _max: CommunicationMaxAggregateOutputType | null
+  }
+
+  type GetCommunicationGroupByPayload<T extends CommunicationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CommunicationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CommunicationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CommunicationGroupByOutputType[P]>
+            : GetScalarType<T[P], CommunicationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CommunicationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    commId?: boolean
+    companyId?: boolean
+    leadId?: boolean
+    channel?: boolean
+    direction?: boolean
+    status?: boolean
+    fromNumber?: boolean
+    toNumber?: boolean
+    templateId?: boolean
+    subject?: boolean
+    body?: boolean
+    watiMessageId?: boolean
+    metadata?: boolean
+    sentAt?: boolean
+    deliveredAt?: boolean
+    readAt?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    lead?: boolean | Communication$leadArgs<ExtArgs>
+    template?: boolean | Communication$templateArgs<ExtArgs>
+  }, ExtArgs["result"]["communication"]>
+
+  export type CommunicationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    commId?: boolean
+    companyId?: boolean
+    leadId?: boolean
+    channel?: boolean
+    direction?: boolean
+    status?: boolean
+    fromNumber?: boolean
+    toNumber?: boolean
+    templateId?: boolean
+    subject?: boolean
+    body?: boolean
+    watiMessageId?: boolean
+    metadata?: boolean
+    sentAt?: boolean
+    deliveredAt?: boolean
+    readAt?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    lead?: boolean | Communication$leadArgs<ExtArgs>
+    template?: boolean | Communication$templateArgs<ExtArgs>
+  }, ExtArgs["result"]["communication"]>
+
+  export type CommunicationSelectScalar = {
+    commId?: boolean
+    companyId?: boolean
+    leadId?: boolean
+    channel?: boolean
+    direction?: boolean
+    status?: boolean
+    fromNumber?: boolean
+    toNumber?: boolean
+    templateId?: boolean
+    subject?: boolean
+    body?: boolean
+    watiMessageId?: boolean
+    metadata?: boolean
+    sentAt?: boolean
+    deliveredAt?: boolean
+    readAt?: boolean
+    userId?: boolean
+    createdAt?: boolean
+  }
+
+  export type CommunicationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    lead?: boolean | Communication$leadArgs<ExtArgs>
+    template?: boolean | Communication$templateArgs<ExtArgs>
+  }
+  export type CommunicationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    lead?: boolean | Communication$leadArgs<ExtArgs>
+    template?: boolean | Communication$templateArgs<ExtArgs>
+  }
+
+  export type $CommunicationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Communication"
+    objects: {
+      lead: Prisma.$LeadPayload<ExtArgs> | null
+      template: Prisma.$MessageTemplatePayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      commId: string
+      companyId: string
+      leadId: string | null
+      channel: string
+      direction: string
+      status: string
+      fromNumber: string | null
+      toNumber: string | null
+      templateId: string | null
+      subject: string | null
+      body: string
+      watiMessageId: string | null
+      metadata: Prisma.JsonValue | null
+      sentAt: Date | null
+      deliveredAt: Date | null
+      readAt: Date | null
+      userId: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["communication"]>
+    composites: {}
+  }
+
+  type CommunicationGetPayload<S extends boolean | null | undefined | CommunicationDefaultArgs> = $Result.GetResult<Prisma.$CommunicationPayload, S>
+
+  type CommunicationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<CommunicationFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: CommunicationCountAggregateInputType | true
+    }
+
+  export interface CommunicationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Communication'], meta: { name: 'Communication' } }
+    /**
+     * Find zero or one Communication that matches the filter.
+     * @param {CommunicationFindUniqueArgs} args - Arguments to find a Communication
+     * @example
+     * // Get one Communication
+     * const communication = await prisma.communication.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CommunicationFindUniqueArgs>(args: SelectSubset<T, CommunicationFindUniqueArgs<ExtArgs>>): Prisma__CommunicationClient<$Result.GetResult<Prisma.$CommunicationPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Communication that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {CommunicationFindUniqueOrThrowArgs} args - Arguments to find a Communication
+     * @example
+     * // Get one Communication
+     * const communication = await prisma.communication.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CommunicationFindUniqueOrThrowArgs>(args: SelectSubset<T, CommunicationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CommunicationClient<$Result.GetResult<Prisma.$CommunicationPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Communication that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunicationFindFirstArgs} args - Arguments to find a Communication
+     * @example
+     * // Get one Communication
+     * const communication = await prisma.communication.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CommunicationFindFirstArgs>(args?: SelectSubset<T, CommunicationFindFirstArgs<ExtArgs>>): Prisma__CommunicationClient<$Result.GetResult<Prisma.$CommunicationPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Communication that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunicationFindFirstOrThrowArgs} args - Arguments to find a Communication
+     * @example
+     * // Get one Communication
+     * const communication = await prisma.communication.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CommunicationFindFirstOrThrowArgs>(args?: SelectSubset<T, CommunicationFindFirstOrThrowArgs<ExtArgs>>): Prisma__CommunicationClient<$Result.GetResult<Prisma.$CommunicationPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Communications that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunicationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Communications
+     * const communications = await prisma.communication.findMany()
+     * 
+     * // Get first 10 Communications
+     * const communications = await prisma.communication.findMany({ take: 10 })
+     * 
+     * // Only select the `commId`
+     * const communicationWithCommIdOnly = await prisma.communication.findMany({ select: { commId: true } })
+     * 
+     */
+    findMany<T extends CommunicationFindManyArgs>(args?: SelectSubset<T, CommunicationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommunicationPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Communication.
+     * @param {CommunicationCreateArgs} args - Arguments to create a Communication.
+     * @example
+     * // Create one Communication
+     * const Communication = await prisma.communication.create({
+     *   data: {
+     *     // ... data to create a Communication
+     *   }
+     * })
+     * 
+     */
+    create<T extends CommunicationCreateArgs>(args: SelectSubset<T, CommunicationCreateArgs<ExtArgs>>): Prisma__CommunicationClient<$Result.GetResult<Prisma.$CommunicationPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Communications.
+     * @param {CommunicationCreateManyArgs} args - Arguments to create many Communications.
+     * @example
+     * // Create many Communications
+     * const communication = await prisma.communication.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CommunicationCreateManyArgs>(args?: SelectSubset<T, CommunicationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Communications and returns the data saved in the database.
+     * @param {CommunicationCreateManyAndReturnArgs} args - Arguments to create many Communications.
+     * @example
+     * // Create many Communications
+     * const communication = await prisma.communication.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Communications and only return the `commId`
+     * const communicationWithCommIdOnly = await prisma.communication.createManyAndReturn({ 
+     *   select: { commId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CommunicationCreateManyAndReturnArgs>(args?: SelectSubset<T, CommunicationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommunicationPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Communication.
+     * @param {CommunicationDeleteArgs} args - Arguments to delete one Communication.
+     * @example
+     * // Delete one Communication
+     * const Communication = await prisma.communication.delete({
+     *   where: {
+     *     // ... filter to delete one Communication
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CommunicationDeleteArgs>(args: SelectSubset<T, CommunicationDeleteArgs<ExtArgs>>): Prisma__CommunicationClient<$Result.GetResult<Prisma.$CommunicationPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Communication.
+     * @param {CommunicationUpdateArgs} args - Arguments to update one Communication.
+     * @example
+     * // Update one Communication
+     * const communication = await prisma.communication.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CommunicationUpdateArgs>(args: SelectSubset<T, CommunicationUpdateArgs<ExtArgs>>): Prisma__CommunicationClient<$Result.GetResult<Prisma.$CommunicationPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Communications.
+     * @param {CommunicationDeleteManyArgs} args - Arguments to filter Communications to delete.
+     * @example
+     * // Delete a few Communications
+     * const { count } = await prisma.communication.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CommunicationDeleteManyArgs>(args?: SelectSubset<T, CommunicationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Communications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunicationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Communications
+     * const communication = await prisma.communication.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CommunicationUpdateManyArgs>(args: SelectSubset<T, CommunicationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Communication.
+     * @param {CommunicationUpsertArgs} args - Arguments to update or create a Communication.
+     * @example
+     * // Update or create a Communication
+     * const communication = await prisma.communication.upsert({
+     *   create: {
+     *     // ... data to create a Communication
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Communication we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CommunicationUpsertArgs>(args: SelectSubset<T, CommunicationUpsertArgs<ExtArgs>>): Prisma__CommunicationClient<$Result.GetResult<Prisma.$CommunicationPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Communications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunicationCountArgs} args - Arguments to filter Communications to count.
+     * @example
+     * // Count the number of Communications
+     * const count = await prisma.communication.count({
+     *   where: {
+     *     // ... the filter for the Communications we want to count
+     *   }
+     * })
+    **/
+    count<T extends CommunicationCountArgs>(
+      args?: Subset<T, CommunicationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CommunicationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Communication.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunicationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CommunicationAggregateArgs>(args: Subset<T, CommunicationAggregateArgs>): Prisma.PrismaPromise<GetCommunicationAggregateType<T>>
+
+    /**
+     * Group by Communication.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunicationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CommunicationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CommunicationGroupByArgs['orderBy'] }
+        : { orderBy?: CommunicationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CommunicationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCommunicationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Communication model
+   */
+  readonly fields: CommunicationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Communication.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CommunicationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    lead<T extends Communication$leadArgs<ExtArgs> = {}>(args?: Subset<T, Communication$leadArgs<ExtArgs>>): Prisma__LeadClient<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    template<T extends Communication$templateArgs<ExtArgs> = {}>(args?: Subset<T, Communication$templateArgs<ExtArgs>>): Prisma__MessageTemplateClient<$Result.GetResult<Prisma.$MessageTemplatePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Communication model
+   */ 
+  interface CommunicationFieldRefs {
+    readonly commId: FieldRef<"Communication", 'String'>
+    readonly companyId: FieldRef<"Communication", 'String'>
+    readonly leadId: FieldRef<"Communication", 'String'>
+    readonly channel: FieldRef<"Communication", 'String'>
+    readonly direction: FieldRef<"Communication", 'String'>
+    readonly status: FieldRef<"Communication", 'String'>
+    readonly fromNumber: FieldRef<"Communication", 'String'>
+    readonly toNumber: FieldRef<"Communication", 'String'>
+    readonly templateId: FieldRef<"Communication", 'String'>
+    readonly subject: FieldRef<"Communication", 'String'>
+    readonly body: FieldRef<"Communication", 'String'>
+    readonly watiMessageId: FieldRef<"Communication", 'String'>
+    readonly metadata: FieldRef<"Communication", 'Json'>
+    readonly sentAt: FieldRef<"Communication", 'DateTime'>
+    readonly deliveredAt: FieldRef<"Communication", 'DateTime'>
+    readonly readAt: FieldRef<"Communication", 'DateTime'>
+    readonly userId: FieldRef<"Communication", 'String'>
+    readonly createdAt: FieldRef<"Communication", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Communication findUnique
+   */
+  export type CommunicationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Communication
+     */
+    select?: CommunicationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommunicationInclude<ExtArgs> | null
+    /**
+     * Filter, which Communication to fetch.
+     */
+    where: CommunicationWhereUniqueInput
+  }
+
+  /**
+   * Communication findUniqueOrThrow
+   */
+  export type CommunicationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Communication
+     */
+    select?: CommunicationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommunicationInclude<ExtArgs> | null
+    /**
+     * Filter, which Communication to fetch.
+     */
+    where: CommunicationWhereUniqueInput
+  }
+
+  /**
+   * Communication findFirst
+   */
+  export type CommunicationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Communication
+     */
+    select?: CommunicationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommunicationInclude<ExtArgs> | null
+    /**
+     * Filter, which Communication to fetch.
+     */
+    where?: CommunicationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Communications to fetch.
+     */
+    orderBy?: CommunicationOrderByWithRelationInput | CommunicationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Communications.
+     */
+    cursor?: CommunicationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Communications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Communications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Communications.
+     */
+    distinct?: CommunicationScalarFieldEnum | CommunicationScalarFieldEnum[]
+  }
+
+  /**
+   * Communication findFirstOrThrow
+   */
+  export type CommunicationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Communication
+     */
+    select?: CommunicationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommunicationInclude<ExtArgs> | null
+    /**
+     * Filter, which Communication to fetch.
+     */
+    where?: CommunicationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Communications to fetch.
+     */
+    orderBy?: CommunicationOrderByWithRelationInput | CommunicationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Communications.
+     */
+    cursor?: CommunicationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Communications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Communications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Communications.
+     */
+    distinct?: CommunicationScalarFieldEnum | CommunicationScalarFieldEnum[]
+  }
+
+  /**
+   * Communication findMany
+   */
+  export type CommunicationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Communication
+     */
+    select?: CommunicationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommunicationInclude<ExtArgs> | null
+    /**
+     * Filter, which Communications to fetch.
+     */
+    where?: CommunicationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Communications to fetch.
+     */
+    orderBy?: CommunicationOrderByWithRelationInput | CommunicationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Communications.
+     */
+    cursor?: CommunicationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Communications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Communications.
+     */
+    skip?: number
+    distinct?: CommunicationScalarFieldEnum | CommunicationScalarFieldEnum[]
+  }
+
+  /**
+   * Communication create
+   */
+  export type CommunicationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Communication
+     */
+    select?: CommunicationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommunicationInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Communication.
+     */
+    data: XOR<CommunicationCreateInput, CommunicationUncheckedCreateInput>
+  }
+
+  /**
+   * Communication createMany
+   */
+  export type CommunicationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Communications.
+     */
+    data: CommunicationCreateManyInput | CommunicationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Communication createManyAndReturn
+   */
+  export type CommunicationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Communication
+     */
+    select?: CommunicationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many Communications.
+     */
+    data: CommunicationCreateManyInput | CommunicationCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommunicationIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Communication update
+   */
+  export type CommunicationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Communication
+     */
+    select?: CommunicationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommunicationInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Communication.
+     */
+    data: XOR<CommunicationUpdateInput, CommunicationUncheckedUpdateInput>
+    /**
+     * Choose, which Communication to update.
+     */
+    where: CommunicationWhereUniqueInput
+  }
+
+  /**
+   * Communication updateMany
+   */
+  export type CommunicationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Communications.
+     */
+    data: XOR<CommunicationUpdateManyMutationInput, CommunicationUncheckedUpdateManyInput>
+    /**
+     * Filter which Communications to update
+     */
+    where?: CommunicationWhereInput
+  }
+
+  /**
+   * Communication upsert
+   */
+  export type CommunicationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Communication
+     */
+    select?: CommunicationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommunicationInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Communication to update in case it exists.
+     */
+    where: CommunicationWhereUniqueInput
+    /**
+     * In case the Communication found by the `where` argument doesn't exist, create a new Communication with this data.
+     */
+    create: XOR<CommunicationCreateInput, CommunicationUncheckedCreateInput>
+    /**
+     * In case the Communication was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CommunicationUpdateInput, CommunicationUncheckedUpdateInput>
+  }
+
+  /**
+   * Communication delete
+   */
+  export type CommunicationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Communication
+     */
+    select?: CommunicationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommunicationInclude<ExtArgs> | null
+    /**
+     * Filter which Communication to delete.
+     */
+    where: CommunicationWhereUniqueInput
+  }
+
+  /**
+   * Communication deleteMany
+   */
+  export type CommunicationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Communications to delete
+     */
+    where?: CommunicationWhereInput
+  }
+
+  /**
+   * Communication.lead
+   */
+  export type Communication$leadArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Lead
+     */
+    select?: LeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LeadInclude<ExtArgs> | null
+    where?: LeadWhereInput
+  }
+
+  /**
+   * Communication.template
+   */
+  export type Communication$templateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MessageTemplate
+     */
+    select?: MessageTemplateSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageTemplateInclude<ExtArgs> | null
+    where?: MessageTemplateWhereInput
+  }
+
+  /**
+   * Communication without action
+   */
+  export type CommunicationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Communication
+     */
+    select?: CommunicationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommunicationInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AutoReplyRule
+   */
+
+  export type AggregateAutoReplyRule = {
+    _count: AutoReplyRuleCountAggregateOutputType | null
+    _avg: AutoReplyRuleAvgAggregateOutputType | null
+    _sum: AutoReplyRuleSumAggregateOutputType | null
+    _min: AutoReplyRuleMinAggregateOutputType | null
+    _max: AutoReplyRuleMaxAggregateOutputType | null
+  }
+
+  export type AutoReplyRuleAvgAggregateOutputType = {
+    priority: number | null
+  }
+
+  export type AutoReplyRuleSumAggregateOutputType = {
+    priority: number | null
+  }
+
+  export type AutoReplyRuleMinAggregateOutputType = {
+    replyRuleId: string | null
+    companyId: string | null
+    keyword: string | null
+    matchType: string | null
+    replyBody: string | null
+    isActive: boolean | null
+    priority: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AutoReplyRuleMaxAggregateOutputType = {
+    replyRuleId: string | null
+    companyId: string | null
+    keyword: string | null
+    matchType: string | null
+    replyBody: string | null
+    isActive: boolean | null
+    priority: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AutoReplyRuleCountAggregateOutputType = {
+    replyRuleId: number
+    companyId: number
+    keyword: number
+    matchType: number
+    replyBody: number
+    isActive: number
+    priority: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type AutoReplyRuleAvgAggregateInputType = {
+    priority?: true
+  }
+
+  export type AutoReplyRuleSumAggregateInputType = {
+    priority?: true
+  }
+
+  export type AutoReplyRuleMinAggregateInputType = {
+    replyRuleId?: true
+    companyId?: true
+    keyword?: true
+    matchType?: true
+    replyBody?: true
+    isActive?: true
+    priority?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AutoReplyRuleMaxAggregateInputType = {
+    replyRuleId?: true
+    companyId?: true
+    keyword?: true
+    matchType?: true
+    replyBody?: true
+    isActive?: true
+    priority?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AutoReplyRuleCountAggregateInputType = {
+    replyRuleId?: true
+    companyId?: true
+    keyword?: true
+    matchType?: true
+    replyBody?: true
+    isActive?: true
+    priority?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type AutoReplyRuleAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AutoReplyRule to aggregate.
+     */
+    where?: AutoReplyRuleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AutoReplyRules to fetch.
+     */
+    orderBy?: AutoReplyRuleOrderByWithRelationInput | AutoReplyRuleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AutoReplyRuleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AutoReplyRules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AutoReplyRules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AutoReplyRules
+    **/
+    _count?: true | AutoReplyRuleCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AutoReplyRuleAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AutoReplyRuleSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AutoReplyRuleMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AutoReplyRuleMaxAggregateInputType
+  }
+
+  export type GetAutoReplyRuleAggregateType<T extends AutoReplyRuleAggregateArgs> = {
+        [P in keyof T & keyof AggregateAutoReplyRule]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAutoReplyRule[P]>
+      : GetScalarType<T[P], AggregateAutoReplyRule[P]>
+  }
+
+
+
+
+  export type AutoReplyRuleGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AutoReplyRuleWhereInput
+    orderBy?: AutoReplyRuleOrderByWithAggregationInput | AutoReplyRuleOrderByWithAggregationInput[]
+    by: AutoReplyRuleScalarFieldEnum[] | AutoReplyRuleScalarFieldEnum
+    having?: AutoReplyRuleScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AutoReplyRuleCountAggregateInputType | true
+    _avg?: AutoReplyRuleAvgAggregateInputType
+    _sum?: AutoReplyRuleSumAggregateInputType
+    _min?: AutoReplyRuleMinAggregateInputType
+    _max?: AutoReplyRuleMaxAggregateInputType
+  }
+
+  export type AutoReplyRuleGroupByOutputType = {
+    replyRuleId: string
+    companyId: string
+    keyword: string
+    matchType: string
+    replyBody: string
+    isActive: boolean
+    priority: number
+    createdAt: Date
+    updatedAt: Date
+    _count: AutoReplyRuleCountAggregateOutputType | null
+    _avg: AutoReplyRuleAvgAggregateOutputType | null
+    _sum: AutoReplyRuleSumAggregateOutputType | null
+    _min: AutoReplyRuleMinAggregateOutputType | null
+    _max: AutoReplyRuleMaxAggregateOutputType | null
+  }
+
+  type GetAutoReplyRuleGroupByPayload<T extends AutoReplyRuleGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AutoReplyRuleGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AutoReplyRuleGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AutoReplyRuleGroupByOutputType[P]>
+            : GetScalarType<T[P], AutoReplyRuleGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AutoReplyRuleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    replyRuleId?: boolean
+    companyId?: boolean
+    keyword?: boolean
+    matchType?: boolean
+    replyBody?: boolean
+    isActive?: boolean
+    priority?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["autoReplyRule"]>
+
+  export type AutoReplyRuleSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    replyRuleId?: boolean
+    companyId?: boolean
+    keyword?: boolean
+    matchType?: boolean
+    replyBody?: boolean
+    isActive?: boolean
+    priority?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["autoReplyRule"]>
+
+  export type AutoReplyRuleSelectScalar = {
+    replyRuleId?: boolean
+    companyId?: boolean
+    keyword?: boolean
+    matchType?: boolean
+    replyBody?: boolean
+    isActive?: boolean
+    priority?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type AutoReplyRuleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+  }
+  export type AutoReplyRuleIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+  }
+
+  export type $AutoReplyRulePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AutoReplyRule"
+    objects: {
+      company: Prisma.$CompanyPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      replyRuleId: string
+      companyId: string
+      keyword: string
+      matchType: string
+      replyBody: string
+      isActive: boolean
+      priority: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["autoReplyRule"]>
+    composites: {}
+  }
+
+  type AutoReplyRuleGetPayload<S extends boolean | null | undefined | AutoReplyRuleDefaultArgs> = $Result.GetResult<Prisma.$AutoReplyRulePayload, S>
+
+  type AutoReplyRuleCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<AutoReplyRuleFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: AutoReplyRuleCountAggregateInputType | true
+    }
+
+  export interface AutoReplyRuleDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AutoReplyRule'], meta: { name: 'AutoReplyRule' } }
+    /**
+     * Find zero or one AutoReplyRule that matches the filter.
+     * @param {AutoReplyRuleFindUniqueArgs} args - Arguments to find a AutoReplyRule
+     * @example
+     * // Get one AutoReplyRule
+     * const autoReplyRule = await prisma.autoReplyRule.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AutoReplyRuleFindUniqueArgs>(args: SelectSubset<T, AutoReplyRuleFindUniqueArgs<ExtArgs>>): Prisma__AutoReplyRuleClient<$Result.GetResult<Prisma.$AutoReplyRulePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one AutoReplyRule that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {AutoReplyRuleFindUniqueOrThrowArgs} args - Arguments to find a AutoReplyRule
+     * @example
+     * // Get one AutoReplyRule
+     * const autoReplyRule = await prisma.autoReplyRule.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AutoReplyRuleFindUniqueOrThrowArgs>(args: SelectSubset<T, AutoReplyRuleFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AutoReplyRuleClient<$Result.GetResult<Prisma.$AutoReplyRulePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first AutoReplyRule that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AutoReplyRuleFindFirstArgs} args - Arguments to find a AutoReplyRule
+     * @example
+     * // Get one AutoReplyRule
+     * const autoReplyRule = await prisma.autoReplyRule.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AutoReplyRuleFindFirstArgs>(args?: SelectSubset<T, AutoReplyRuleFindFirstArgs<ExtArgs>>): Prisma__AutoReplyRuleClient<$Result.GetResult<Prisma.$AutoReplyRulePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first AutoReplyRule that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AutoReplyRuleFindFirstOrThrowArgs} args - Arguments to find a AutoReplyRule
+     * @example
+     * // Get one AutoReplyRule
+     * const autoReplyRule = await prisma.autoReplyRule.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AutoReplyRuleFindFirstOrThrowArgs>(args?: SelectSubset<T, AutoReplyRuleFindFirstOrThrowArgs<ExtArgs>>): Prisma__AutoReplyRuleClient<$Result.GetResult<Prisma.$AutoReplyRulePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more AutoReplyRules that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AutoReplyRuleFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AutoReplyRules
+     * const autoReplyRules = await prisma.autoReplyRule.findMany()
+     * 
+     * // Get first 10 AutoReplyRules
+     * const autoReplyRules = await prisma.autoReplyRule.findMany({ take: 10 })
+     * 
+     * // Only select the `replyRuleId`
+     * const autoReplyRuleWithReplyRuleIdOnly = await prisma.autoReplyRule.findMany({ select: { replyRuleId: true } })
+     * 
+     */
+    findMany<T extends AutoReplyRuleFindManyArgs>(args?: SelectSubset<T, AutoReplyRuleFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AutoReplyRulePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a AutoReplyRule.
+     * @param {AutoReplyRuleCreateArgs} args - Arguments to create a AutoReplyRule.
+     * @example
+     * // Create one AutoReplyRule
+     * const AutoReplyRule = await prisma.autoReplyRule.create({
+     *   data: {
+     *     // ... data to create a AutoReplyRule
+     *   }
+     * })
+     * 
+     */
+    create<T extends AutoReplyRuleCreateArgs>(args: SelectSubset<T, AutoReplyRuleCreateArgs<ExtArgs>>): Prisma__AutoReplyRuleClient<$Result.GetResult<Prisma.$AutoReplyRulePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many AutoReplyRules.
+     * @param {AutoReplyRuleCreateManyArgs} args - Arguments to create many AutoReplyRules.
+     * @example
+     * // Create many AutoReplyRules
+     * const autoReplyRule = await prisma.autoReplyRule.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AutoReplyRuleCreateManyArgs>(args?: SelectSubset<T, AutoReplyRuleCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AutoReplyRules and returns the data saved in the database.
+     * @param {AutoReplyRuleCreateManyAndReturnArgs} args - Arguments to create many AutoReplyRules.
+     * @example
+     * // Create many AutoReplyRules
+     * const autoReplyRule = await prisma.autoReplyRule.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AutoReplyRules and only return the `replyRuleId`
+     * const autoReplyRuleWithReplyRuleIdOnly = await prisma.autoReplyRule.createManyAndReturn({ 
+     *   select: { replyRuleId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AutoReplyRuleCreateManyAndReturnArgs>(args?: SelectSubset<T, AutoReplyRuleCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AutoReplyRulePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a AutoReplyRule.
+     * @param {AutoReplyRuleDeleteArgs} args - Arguments to delete one AutoReplyRule.
+     * @example
+     * // Delete one AutoReplyRule
+     * const AutoReplyRule = await prisma.autoReplyRule.delete({
+     *   where: {
+     *     // ... filter to delete one AutoReplyRule
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AutoReplyRuleDeleteArgs>(args: SelectSubset<T, AutoReplyRuleDeleteArgs<ExtArgs>>): Prisma__AutoReplyRuleClient<$Result.GetResult<Prisma.$AutoReplyRulePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one AutoReplyRule.
+     * @param {AutoReplyRuleUpdateArgs} args - Arguments to update one AutoReplyRule.
+     * @example
+     * // Update one AutoReplyRule
+     * const autoReplyRule = await prisma.autoReplyRule.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AutoReplyRuleUpdateArgs>(args: SelectSubset<T, AutoReplyRuleUpdateArgs<ExtArgs>>): Prisma__AutoReplyRuleClient<$Result.GetResult<Prisma.$AutoReplyRulePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more AutoReplyRules.
+     * @param {AutoReplyRuleDeleteManyArgs} args - Arguments to filter AutoReplyRules to delete.
+     * @example
+     * // Delete a few AutoReplyRules
+     * const { count } = await prisma.autoReplyRule.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AutoReplyRuleDeleteManyArgs>(args?: SelectSubset<T, AutoReplyRuleDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AutoReplyRules.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AutoReplyRuleUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AutoReplyRules
+     * const autoReplyRule = await prisma.autoReplyRule.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AutoReplyRuleUpdateManyArgs>(args: SelectSubset<T, AutoReplyRuleUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one AutoReplyRule.
+     * @param {AutoReplyRuleUpsertArgs} args - Arguments to update or create a AutoReplyRule.
+     * @example
+     * // Update or create a AutoReplyRule
+     * const autoReplyRule = await prisma.autoReplyRule.upsert({
+     *   create: {
+     *     // ... data to create a AutoReplyRule
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AutoReplyRule we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AutoReplyRuleUpsertArgs>(args: SelectSubset<T, AutoReplyRuleUpsertArgs<ExtArgs>>): Prisma__AutoReplyRuleClient<$Result.GetResult<Prisma.$AutoReplyRulePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of AutoReplyRules.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AutoReplyRuleCountArgs} args - Arguments to filter AutoReplyRules to count.
+     * @example
+     * // Count the number of AutoReplyRules
+     * const count = await prisma.autoReplyRule.count({
+     *   where: {
+     *     // ... the filter for the AutoReplyRules we want to count
+     *   }
+     * })
+    **/
+    count<T extends AutoReplyRuleCountArgs>(
+      args?: Subset<T, AutoReplyRuleCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AutoReplyRuleCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AutoReplyRule.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AutoReplyRuleAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AutoReplyRuleAggregateArgs>(args: Subset<T, AutoReplyRuleAggregateArgs>): Prisma.PrismaPromise<GetAutoReplyRuleAggregateType<T>>
+
+    /**
+     * Group by AutoReplyRule.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AutoReplyRuleGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AutoReplyRuleGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AutoReplyRuleGroupByArgs['orderBy'] }
+        : { orderBy?: AutoReplyRuleGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AutoReplyRuleGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAutoReplyRuleGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AutoReplyRule model
+   */
+  readonly fields: AutoReplyRuleFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AutoReplyRule.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AutoReplyRuleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    company<T extends CompanyDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CompanyDefaultArgs<ExtArgs>>): Prisma__CompanyClient<$Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AutoReplyRule model
+   */ 
+  interface AutoReplyRuleFieldRefs {
+    readonly replyRuleId: FieldRef<"AutoReplyRule", 'String'>
+    readonly companyId: FieldRef<"AutoReplyRule", 'String'>
+    readonly keyword: FieldRef<"AutoReplyRule", 'String'>
+    readonly matchType: FieldRef<"AutoReplyRule", 'String'>
+    readonly replyBody: FieldRef<"AutoReplyRule", 'String'>
+    readonly isActive: FieldRef<"AutoReplyRule", 'Boolean'>
+    readonly priority: FieldRef<"AutoReplyRule", 'Int'>
+    readonly createdAt: FieldRef<"AutoReplyRule", 'DateTime'>
+    readonly updatedAt: FieldRef<"AutoReplyRule", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AutoReplyRule findUnique
+   */
+  export type AutoReplyRuleFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutoReplyRule
+     */
+    select?: AutoReplyRuleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutoReplyRuleInclude<ExtArgs> | null
+    /**
+     * Filter, which AutoReplyRule to fetch.
+     */
+    where: AutoReplyRuleWhereUniqueInput
+  }
+
+  /**
+   * AutoReplyRule findUniqueOrThrow
+   */
+  export type AutoReplyRuleFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutoReplyRule
+     */
+    select?: AutoReplyRuleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutoReplyRuleInclude<ExtArgs> | null
+    /**
+     * Filter, which AutoReplyRule to fetch.
+     */
+    where: AutoReplyRuleWhereUniqueInput
+  }
+
+  /**
+   * AutoReplyRule findFirst
+   */
+  export type AutoReplyRuleFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutoReplyRule
+     */
+    select?: AutoReplyRuleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutoReplyRuleInclude<ExtArgs> | null
+    /**
+     * Filter, which AutoReplyRule to fetch.
+     */
+    where?: AutoReplyRuleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AutoReplyRules to fetch.
+     */
+    orderBy?: AutoReplyRuleOrderByWithRelationInput | AutoReplyRuleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AutoReplyRules.
+     */
+    cursor?: AutoReplyRuleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AutoReplyRules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AutoReplyRules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AutoReplyRules.
+     */
+    distinct?: AutoReplyRuleScalarFieldEnum | AutoReplyRuleScalarFieldEnum[]
+  }
+
+  /**
+   * AutoReplyRule findFirstOrThrow
+   */
+  export type AutoReplyRuleFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutoReplyRule
+     */
+    select?: AutoReplyRuleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutoReplyRuleInclude<ExtArgs> | null
+    /**
+     * Filter, which AutoReplyRule to fetch.
+     */
+    where?: AutoReplyRuleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AutoReplyRules to fetch.
+     */
+    orderBy?: AutoReplyRuleOrderByWithRelationInput | AutoReplyRuleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AutoReplyRules.
+     */
+    cursor?: AutoReplyRuleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AutoReplyRules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AutoReplyRules.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AutoReplyRules.
+     */
+    distinct?: AutoReplyRuleScalarFieldEnum | AutoReplyRuleScalarFieldEnum[]
+  }
+
+  /**
+   * AutoReplyRule findMany
+   */
+  export type AutoReplyRuleFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutoReplyRule
+     */
+    select?: AutoReplyRuleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutoReplyRuleInclude<ExtArgs> | null
+    /**
+     * Filter, which AutoReplyRules to fetch.
+     */
+    where?: AutoReplyRuleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AutoReplyRules to fetch.
+     */
+    orderBy?: AutoReplyRuleOrderByWithRelationInput | AutoReplyRuleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AutoReplyRules.
+     */
+    cursor?: AutoReplyRuleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AutoReplyRules from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AutoReplyRules.
+     */
+    skip?: number
+    distinct?: AutoReplyRuleScalarFieldEnum | AutoReplyRuleScalarFieldEnum[]
+  }
+
+  /**
+   * AutoReplyRule create
+   */
+  export type AutoReplyRuleCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutoReplyRule
+     */
+    select?: AutoReplyRuleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutoReplyRuleInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AutoReplyRule.
+     */
+    data: XOR<AutoReplyRuleCreateInput, AutoReplyRuleUncheckedCreateInput>
+  }
+
+  /**
+   * AutoReplyRule createMany
+   */
+  export type AutoReplyRuleCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AutoReplyRules.
+     */
+    data: AutoReplyRuleCreateManyInput | AutoReplyRuleCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AutoReplyRule createManyAndReturn
+   */
+  export type AutoReplyRuleCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutoReplyRule
+     */
+    select?: AutoReplyRuleSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many AutoReplyRules.
+     */
+    data: AutoReplyRuleCreateManyInput | AutoReplyRuleCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutoReplyRuleIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AutoReplyRule update
+   */
+  export type AutoReplyRuleUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutoReplyRule
+     */
+    select?: AutoReplyRuleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutoReplyRuleInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AutoReplyRule.
+     */
+    data: XOR<AutoReplyRuleUpdateInput, AutoReplyRuleUncheckedUpdateInput>
+    /**
+     * Choose, which AutoReplyRule to update.
+     */
+    where: AutoReplyRuleWhereUniqueInput
+  }
+
+  /**
+   * AutoReplyRule updateMany
+   */
+  export type AutoReplyRuleUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AutoReplyRules.
+     */
+    data: XOR<AutoReplyRuleUpdateManyMutationInput, AutoReplyRuleUncheckedUpdateManyInput>
+    /**
+     * Filter which AutoReplyRules to update
+     */
+    where?: AutoReplyRuleWhereInput
+  }
+
+  /**
+   * AutoReplyRule upsert
+   */
+  export type AutoReplyRuleUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutoReplyRule
+     */
+    select?: AutoReplyRuleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutoReplyRuleInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AutoReplyRule to update in case it exists.
+     */
+    where: AutoReplyRuleWhereUniqueInput
+    /**
+     * In case the AutoReplyRule found by the `where` argument doesn't exist, create a new AutoReplyRule with this data.
+     */
+    create: XOR<AutoReplyRuleCreateInput, AutoReplyRuleUncheckedCreateInput>
+    /**
+     * In case the AutoReplyRule was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AutoReplyRuleUpdateInput, AutoReplyRuleUncheckedUpdateInput>
+  }
+
+  /**
+   * AutoReplyRule delete
+   */
+  export type AutoReplyRuleDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutoReplyRule
+     */
+    select?: AutoReplyRuleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutoReplyRuleInclude<ExtArgs> | null
+    /**
+     * Filter which AutoReplyRule to delete.
+     */
+    where: AutoReplyRuleWhereUniqueInput
+  }
+
+  /**
+   * AutoReplyRule deleteMany
+   */
+  export type AutoReplyRuleDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AutoReplyRules to delete
+     */
+    where?: AutoReplyRuleWhereInput
+  }
+
+  /**
+   * AutoReplyRule without action
+   */
+  export type AutoReplyRuleDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AutoReplyRule
+     */
+    select?: AutoReplyRuleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AutoReplyRuleInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Campaign
+   */
+
+  export type AggregateCampaign = {
+    _count: CampaignCountAggregateOutputType | null
+    _avg: CampaignAvgAggregateOutputType | null
+    _sum: CampaignSumAggregateOutputType | null
+    _min: CampaignMinAggregateOutputType | null
+    _max: CampaignMaxAggregateOutputType | null
+  }
+
+  export type CampaignAvgAggregateOutputType = {
+    totalLeads: number | null
+    sentCount: number | null
+    deliveredCount: number | null
+    failedCount: number | null
+  }
+
+  export type CampaignSumAggregateOutputType = {
+    totalLeads: number | null
+    sentCount: number | null
+    deliveredCount: number | null
+    failedCount: number | null
+  }
+
+  export type CampaignMinAggregateOutputType = {
+    campaignId: string | null
+    companyId: string | null
+    name: string | null
+    description: string | null
+    channel: string | null
+    status: string | null
+    templateId: string | null
+    subject: string | null
+    body: string | null
+    scheduledAt: Date | null
+    startedAt: Date | null
+    completedAt: Date | null
+    totalLeads: number | null
+    sentCount: number | null
+    deliveredCount: number | null
+    failedCount: number | null
+    createdById: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CampaignMaxAggregateOutputType = {
+    campaignId: string | null
+    companyId: string | null
+    name: string | null
+    description: string | null
+    channel: string | null
+    status: string | null
+    templateId: string | null
+    subject: string | null
+    body: string | null
+    scheduledAt: Date | null
+    startedAt: Date | null
+    completedAt: Date | null
+    totalLeads: number | null
+    sentCount: number | null
+    deliveredCount: number | null
+    failedCount: number | null
+    createdById: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CampaignCountAggregateOutputType = {
+    campaignId: number
+    companyId: number
+    name: number
+    description: number
+    channel: number
+    status: number
+    templateId: number
+    subject: number
+    body: number
+    filters: number
+    scheduledAt: number
+    startedAt: number
+    completedAt: number
+    totalLeads: number
+    sentCount: number
+    deliveredCount: number
+    failedCount: number
+    createdById: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type CampaignAvgAggregateInputType = {
+    totalLeads?: true
+    sentCount?: true
+    deliveredCount?: true
+    failedCount?: true
+  }
+
+  export type CampaignSumAggregateInputType = {
+    totalLeads?: true
+    sentCount?: true
+    deliveredCount?: true
+    failedCount?: true
+  }
+
+  export type CampaignMinAggregateInputType = {
+    campaignId?: true
+    companyId?: true
+    name?: true
+    description?: true
+    channel?: true
+    status?: true
+    templateId?: true
+    subject?: true
+    body?: true
+    scheduledAt?: true
+    startedAt?: true
+    completedAt?: true
+    totalLeads?: true
+    sentCount?: true
+    deliveredCount?: true
+    failedCount?: true
+    createdById?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CampaignMaxAggregateInputType = {
+    campaignId?: true
+    companyId?: true
+    name?: true
+    description?: true
+    channel?: true
+    status?: true
+    templateId?: true
+    subject?: true
+    body?: true
+    scheduledAt?: true
+    startedAt?: true
+    completedAt?: true
+    totalLeads?: true
+    sentCount?: true
+    deliveredCount?: true
+    failedCount?: true
+    createdById?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CampaignCountAggregateInputType = {
+    campaignId?: true
+    companyId?: true
+    name?: true
+    description?: true
+    channel?: true
+    status?: true
+    templateId?: true
+    subject?: true
+    body?: true
+    filters?: true
+    scheduledAt?: true
+    startedAt?: true
+    completedAt?: true
+    totalLeads?: true
+    sentCount?: true
+    deliveredCount?: true
+    failedCount?: true
+    createdById?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type CampaignAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Campaign to aggregate.
+     */
+    where?: CampaignWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Campaigns to fetch.
+     */
+    orderBy?: CampaignOrderByWithRelationInput | CampaignOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CampaignWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Campaigns from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Campaigns.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Campaigns
+    **/
+    _count?: true | CampaignCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: CampaignAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: CampaignSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CampaignMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CampaignMaxAggregateInputType
+  }
+
+  export type GetCampaignAggregateType<T extends CampaignAggregateArgs> = {
+        [P in keyof T & keyof AggregateCampaign]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCampaign[P]>
+      : GetScalarType<T[P], AggregateCampaign[P]>
+  }
+
+
+
+
+  export type CampaignGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CampaignWhereInput
+    orderBy?: CampaignOrderByWithAggregationInput | CampaignOrderByWithAggregationInput[]
+    by: CampaignScalarFieldEnum[] | CampaignScalarFieldEnum
+    having?: CampaignScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CampaignCountAggregateInputType | true
+    _avg?: CampaignAvgAggregateInputType
+    _sum?: CampaignSumAggregateInputType
+    _min?: CampaignMinAggregateInputType
+    _max?: CampaignMaxAggregateInputType
+  }
+
+  export type CampaignGroupByOutputType = {
+    campaignId: string
+    companyId: string
+    name: string
+    description: string | null
+    channel: string
+    status: string
+    templateId: string | null
+    subject: string | null
+    body: string | null
+    filters: JsonValue | null
+    scheduledAt: Date | null
+    startedAt: Date | null
+    completedAt: Date | null
+    totalLeads: number
+    sentCount: number
+    deliveredCount: number
+    failedCount: number
+    createdById: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: CampaignCountAggregateOutputType | null
+    _avg: CampaignAvgAggregateOutputType | null
+    _sum: CampaignSumAggregateOutputType | null
+    _min: CampaignMinAggregateOutputType | null
+    _max: CampaignMaxAggregateOutputType | null
+  }
+
+  type GetCampaignGroupByPayload<T extends CampaignGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CampaignGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CampaignGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CampaignGroupByOutputType[P]>
+            : GetScalarType<T[P], CampaignGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CampaignSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    campaignId?: boolean
+    companyId?: boolean
+    name?: boolean
+    description?: boolean
+    channel?: boolean
+    status?: boolean
+    templateId?: boolean
+    subject?: boolean
+    body?: boolean
+    filters?: boolean
+    scheduledAt?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    totalLeads?: boolean
+    sentCount?: boolean
+    deliveredCount?: boolean
+    failedCount?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+    campaignLeads?: boolean | Campaign$campaignLeadsArgs<ExtArgs>
+    _count?: boolean | CampaignCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["campaign"]>
+
+  export type CampaignSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    campaignId?: boolean
+    companyId?: boolean
+    name?: boolean
+    description?: boolean
+    channel?: boolean
+    status?: boolean
+    templateId?: boolean
+    subject?: boolean
+    body?: boolean
+    filters?: boolean
+    scheduledAt?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    totalLeads?: boolean
+    sentCount?: boolean
+    deliveredCount?: boolean
+    failedCount?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["campaign"]>
+
+  export type CampaignSelectScalar = {
+    campaignId?: boolean
+    companyId?: boolean
+    name?: boolean
+    description?: boolean
+    channel?: boolean
+    status?: boolean
+    templateId?: boolean
+    subject?: boolean
+    body?: boolean
+    filters?: boolean
+    scheduledAt?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    totalLeads?: boolean
+    sentCount?: boolean
+    deliveredCount?: boolean
+    failedCount?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type CampaignInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+    campaignLeads?: boolean | Campaign$campaignLeadsArgs<ExtArgs>
+    _count?: boolean | CampaignCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type CampaignIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+  }
+
+  export type $CampaignPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Campaign"
+    objects: {
+      company: Prisma.$CompanyPayload<ExtArgs>
+      campaignLeads: Prisma.$CampaignLeadPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      campaignId: string
+      companyId: string
+      name: string
+      description: string | null
+      channel: string
+      status: string
+      templateId: string | null
+      subject: string | null
+      body: string | null
+      filters: Prisma.JsonValue | null
+      scheduledAt: Date | null
+      startedAt: Date | null
+      completedAt: Date | null
+      totalLeads: number
+      sentCount: number
+      deliveredCount: number
+      failedCount: number
+      createdById: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["campaign"]>
+    composites: {}
+  }
+
+  type CampaignGetPayload<S extends boolean | null | undefined | CampaignDefaultArgs> = $Result.GetResult<Prisma.$CampaignPayload, S>
+
+  type CampaignCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<CampaignFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: CampaignCountAggregateInputType | true
+    }
+
+  export interface CampaignDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Campaign'], meta: { name: 'Campaign' } }
+    /**
+     * Find zero or one Campaign that matches the filter.
+     * @param {CampaignFindUniqueArgs} args - Arguments to find a Campaign
+     * @example
+     * // Get one Campaign
+     * const campaign = await prisma.campaign.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CampaignFindUniqueArgs>(args: SelectSubset<T, CampaignFindUniqueArgs<ExtArgs>>): Prisma__CampaignClient<$Result.GetResult<Prisma.$CampaignPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Campaign that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {CampaignFindUniqueOrThrowArgs} args - Arguments to find a Campaign
+     * @example
+     * // Get one Campaign
+     * const campaign = await prisma.campaign.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CampaignFindUniqueOrThrowArgs>(args: SelectSubset<T, CampaignFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CampaignClient<$Result.GetResult<Prisma.$CampaignPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Campaign that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CampaignFindFirstArgs} args - Arguments to find a Campaign
+     * @example
+     * // Get one Campaign
+     * const campaign = await prisma.campaign.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CampaignFindFirstArgs>(args?: SelectSubset<T, CampaignFindFirstArgs<ExtArgs>>): Prisma__CampaignClient<$Result.GetResult<Prisma.$CampaignPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Campaign that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CampaignFindFirstOrThrowArgs} args - Arguments to find a Campaign
+     * @example
+     * // Get one Campaign
+     * const campaign = await prisma.campaign.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CampaignFindFirstOrThrowArgs>(args?: SelectSubset<T, CampaignFindFirstOrThrowArgs<ExtArgs>>): Prisma__CampaignClient<$Result.GetResult<Prisma.$CampaignPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Campaigns that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CampaignFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Campaigns
+     * const campaigns = await prisma.campaign.findMany()
+     * 
+     * // Get first 10 Campaigns
+     * const campaigns = await prisma.campaign.findMany({ take: 10 })
+     * 
+     * // Only select the `campaignId`
+     * const campaignWithCampaignIdOnly = await prisma.campaign.findMany({ select: { campaignId: true } })
+     * 
+     */
+    findMany<T extends CampaignFindManyArgs>(args?: SelectSubset<T, CampaignFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CampaignPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Campaign.
+     * @param {CampaignCreateArgs} args - Arguments to create a Campaign.
+     * @example
+     * // Create one Campaign
+     * const Campaign = await prisma.campaign.create({
+     *   data: {
+     *     // ... data to create a Campaign
+     *   }
+     * })
+     * 
+     */
+    create<T extends CampaignCreateArgs>(args: SelectSubset<T, CampaignCreateArgs<ExtArgs>>): Prisma__CampaignClient<$Result.GetResult<Prisma.$CampaignPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Campaigns.
+     * @param {CampaignCreateManyArgs} args - Arguments to create many Campaigns.
+     * @example
+     * // Create many Campaigns
+     * const campaign = await prisma.campaign.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CampaignCreateManyArgs>(args?: SelectSubset<T, CampaignCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Campaigns and returns the data saved in the database.
+     * @param {CampaignCreateManyAndReturnArgs} args - Arguments to create many Campaigns.
+     * @example
+     * // Create many Campaigns
+     * const campaign = await prisma.campaign.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Campaigns and only return the `campaignId`
+     * const campaignWithCampaignIdOnly = await prisma.campaign.createManyAndReturn({ 
+     *   select: { campaignId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CampaignCreateManyAndReturnArgs>(args?: SelectSubset<T, CampaignCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CampaignPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Campaign.
+     * @param {CampaignDeleteArgs} args - Arguments to delete one Campaign.
+     * @example
+     * // Delete one Campaign
+     * const Campaign = await prisma.campaign.delete({
+     *   where: {
+     *     // ... filter to delete one Campaign
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CampaignDeleteArgs>(args: SelectSubset<T, CampaignDeleteArgs<ExtArgs>>): Prisma__CampaignClient<$Result.GetResult<Prisma.$CampaignPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Campaign.
+     * @param {CampaignUpdateArgs} args - Arguments to update one Campaign.
+     * @example
+     * // Update one Campaign
+     * const campaign = await prisma.campaign.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CampaignUpdateArgs>(args: SelectSubset<T, CampaignUpdateArgs<ExtArgs>>): Prisma__CampaignClient<$Result.GetResult<Prisma.$CampaignPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Campaigns.
+     * @param {CampaignDeleteManyArgs} args - Arguments to filter Campaigns to delete.
+     * @example
+     * // Delete a few Campaigns
+     * const { count } = await prisma.campaign.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CampaignDeleteManyArgs>(args?: SelectSubset<T, CampaignDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Campaigns.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CampaignUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Campaigns
+     * const campaign = await prisma.campaign.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CampaignUpdateManyArgs>(args: SelectSubset<T, CampaignUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Campaign.
+     * @param {CampaignUpsertArgs} args - Arguments to update or create a Campaign.
+     * @example
+     * // Update or create a Campaign
+     * const campaign = await prisma.campaign.upsert({
+     *   create: {
+     *     // ... data to create a Campaign
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Campaign we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CampaignUpsertArgs>(args: SelectSubset<T, CampaignUpsertArgs<ExtArgs>>): Prisma__CampaignClient<$Result.GetResult<Prisma.$CampaignPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Campaigns.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CampaignCountArgs} args - Arguments to filter Campaigns to count.
+     * @example
+     * // Count the number of Campaigns
+     * const count = await prisma.campaign.count({
+     *   where: {
+     *     // ... the filter for the Campaigns we want to count
+     *   }
+     * })
+    **/
+    count<T extends CampaignCountArgs>(
+      args?: Subset<T, CampaignCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CampaignCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Campaign.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CampaignAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CampaignAggregateArgs>(args: Subset<T, CampaignAggregateArgs>): Prisma.PrismaPromise<GetCampaignAggregateType<T>>
+
+    /**
+     * Group by Campaign.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CampaignGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CampaignGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CampaignGroupByArgs['orderBy'] }
+        : { orderBy?: CampaignGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CampaignGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCampaignGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Campaign model
+   */
+  readonly fields: CampaignFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Campaign.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CampaignClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    company<T extends CompanyDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CompanyDefaultArgs<ExtArgs>>): Prisma__CompanyClient<$Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    campaignLeads<T extends Campaign$campaignLeadsArgs<ExtArgs> = {}>(args?: Subset<T, Campaign$campaignLeadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CampaignLeadPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Campaign model
+   */ 
+  interface CampaignFieldRefs {
+    readonly campaignId: FieldRef<"Campaign", 'String'>
+    readonly companyId: FieldRef<"Campaign", 'String'>
+    readonly name: FieldRef<"Campaign", 'String'>
+    readonly description: FieldRef<"Campaign", 'String'>
+    readonly channel: FieldRef<"Campaign", 'String'>
+    readonly status: FieldRef<"Campaign", 'String'>
+    readonly templateId: FieldRef<"Campaign", 'String'>
+    readonly subject: FieldRef<"Campaign", 'String'>
+    readonly body: FieldRef<"Campaign", 'String'>
+    readonly filters: FieldRef<"Campaign", 'Json'>
+    readonly scheduledAt: FieldRef<"Campaign", 'DateTime'>
+    readonly startedAt: FieldRef<"Campaign", 'DateTime'>
+    readonly completedAt: FieldRef<"Campaign", 'DateTime'>
+    readonly totalLeads: FieldRef<"Campaign", 'Int'>
+    readonly sentCount: FieldRef<"Campaign", 'Int'>
+    readonly deliveredCount: FieldRef<"Campaign", 'Int'>
+    readonly failedCount: FieldRef<"Campaign", 'Int'>
+    readonly createdById: FieldRef<"Campaign", 'String'>
+    readonly createdAt: FieldRef<"Campaign", 'DateTime'>
+    readonly updatedAt: FieldRef<"Campaign", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Campaign findUnique
+   */
+  export type CampaignFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Campaign
+     */
+    select?: CampaignSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignInclude<ExtArgs> | null
+    /**
+     * Filter, which Campaign to fetch.
+     */
+    where: CampaignWhereUniqueInput
+  }
+
+  /**
+   * Campaign findUniqueOrThrow
+   */
+  export type CampaignFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Campaign
+     */
+    select?: CampaignSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignInclude<ExtArgs> | null
+    /**
+     * Filter, which Campaign to fetch.
+     */
+    where: CampaignWhereUniqueInput
+  }
+
+  /**
+   * Campaign findFirst
+   */
+  export type CampaignFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Campaign
+     */
+    select?: CampaignSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignInclude<ExtArgs> | null
+    /**
+     * Filter, which Campaign to fetch.
+     */
+    where?: CampaignWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Campaigns to fetch.
+     */
+    orderBy?: CampaignOrderByWithRelationInput | CampaignOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Campaigns.
+     */
+    cursor?: CampaignWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Campaigns from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Campaigns.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Campaigns.
+     */
+    distinct?: CampaignScalarFieldEnum | CampaignScalarFieldEnum[]
+  }
+
+  /**
+   * Campaign findFirstOrThrow
+   */
+  export type CampaignFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Campaign
+     */
+    select?: CampaignSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignInclude<ExtArgs> | null
+    /**
+     * Filter, which Campaign to fetch.
+     */
+    where?: CampaignWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Campaigns to fetch.
+     */
+    orderBy?: CampaignOrderByWithRelationInput | CampaignOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Campaigns.
+     */
+    cursor?: CampaignWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Campaigns from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Campaigns.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Campaigns.
+     */
+    distinct?: CampaignScalarFieldEnum | CampaignScalarFieldEnum[]
+  }
+
+  /**
+   * Campaign findMany
+   */
+  export type CampaignFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Campaign
+     */
+    select?: CampaignSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignInclude<ExtArgs> | null
+    /**
+     * Filter, which Campaigns to fetch.
+     */
+    where?: CampaignWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Campaigns to fetch.
+     */
+    orderBy?: CampaignOrderByWithRelationInput | CampaignOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Campaigns.
+     */
+    cursor?: CampaignWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Campaigns from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Campaigns.
+     */
+    skip?: number
+    distinct?: CampaignScalarFieldEnum | CampaignScalarFieldEnum[]
+  }
+
+  /**
+   * Campaign create
+   */
+  export type CampaignCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Campaign
+     */
+    select?: CampaignSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Campaign.
+     */
+    data: XOR<CampaignCreateInput, CampaignUncheckedCreateInput>
+  }
+
+  /**
+   * Campaign createMany
+   */
+  export type CampaignCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Campaigns.
+     */
+    data: CampaignCreateManyInput | CampaignCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Campaign createManyAndReturn
+   */
+  export type CampaignCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Campaign
+     */
+    select?: CampaignSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many Campaigns.
+     */
+    data: CampaignCreateManyInput | CampaignCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Campaign update
+   */
+  export type CampaignUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Campaign
+     */
+    select?: CampaignSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Campaign.
+     */
+    data: XOR<CampaignUpdateInput, CampaignUncheckedUpdateInput>
+    /**
+     * Choose, which Campaign to update.
+     */
+    where: CampaignWhereUniqueInput
+  }
+
+  /**
+   * Campaign updateMany
+   */
+  export type CampaignUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Campaigns.
+     */
+    data: XOR<CampaignUpdateManyMutationInput, CampaignUncheckedUpdateManyInput>
+    /**
+     * Filter which Campaigns to update
+     */
+    where?: CampaignWhereInput
+  }
+
+  /**
+   * Campaign upsert
+   */
+  export type CampaignUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Campaign
+     */
+    select?: CampaignSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Campaign to update in case it exists.
+     */
+    where: CampaignWhereUniqueInput
+    /**
+     * In case the Campaign found by the `where` argument doesn't exist, create a new Campaign with this data.
+     */
+    create: XOR<CampaignCreateInput, CampaignUncheckedCreateInput>
+    /**
+     * In case the Campaign was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CampaignUpdateInput, CampaignUncheckedUpdateInput>
+  }
+
+  /**
+   * Campaign delete
+   */
+  export type CampaignDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Campaign
+     */
+    select?: CampaignSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignInclude<ExtArgs> | null
+    /**
+     * Filter which Campaign to delete.
+     */
+    where: CampaignWhereUniqueInput
+  }
+
+  /**
+   * Campaign deleteMany
+   */
+  export type CampaignDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Campaigns to delete
+     */
+    where?: CampaignWhereInput
+  }
+
+  /**
+   * Campaign.campaignLeads
+   */
+  export type Campaign$campaignLeadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CampaignLead
+     */
+    select?: CampaignLeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignLeadInclude<ExtArgs> | null
+    where?: CampaignLeadWhereInput
+    orderBy?: CampaignLeadOrderByWithRelationInput | CampaignLeadOrderByWithRelationInput[]
+    cursor?: CampaignLeadWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CampaignLeadScalarFieldEnum | CampaignLeadScalarFieldEnum[]
+  }
+
+  /**
+   * Campaign without action
+   */
+  export type CampaignDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Campaign
+     */
+    select?: CampaignSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model CampaignLead
+   */
+
+  export type AggregateCampaignLead = {
+    _count: CampaignLeadCountAggregateOutputType | null
+    _min: CampaignLeadMinAggregateOutputType | null
+    _max: CampaignLeadMaxAggregateOutputType | null
+  }
+
+  export type CampaignLeadMinAggregateOutputType = {
+    id: string | null
+    campaignId: string | null
+    leadId: string | null
+    status: string | null
+    sentAt: Date | null
+    deliveredAt: Date | null
+    error: string | null
+    createdAt: Date | null
+  }
+
+  export type CampaignLeadMaxAggregateOutputType = {
+    id: string | null
+    campaignId: string | null
+    leadId: string | null
+    status: string | null
+    sentAt: Date | null
+    deliveredAt: Date | null
+    error: string | null
+    createdAt: Date | null
+  }
+
+  export type CampaignLeadCountAggregateOutputType = {
+    id: number
+    campaignId: number
+    leadId: number
+    status: number
+    sentAt: number
+    deliveredAt: number
+    error: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type CampaignLeadMinAggregateInputType = {
+    id?: true
+    campaignId?: true
+    leadId?: true
+    status?: true
+    sentAt?: true
+    deliveredAt?: true
+    error?: true
+    createdAt?: true
+  }
+
+  export type CampaignLeadMaxAggregateInputType = {
+    id?: true
+    campaignId?: true
+    leadId?: true
+    status?: true
+    sentAt?: true
+    deliveredAt?: true
+    error?: true
+    createdAt?: true
+  }
+
+  export type CampaignLeadCountAggregateInputType = {
+    id?: true
+    campaignId?: true
+    leadId?: true
+    status?: true
+    sentAt?: true
+    deliveredAt?: true
+    error?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type CampaignLeadAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CampaignLead to aggregate.
+     */
+    where?: CampaignLeadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CampaignLeads to fetch.
+     */
+    orderBy?: CampaignLeadOrderByWithRelationInput | CampaignLeadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CampaignLeadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CampaignLeads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CampaignLeads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CampaignLeads
+    **/
+    _count?: true | CampaignLeadCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CampaignLeadMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CampaignLeadMaxAggregateInputType
+  }
+
+  export type GetCampaignLeadAggregateType<T extends CampaignLeadAggregateArgs> = {
+        [P in keyof T & keyof AggregateCampaignLead]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCampaignLead[P]>
+      : GetScalarType<T[P], AggregateCampaignLead[P]>
+  }
+
+
+
+
+  export type CampaignLeadGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CampaignLeadWhereInput
+    orderBy?: CampaignLeadOrderByWithAggregationInput | CampaignLeadOrderByWithAggregationInput[]
+    by: CampaignLeadScalarFieldEnum[] | CampaignLeadScalarFieldEnum
+    having?: CampaignLeadScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CampaignLeadCountAggregateInputType | true
+    _min?: CampaignLeadMinAggregateInputType
+    _max?: CampaignLeadMaxAggregateInputType
+  }
+
+  export type CampaignLeadGroupByOutputType = {
+    id: string
+    campaignId: string
+    leadId: string
+    status: string
+    sentAt: Date | null
+    deliveredAt: Date | null
+    error: string | null
+    createdAt: Date
+    _count: CampaignLeadCountAggregateOutputType | null
+    _min: CampaignLeadMinAggregateOutputType | null
+    _max: CampaignLeadMaxAggregateOutputType | null
+  }
+
+  type GetCampaignLeadGroupByPayload<T extends CampaignLeadGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CampaignLeadGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CampaignLeadGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CampaignLeadGroupByOutputType[P]>
+            : GetScalarType<T[P], CampaignLeadGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CampaignLeadSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    campaignId?: boolean
+    leadId?: boolean
+    status?: boolean
+    sentAt?: boolean
+    deliveredAt?: boolean
+    error?: boolean
+    createdAt?: boolean
+    campaign?: boolean | CampaignDefaultArgs<ExtArgs>
+    lead?: boolean | LeadDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["campaignLead"]>
+
+  export type CampaignLeadSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    campaignId?: boolean
+    leadId?: boolean
+    status?: boolean
+    sentAt?: boolean
+    deliveredAt?: boolean
+    error?: boolean
+    createdAt?: boolean
+    campaign?: boolean | CampaignDefaultArgs<ExtArgs>
+    lead?: boolean | LeadDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["campaignLead"]>
+
+  export type CampaignLeadSelectScalar = {
+    id?: boolean
+    campaignId?: boolean
+    leadId?: boolean
+    status?: boolean
+    sentAt?: boolean
+    deliveredAt?: boolean
+    error?: boolean
+    createdAt?: boolean
+  }
+
+  export type CampaignLeadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    campaign?: boolean | CampaignDefaultArgs<ExtArgs>
+    lead?: boolean | LeadDefaultArgs<ExtArgs>
+  }
+  export type CampaignLeadIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    campaign?: boolean | CampaignDefaultArgs<ExtArgs>
+    lead?: boolean | LeadDefaultArgs<ExtArgs>
+  }
+
+  export type $CampaignLeadPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CampaignLead"
+    objects: {
+      campaign: Prisma.$CampaignPayload<ExtArgs>
+      lead: Prisma.$LeadPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      campaignId: string
+      leadId: string
+      status: string
+      sentAt: Date | null
+      deliveredAt: Date | null
+      error: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["campaignLead"]>
+    composites: {}
+  }
+
+  type CampaignLeadGetPayload<S extends boolean | null | undefined | CampaignLeadDefaultArgs> = $Result.GetResult<Prisma.$CampaignLeadPayload, S>
+
+  type CampaignLeadCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<CampaignLeadFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: CampaignLeadCountAggregateInputType | true
+    }
+
+  export interface CampaignLeadDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CampaignLead'], meta: { name: 'CampaignLead' } }
+    /**
+     * Find zero or one CampaignLead that matches the filter.
+     * @param {CampaignLeadFindUniqueArgs} args - Arguments to find a CampaignLead
+     * @example
+     * // Get one CampaignLead
+     * const campaignLead = await prisma.campaignLead.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CampaignLeadFindUniqueArgs>(args: SelectSubset<T, CampaignLeadFindUniqueArgs<ExtArgs>>): Prisma__CampaignLeadClient<$Result.GetResult<Prisma.$CampaignLeadPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one CampaignLead that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {CampaignLeadFindUniqueOrThrowArgs} args - Arguments to find a CampaignLead
+     * @example
+     * // Get one CampaignLead
+     * const campaignLead = await prisma.campaignLead.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CampaignLeadFindUniqueOrThrowArgs>(args: SelectSubset<T, CampaignLeadFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CampaignLeadClient<$Result.GetResult<Prisma.$CampaignLeadPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first CampaignLead that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CampaignLeadFindFirstArgs} args - Arguments to find a CampaignLead
+     * @example
+     * // Get one CampaignLead
+     * const campaignLead = await prisma.campaignLead.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CampaignLeadFindFirstArgs>(args?: SelectSubset<T, CampaignLeadFindFirstArgs<ExtArgs>>): Prisma__CampaignLeadClient<$Result.GetResult<Prisma.$CampaignLeadPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first CampaignLead that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CampaignLeadFindFirstOrThrowArgs} args - Arguments to find a CampaignLead
+     * @example
+     * // Get one CampaignLead
+     * const campaignLead = await prisma.campaignLead.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CampaignLeadFindFirstOrThrowArgs>(args?: SelectSubset<T, CampaignLeadFindFirstOrThrowArgs<ExtArgs>>): Prisma__CampaignLeadClient<$Result.GetResult<Prisma.$CampaignLeadPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more CampaignLeads that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CampaignLeadFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CampaignLeads
+     * const campaignLeads = await prisma.campaignLead.findMany()
+     * 
+     * // Get first 10 CampaignLeads
+     * const campaignLeads = await prisma.campaignLead.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const campaignLeadWithIdOnly = await prisma.campaignLead.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CampaignLeadFindManyArgs>(args?: SelectSubset<T, CampaignLeadFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CampaignLeadPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a CampaignLead.
+     * @param {CampaignLeadCreateArgs} args - Arguments to create a CampaignLead.
+     * @example
+     * // Create one CampaignLead
+     * const CampaignLead = await prisma.campaignLead.create({
+     *   data: {
+     *     // ... data to create a CampaignLead
+     *   }
+     * })
+     * 
+     */
+    create<T extends CampaignLeadCreateArgs>(args: SelectSubset<T, CampaignLeadCreateArgs<ExtArgs>>): Prisma__CampaignLeadClient<$Result.GetResult<Prisma.$CampaignLeadPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many CampaignLeads.
+     * @param {CampaignLeadCreateManyArgs} args - Arguments to create many CampaignLeads.
+     * @example
+     * // Create many CampaignLeads
+     * const campaignLead = await prisma.campaignLead.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CampaignLeadCreateManyArgs>(args?: SelectSubset<T, CampaignLeadCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CampaignLeads and returns the data saved in the database.
+     * @param {CampaignLeadCreateManyAndReturnArgs} args - Arguments to create many CampaignLeads.
+     * @example
+     * // Create many CampaignLeads
+     * const campaignLead = await prisma.campaignLead.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CampaignLeads and only return the `id`
+     * const campaignLeadWithIdOnly = await prisma.campaignLead.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CampaignLeadCreateManyAndReturnArgs>(args?: SelectSubset<T, CampaignLeadCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CampaignLeadPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a CampaignLead.
+     * @param {CampaignLeadDeleteArgs} args - Arguments to delete one CampaignLead.
+     * @example
+     * // Delete one CampaignLead
+     * const CampaignLead = await prisma.campaignLead.delete({
+     *   where: {
+     *     // ... filter to delete one CampaignLead
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CampaignLeadDeleteArgs>(args: SelectSubset<T, CampaignLeadDeleteArgs<ExtArgs>>): Prisma__CampaignLeadClient<$Result.GetResult<Prisma.$CampaignLeadPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one CampaignLead.
+     * @param {CampaignLeadUpdateArgs} args - Arguments to update one CampaignLead.
+     * @example
+     * // Update one CampaignLead
+     * const campaignLead = await prisma.campaignLead.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CampaignLeadUpdateArgs>(args: SelectSubset<T, CampaignLeadUpdateArgs<ExtArgs>>): Prisma__CampaignLeadClient<$Result.GetResult<Prisma.$CampaignLeadPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more CampaignLeads.
+     * @param {CampaignLeadDeleteManyArgs} args - Arguments to filter CampaignLeads to delete.
+     * @example
+     * // Delete a few CampaignLeads
+     * const { count } = await prisma.campaignLead.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CampaignLeadDeleteManyArgs>(args?: SelectSubset<T, CampaignLeadDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CampaignLeads.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CampaignLeadUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CampaignLeads
+     * const campaignLead = await prisma.campaignLead.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CampaignLeadUpdateManyArgs>(args: SelectSubset<T, CampaignLeadUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one CampaignLead.
+     * @param {CampaignLeadUpsertArgs} args - Arguments to update or create a CampaignLead.
+     * @example
+     * // Update or create a CampaignLead
+     * const campaignLead = await prisma.campaignLead.upsert({
+     *   create: {
+     *     // ... data to create a CampaignLead
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CampaignLead we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CampaignLeadUpsertArgs>(args: SelectSubset<T, CampaignLeadUpsertArgs<ExtArgs>>): Prisma__CampaignLeadClient<$Result.GetResult<Prisma.$CampaignLeadPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of CampaignLeads.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CampaignLeadCountArgs} args - Arguments to filter CampaignLeads to count.
+     * @example
+     * // Count the number of CampaignLeads
+     * const count = await prisma.campaignLead.count({
+     *   where: {
+     *     // ... the filter for the CampaignLeads we want to count
+     *   }
+     * })
+    **/
+    count<T extends CampaignLeadCountArgs>(
+      args?: Subset<T, CampaignLeadCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CampaignLeadCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CampaignLead.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CampaignLeadAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CampaignLeadAggregateArgs>(args: Subset<T, CampaignLeadAggregateArgs>): Prisma.PrismaPromise<GetCampaignLeadAggregateType<T>>
+
+    /**
+     * Group by CampaignLead.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CampaignLeadGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CampaignLeadGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CampaignLeadGroupByArgs['orderBy'] }
+        : { orderBy?: CampaignLeadGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CampaignLeadGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCampaignLeadGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CampaignLead model
+   */
+  readonly fields: CampaignLeadFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CampaignLead.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CampaignLeadClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    campaign<T extends CampaignDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CampaignDefaultArgs<ExtArgs>>): Prisma__CampaignClient<$Result.GetResult<Prisma.$CampaignPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    lead<T extends LeadDefaultArgs<ExtArgs> = {}>(args?: Subset<T, LeadDefaultArgs<ExtArgs>>): Prisma__LeadClient<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CampaignLead model
+   */ 
+  interface CampaignLeadFieldRefs {
+    readonly id: FieldRef<"CampaignLead", 'String'>
+    readonly campaignId: FieldRef<"CampaignLead", 'String'>
+    readonly leadId: FieldRef<"CampaignLead", 'String'>
+    readonly status: FieldRef<"CampaignLead", 'String'>
+    readonly sentAt: FieldRef<"CampaignLead", 'DateTime'>
+    readonly deliveredAt: FieldRef<"CampaignLead", 'DateTime'>
+    readonly error: FieldRef<"CampaignLead", 'String'>
+    readonly createdAt: FieldRef<"CampaignLead", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CampaignLead findUnique
+   */
+  export type CampaignLeadFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CampaignLead
+     */
+    select?: CampaignLeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignLeadInclude<ExtArgs> | null
+    /**
+     * Filter, which CampaignLead to fetch.
+     */
+    where: CampaignLeadWhereUniqueInput
+  }
+
+  /**
+   * CampaignLead findUniqueOrThrow
+   */
+  export type CampaignLeadFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CampaignLead
+     */
+    select?: CampaignLeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignLeadInclude<ExtArgs> | null
+    /**
+     * Filter, which CampaignLead to fetch.
+     */
+    where: CampaignLeadWhereUniqueInput
+  }
+
+  /**
+   * CampaignLead findFirst
+   */
+  export type CampaignLeadFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CampaignLead
+     */
+    select?: CampaignLeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignLeadInclude<ExtArgs> | null
+    /**
+     * Filter, which CampaignLead to fetch.
+     */
+    where?: CampaignLeadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CampaignLeads to fetch.
+     */
+    orderBy?: CampaignLeadOrderByWithRelationInput | CampaignLeadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CampaignLeads.
+     */
+    cursor?: CampaignLeadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CampaignLeads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CampaignLeads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CampaignLeads.
+     */
+    distinct?: CampaignLeadScalarFieldEnum | CampaignLeadScalarFieldEnum[]
+  }
+
+  /**
+   * CampaignLead findFirstOrThrow
+   */
+  export type CampaignLeadFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CampaignLead
+     */
+    select?: CampaignLeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignLeadInclude<ExtArgs> | null
+    /**
+     * Filter, which CampaignLead to fetch.
+     */
+    where?: CampaignLeadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CampaignLeads to fetch.
+     */
+    orderBy?: CampaignLeadOrderByWithRelationInput | CampaignLeadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CampaignLeads.
+     */
+    cursor?: CampaignLeadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CampaignLeads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CampaignLeads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CampaignLeads.
+     */
+    distinct?: CampaignLeadScalarFieldEnum | CampaignLeadScalarFieldEnum[]
+  }
+
+  /**
+   * CampaignLead findMany
+   */
+  export type CampaignLeadFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CampaignLead
+     */
+    select?: CampaignLeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignLeadInclude<ExtArgs> | null
+    /**
+     * Filter, which CampaignLeads to fetch.
+     */
+    where?: CampaignLeadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CampaignLeads to fetch.
+     */
+    orderBy?: CampaignLeadOrderByWithRelationInput | CampaignLeadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CampaignLeads.
+     */
+    cursor?: CampaignLeadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CampaignLeads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CampaignLeads.
+     */
+    skip?: number
+    distinct?: CampaignLeadScalarFieldEnum | CampaignLeadScalarFieldEnum[]
+  }
+
+  /**
+   * CampaignLead create
+   */
+  export type CampaignLeadCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CampaignLead
+     */
+    select?: CampaignLeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignLeadInclude<ExtArgs> | null
+    /**
+     * The data needed to create a CampaignLead.
+     */
+    data: XOR<CampaignLeadCreateInput, CampaignLeadUncheckedCreateInput>
+  }
+
+  /**
+   * CampaignLead createMany
+   */
+  export type CampaignLeadCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CampaignLeads.
+     */
+    data: CampaignLeadCreateManyInput | CampaignLeadCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CampaignLead createManyAndReturn
+   */
+  export type CampaignLeadCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CampaignLead
+     */
+    select?: CampaignLeadSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many CampaignLeads.
+     */
+    data: CampaignLeadCreateManyInput | CampaignLeadCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignLeadIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CampaignLead update
+   */
+  export type CampaignLeadUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CampaignLead
+     */
+    select?: CampaignLeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignLeadInclude<ExtArgs> | null
+    /**
+     * The data needed to update a CampaignLead.
+     */
+    data: XOR<CampaignLeadUpdateInput, CampaignLeadUncheckedUpdateInput>
+    /**
+     * Choose, which CampaignLead to update.
+     */
+    where: CampaignLeadWhereUniqueInput
+  }
+
+  /**
+   * CampaignLead updateMany
+   */
+  export type CampaignLeadUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CampaignLeads.
+     */
+    data: XOR<CampaignLeadUpdateManyMutationInput, CampaignLeadUncheckedUpdateManyInput>
+    /**
+     * Filter which CampaignLeads to update
+     */
+    where?: CampaignLeadWhereInput
+  }
+
+  /**
+   * CampaignLead upsert
+   */
+  export type CampaignLeadUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CampaignLead
+     */
+    select?: CampaignLeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignLeadInclude<ExtArgs> | null
+    /**
+     * The filter to search for the CampaignLead to update in case it exists.
+     */
+    where: CampaignLeadWhereUniqueInput
+    /**
+     * In case the CampaignLead found by the `where` argument doesn't exist, create a new CampaignLead with this data.
+     */
+    create: XOR<CampaignLeadCreateInput, CampaignLeadUncheckedCreateInput>
+    /**
+     * In case the CampaignLead was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CampaignLeadUpdateInput, CampaignLeadUncheckedUpdateInput>
+  }
+
+  /**
+   * CampaignLead delete
+   */
+  export type CampaignLeadDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CampaignLead
+     */
+    select?: CampaignLeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignLeadInclude<ExtArgs> | null
+    /**
+     * Filter which CampaignLead to delete.
+     */
+    where: CampaignLeadWhereUniqueInput
+  }
+
+  /**
+   * CampaignLead deleteMany
+   */
+  export type CampaignLeadDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CampaignLeads to delete
+     */
+    where?: CampaignLeadWhereInput
+  }
+
+  /**
+   * CampaignLead without action
+   */
+  export type CampaignLeadDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CampaignLead
+     */
+    select?: CampaignLeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CampaignLeadInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -13299,7 +21644,9 @@ export namespace Prisma {
     nextFollowUpAt: 'nextFollowUpAt',
     isDeleted: 'isDeleted',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    country: 'country',
+    service: 'service'
   };
 
   export type LeadScalarFieldEnum = (typeof LeadScalarFieldEnum)[keyof typeof LeadScalarFieldEnum]
@@ -13439,6 +21786,136 @@ export namespace Prisma {
   };
 
   export type WebhookScalarFieldEnum = (typeof WebhookScalarFieldEnum)[keyof typeof WebhookScalarFieldEnum]
+
+
+  export const MessageTemplateScalarFieldEnum: {
+    templateId: 'templateId',
+    companyId: 'companyId',
+    name: 'name',
+    category: 'category',
+    channel: 'channel',
+    subject: 'subject',
+    body: 'body',
+    variables: 'variables',
+    isActive: 'isActive',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type MessageTemplateScalarFieldEnum = (typeof MessageTemplateScalarFieldEnum)[keyof typeof MessageTemplateScalarFieldEnum]
+
+
+  export const AutomationRuleScalarFieldEnum: {
+    ruleId: 'ruleId',
+    companyId: 'companyId',
+    name: 'name',
+    isActive: 'isActive',
+    trigger: 'trigger',
+    triggerValue: 'triggerValue',
+    channel: 'channel',
+    templateId: 'templateId',
+    delayMinutes: 'delayMinutes',
+    conditions: 'conditions',
+    executionCount: 'executionCount',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type AutomationRuleScalarFieldEnum = (typeof AutomationRuleScalarFieldEnum)[keyof typeof AutomationRuleScalarFieldEnum]
+
+
+  export const AutomationJobScalarFieldEnum: {
+    jobId: 'jobId',
+    ruleId: 'ruleId',
+    leadId: 'leadId',
+    companyId: 'companyId',
+    status: 'status',
+    scheduledAt: 'scheduledAt',
+    executedAt: 'executedAt',
+    error: 'error',
+    createdAt: 'createdAt'
+  };
+
+  export type AutomationJobScalarFieldEnum = (typeof AutomationJobScalarFieldEnum)[keyof typeof AutomationJobScalarFieldEnum]
+
+
+  export const CommunicationScalarFieldEnum: {
+    commId: 'commId',
+    companyId: 'companyId',
+    leadId: 'leadId',
+    channel: 'channel',
+    direction: 'direction',
+    status: 'status',
+    fromNumber: 'fromNumber',
+    toNumber: 'toNumber',
+    templateId: 'templateId',
+    subject: 'subject',
+    body: 'body',
+    watiMessageId: 'watiMessageId',
+    metadata: 'metadata',
+    sentAt: 'sentAt',
+    deliveredAt: 'deliveredAt',
+    readAt: 'readAt',
+    userId: 'userId',
+    createdAt: 'createdAt'
+  };
+
+  export type CommunicationScalarFieldEnum = (typeof CommunicationScalarFieldEnum)[keyof typeof CommunicationScalarFieldEnum]
+
+
+  export const AutoReplyRuleScalarFieldEnum: {
+    replyRuleId: 'replyRuleId',
+    companyId: 'companyId',
+    keyword: 'keyword',
+    matchType: 'matchType',
+    replyBody: 'replyBody',
+    isActive: 'isActive',
+    priority: 'priority',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type AutoReplyRuleScalarFieldEnum = (typeof AutoReplyRuleScalarFieldEnum)[keyof typeof AutoReplyRuleScalarFieldEnum]
+
+
+  export const CampaignScalarFieldEnum: {
+    campaignId: 'campaignId',
+    companyId: 'companyId',
+    name: 'name',
+    description: 'description',
+    channel: 'channel',
+    status: 'status',
+    templateId: 'templateId',
+    subject: 'subject',
+    body: 'body',
+    filters: 'filters',
+    scheduledAt: 'scheduledAt',
+    startedAt: 'startedAt',
+    completedAt: 'completedAt',
+    totalLeads: 'totalLeads',
+    sentCount: 'sentCount',
+    deliveredCount: 'deliveredCount',
+    failedCount: 'failedCount',
+    createdById: 'createdById',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type CampaignScalarFieldEnum = (typeof CampaignScalarFieldEnum)[keyof typeof CampaignScalarFieldEnum]
+
+
+  export const CampaignLeadScalarFieldEnum: {
+    id: 'id',
+    campaignId: 'campaignId',
+    leadId: 'leadId',
+    status: 'status',
+    sentAt: 'sentAt',
+    deliveredAt: 'deliveredAt',
+    error: 'error',
+    createdAt: 'createdAt'
+  };
+
+  export type CampaignLeadScalarFieldEnum = (typeof CampaignLeadScalarFieldEnum)[keyof typeof CampaignLeadScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -13626,6 +22103,10 @@ export namespace Prisma {
     invoices?: InvoiceListRelationFilter
     webhooks?: WebhookListRelationFilter
     clients?: ClientListRelationFilter
+    messageTemplates?: MessageTemplateListRelationFilter
+    automationRules?: AutomationRuleListRelationFilter
+    campaigns?: CampaignListRelationFilter
+    autoReplyRules?: AutoReplyRuleListRelationFilter
   }
 
   export type CompanyOrderByWithRelationInput = {
@@ -13656,6 +22137,10 @@ export namespace Prisma {
     invoices?: InvoiceOrderByRelationAggregateInput
     webhooks?: WebhookOrderByRelationAggregateInput
     clients?: ClientOrderByRelationAggregateInput
+    messageTemplates?: MessageTemplateOrderByRelationAggregateInput
+    automationRules?: AutomationRuleOrderByRelationAggregateInput
+    campaigns?: CampaignOrderByRelationAggregateInput
+    autoReplyRules?: AutoReplyRuleOrderByRelationAggregateInput
   }
 
   export type CompanyWhereUniqueInput = Prisma.AtLeast<{
@@ -13689,6 +22174,10 @@ export namespace Prisma {
     invoices?: InvoiceListRelationFilter
     webhooks?: WebhookListRelationFilter
     clients?: ClientListRelationFilter
+    messageTemplates?: MessageTemplateListRelationFilter
+    automationRules?: AutomationRuleListRelationFilter
+    campaigns?: CampaignListRelationFilter
+    autoReplyRules?: AutoReplyRuleListRelationFilter
   }, "companyId" | "slug" | "apiKey">
 
   export type CompanyOrderByWithAggregationInput = {
@@ -13944,12 +22433,16 @@ export namespace Prisma {
     isDeleted?: BoolFilter<"Lead"> | boolean
     createdAt?: DateTimeFilter<"Lead"> | Date | string
     updatedAt?: DateTimeFilter<"Lead"> | Date | string
+    country?: StringNullableFilter<"Lead"> | string | null
+    service?: StringNullableFilter<"Lead"> | string | null
     company?: XOR<CompanyRelationFilter, CompanyWhereInput>
     assignedTo?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     activities?: ActivityListRelationFilter
     deals?: DealListRelationFilter
     quotations?: QuotationListRelationFilter
     invoices?: InvoiceListRelationFilter
+    communications?: CommunicationListRelationFilter
+    campaignLeads?: CampaignLeadListRelationFilter
   }
 
   export type LeadOrderByWithRelationInput = {
@@ -13976,12 +22469,16 @@ export namespace Prisma {
     isDeleted?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    country?: SortOrderInput | SortOrder
+    service?: SortOrderInput | SortOrder
     company?: CompanyOrderByWithRelationInput
     assignedTo?: UserOrderByWithRelationInput
     activities?: ActivityOrderByRelationAggregateInput
     deals?: DealOrderByRelationAggregateInput
     quotations?: QuotationOrderByRelationAggregateInput
     invoices?: InvoiceOrderByRelationAggregateInput
+    communications?: CommunicationOrderByRelationAggregateInput
+    campaignLeads?: CampaignLeadOrderByRelationAggregateInput
   }
 
   export type LeadWhereUniqueInput = Prisma.AtLeast<{
@@ -14012,12 +22509,16 @@ export namespace Prisma {
     isDeleted?: BoolFilter<"Lead"> | boolean
     createdAt?: DateTimeFilter<"Lead"> | Date | string
     updatedAt?: DateTimeFilter<"Lead"> | Date | string
+    country?: StringNullableFilter<"Lead"> | string | null
+    service?: StringNullableFilter<"Lead"> | string | null
     company?: XOR<CompanyRelationFilter, CompanyWhereInput>
     assignedTo?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     activities?: ActivityListRelationFilter
     deals?: DealListRelationFilter
     quotations?: QuotationListRelationFilter
     invoices?: InvoiceListRelationFilter
+    communications?: CommunicationListRelationFilter
+    campaignLeads?: CampaignLeadListRelationFilter
   }, "leadId" | "companyId_email">
 
   export type LeadOrderByWithAggregationInput = {
@@ -14044,6 +22545,8 @@ export namespace Prisma {
     isDeleted?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    country?: SortOrderInput | SortOrder
+    service?: SortOrderInput | SortOrder
     _count?: LeadCountOrderByAggregateInput
     _avg?: LeadAvgOrderByAggregateInput
     _max?: LeadMaxOrderByAggregateInput
@@ -14078,6 +22581,8 @@ export namespace Prisma {
     isDeleted?: BoolWithAggregatesFilter<"Lead"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Lead"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Lead"> | Date | string
+    country?: StringNullableWithAggregatesFilter<"Lead"> | string | null
+    service?: StringNullableWithAggregatesFilter<"Lead"> | string | null
   }
 
   export type ActivityWhereInput = {
@@ -14784,6 +23289,684 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Webhook"> | Date | string
   }
 
+  export type MessageTemplateWhereInput = {
+    AND?: MessageTemplateWhereInput | MessageTemplateWhereInput[]
+    OR?: MessageTemplateWhereInput[]
+    NOT?: MessageTemplateWhereInput | MessageTemplateWhereInput[]
+    templateId?: StringFilter<"MessageTemplate"> | string
+    companyId?: StringFilter<"MessageTemplate"> | string
+    name?: StringFilter<"MessageTemplate"> | string
+    category?: StringFilter<"MessageTemplate"> | string
+    channel?: StringFilter<"MessageTemplate"> | string
+    subject?: StringNullableFilter<"MessageTemplate"> | string | null
+    body?: StringFilter<"MessageTemplate"> | string
+    variables?: StringNullableListFilter<"MessageTemplate">
+    isActive?: BoolFilter<"MessageTemplate"> | boolean
+    createdAt?: DateTimeFilter<"MessageTemplate"> | Date | string
+    updatedAt?: DateTimeFilter<"MessageTemplate"> | Date | string
+    company?: XOR<CompanyRelationFilter, CompanyWhereInput>
+    automationRules?: AutomationRuleListRelationFilter
+    communications?: CommunicationListRelationFilter
+  }
+
+  export type MessageTemplateOrderByWithRelationInput = {
+    templateId?: SortOrder
+    companyId?: SortOrder
+    name?: SortOrder
+    category?: SortOrder
+    channel?: SortOrder
+    subject?: SortOrderInput | SortOrder
+    body?: SortOrder
+    variables?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    company?: CompanyOrderByWithRelationInput
+    automationRules?: AutomationRuleOrderByRelationAggregateInput
+    communications?: CommunicationOrderByRelationAggregateInput
+  }
+
+  export type MessageTemplateWhereUniqueInput = Prisma.AtLeast<{
+    templateId?: string
+    AND?: MessageTemplateWhereInput | MessageTemplateWhereInput[]
+    OR?: MessageTemplateWhereInput[]
+    NOT?: MessageTemplateWhereInput | MessageTemplateWhereInput[]
+    companyId?: StringFilter<"MessageTemplate"> | string
+    name?: StringFilter<"MessageTemplate"> | string
+    category?: StringFilter<"MessageTemplate"> | string
+    channel?: StringFilter<"MessageTemplate"> | string
+    subject?: StringNullableFilter<"MessageTemplate"> | string | null
+    body?: StringFilter<"MessageTemplate"> | string
+    variables?: StringNullableListFilter<"MessageTemplate">
+    isActive?: BoolFilter<"MessageTemplate"> | boolean
+    createdAt?: DateTimeFilter<"MessageTemplate"> | Date | string
+    updatedAt?: DateTimeFilter<"MessageTemplate"> | Date | string
+    company?: XOR<CompanyRelationFilter, CompanyWhereInput>
+    automationRules?: AutomationRuleListRelationFilter
+    communications?: CommunicationListRelationFilter
+  }, "templateId">
+
+  export type MessageTemplateOrderByWithAggregationInput = {
+    templateId?: SortOrder
+    companyId?: SortOrder
+    name?: SortOrder
+    category?: SortOrder
+    channel?: SortOrder
+    subject?: SortOrderInput | SortOrder
+    body?: SortOrder
+    variables?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: MessageTemplateCountOrderByAggregateInput
+    _max?: MessageTemplateMaxOrderByAggregateInput
+    _min?: MessageTemplateMinOrderByAggregateInput
+  }
+
+  export type MessageTemplateScalarWhereWithAggregatesInput = {
+    AND?: MessageTemplateScalarWhereWithAggregatesInput | MessageTemplateScalarWhereWithAggregatesInput[]
+    OR?: MessageTemplateScalarWhereWithAggregatesInput[]
+    NOT?: MessageTemplateScalarWhereWithAggregatesInput | MessageTemplateScalarWhereWithAggregatesInput[]
+    templateId?: StringWithAggregatesFilter<"MessageTemplate"> | string
+    companyId?: StringWithAggregatesFilter<"MessageTemplate"> | string
+    name?: StringWithAggregatesFilter<"MessageTemplate"> | string
+    category?: StringWithAggregatesFilter<"MessageTemplate"> | string
+    channel?: StringWithAggregatesFilter<"MessageTemplate"> | string
+    subject?: StringNullableWithAggregatesFilter<"MessageTemplate"> | string | null
+    body?: StringWithAggregatesFilter<"MessageTemplate"> | string
+    variables?: StringNullableListFilter<"MessageTemplate">
+    isActive?: BoolWithAggregatesFilter<"MessageTemplate"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"MessageTemplate"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"MessageTemplate"> | Date | string
+  }
+
+  export type AutomationRuleWhereInput = {
+    AND?: AutomationRuleWhereInput | AutomationRuleWhereInput[]
+    OR?: AutomationRuleWhereInput[]
+    NOT?: AutomationRuleWhereInput | AutomationRuleWhereInput[]
+    ruleId?: StringFilter<"AutomationRule"> | string
+    companyId?: StringFilter<"AutomationRule"> | string
+    name?: StringFilter<"AutomationRule"> | string
+    isActive?: BoolFilter<"AutomationRule"> | boolean
+    trigger?: StringFilter<"AutomationRule"> | string
+    triggerValue?: StringNullableFilter<"AutomationRule"> | string | null
+    channel?: StringFilter<"AutomationRule"> | string
+    templateId?: StringFilter<"AutomationRule"> | string
+    delayMinutes?: IntFilter<"AutomationRule"> | number
+    conditions?: JsonNullableFilter<"AutomationRule">
+    executionCount?: IntFilter<"AutomationRule"> | number
+    createdAt?: DateTimeFilter<"AutomationRule"> | Date | string
+    updatedAt?: DateTimeFilter<"AutomationRule"> | Date | string
+    company?: XOR<CompanyRelationFilter, CompanyWhereInput>
+    template?: XOR<MessageTemplateRelationFilter, MessageTemplateWhereInput>
+    jobs?: AutomationJobListRelationFilter
+  }
+
+  export type AutomationRuleOrderByWithRelationInput = {
+    ruleId?: SortOrder
+    companyId?: SortOrder
+    name?: SortOrder
+    isActive?: SortOrder
+    trigger?: SortOrder
+    triggerValue?: SortOrderInput | SortOrder
+    channel?: SortOrder
+    templateId?: SortOrder
+    delayMinutes?: SortOrder
+    conditions?: SortOrderInput | SortOrder
+    executionCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    company?: CompanyOrderByWithRelationInput
+    template?: MessageTemplateOrderByWithRelationInput
+    jobs?: AutomationJobOrderByRelationAggregateInput
+  }
+
+  export type AutomationRuleWhereUniqueInput = Prisma.AtLeast<{
+    ruleId?: string
+    AND?: AutomationRuleWhereInput | AutomationRuleWhereInput[]
+    OR?: AutomationRuleWhereInput[]
+    NOT?: AutomationRuleWhereInput | AutomationRuleWhereInput[]
+    companyId?: StringFilter<"AutomationRule"> | string
+    name?: StringFilter<"AutomationRule"> | string
+    isActive?: BoolFilter<"AutomationRule"> | boolean
+    trigger?: StringFilter<"AutomationRule"> | string
+    triggerValue?: StringNullableFilter<"AutomationRule"> | string | null
+    channel?: StringFilter<"AutomationRule"> | string
+    templateId?: StringFilter<"AutomationRule"> | string
+    delayMinutes?: IntFilter<"AutomationRule"> | number
+    conditions?: JsonNullableFilter<"AutomationRule">
+    executionCount?: IntFilter<"AutomationRule"> | number
+    createdAt?: DateTimeFilter<"AutomationRule"> | Date | string
+    updatedAt?: DateTimeFilter<"AutomationRule"> | Date | string
+    company?: XOR<CompanyRelationFilter, CompanyWhereInput>
+    template?: XOR<MessageTemplateRelationFilter, MessageTemplateWhereInput>
+    jobs?: AutomationJobListRelationFilter
+  }, "ruleId">
+
+  export type AutomationRuleOrderByWithAggregationInput = {
+    ruleId?: SortOrder
+    companyId?: SortOrder
+    name?: SortOrder
+    isActive?: SortOrder
+    trigger?: SortOrder
+    triggerValue?: SortOrderInput | SortOrder
+    channel?: SortOrder
+    templateId?: SortOrder
+    delayMinutes?: SortOrder
+    conditions?: SortOrderInput | SortOrder
+    executionCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: AutomationRuleCountOrderByAggregateInput
+    _avg?: AutomationRuleAvgOrderByAggregateInput
+    _max?: AutomationRuleMaxOrderByAggregateInput
+    _min?: AutomationRuleMinOrderByAggregateInput
+    _sum?: AutomationRuleSumOrderByAggregateInput
+  }
+
+  export type AutomationRuleScalarWhereWithAggregatesInput = {
+    AND?: AutomationRuleScalarWhereWithAggregatesInput | AutomationRuleScalarWhereWithAggregatesInput[]
+    OR?: AutomationRuleScalarWhereWithAggregatesInput[]
+    NOT?: AutomationRuleScalarWhereWithAggregatesInput | AutomationRuleScalarWhereWithAggregatesInput[]
+    ruleId?: StringWithAggregatesFilter<"AutomationRule"> | string
+    companyId?: StringWithAggregatesFilter<"AutomationRule"> | string
+    name?: StringWithAggregatesFilter<"AutomationRule"> | string
+    isActive?: BoolWithAggregatesFilter<"AutomationRule"> | boolean
+    trigger?: StringWithAggregatesFilter<"AutomationRule"> | string
+    triggerValue?: StringNullableWithAggregatesFilter<"AutomationRule"> | string | null
+    channel?: StringWithAggregatesFilter<"AutomationRule"> | string
+    templateId?: StringWithAggregatesFilter<"AutomationRule"> | string
+    delayMinutes?: IntWithAggregatesFilter<"AutomationRule"> | number
+    conditions?: JsonNullableWithAggregatesFilter<"AutomationRule">
+    executionCount?: IntWithAggregatesFilter<"AutomationRule"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"AutomationRule"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"AutomationRule"> | Date | string
+  }
+
+  export type AutomationJobWhereInput = {
+    AND?: AutomationJobWhereInput | AutomationJobWhereInput[]
+    OR?: AutomationJobWhereInput[]
+    NOT?: AutomationJobWhereInput | AutomationJobWhereInput[]
+    jobId?: StringFilter<"AutomationJob"> | string
+    ruleId?: StringFilter<"AutomationJob"> | string
+    leadId?: StringFilter<"AutomationJob"> | string
+    companyId?: StringFilter<"AutomationJob"> | string
+    status?: StringFilter<"AutomationJob"> | string
+    scheduledAt?: DateTimeFilter<"AutomationJob"> | Date | string
+    executedAt?: DateTimeNullableFilter<"AutomationJob"> | Date | string | null
+    error?: StringNullableFilter<"AutomationJob"> | string | null
+    createdAt?: DateTimeFilter<"AutomationJob"> | Date | string
+    rule?: XOR<AutomationRuleRelationFilter, AutomationRuleWhereInput>
+  }
+
+  export type AutomationJobOrderByWithRelationInput = {
+    jobId?: SortOrder
+    ruleId?: SortOrder
+    leadId?: SortOrder
+    companyId?: SortOrder
+    status?: SortOrder
+    scheduledAt?: SortOrder
+    executedAt?: SortOrderInput | SortOrder
+    error?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    rule?: AutomationRuleOrderByWithRelationInput
+  }
+
+  export type AutomationJobWhereUniqueInput = Prisma.AtLeast<{
+    jobId?: string
+    AND?: AutomationJobWhereInput | AutomationJobWhereInput[]
+    OR?: AutomationJobWhereInput[]
+    NOT?: AutomationJobWhereInput | AutomationJobWhereInput[]
+    ruleId?: StringFilter<"AutomationJob"> | string
+    leadId?: StringFilter<"AutomationJob"> | string
+    companyId?: StringFilter<"AutomationJob"> | string
+    status?: StringFilter<"AutomationJob"> | string
+    scheduledAt?: DateTimeFilter<"AutomationJob"> | Date | string
+    executedAt?: DateTimeNullableFilter<"AutomationJob"> | Date | string | null
+    error?: StringNullableFilter<"AutomationJob"> | string | null
+    createdAt?: DateTimeFilter<"AutomationJob"> | Date | string
+    rule?: XOR<AutomationRuleRelationFilter, AutomationRuleWhereInput>
+  }, "jobId">
+
+  export type AutomationJobOrderByWithAggregationInput = {
+    jobId?: SortOrder
+    ruleId?: SortOrder
+    leadId?: SortOrder
+    companyId?: SortOrder
+    status?: SortOrder
+    scheduledAt?: SortOrder
+    executedAt?: SortOrderInput | SortOrder
+    error?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: AutomationJobCountOrderByAggregateInput
+    _max?: AutomationJobMaxOrderByAggregateInput
+    _min?: AutomationJobMinOrderByAggregateInput
+  }
+
+  export type AutomationJobScalarWhereWithAggregatesInput = {
+    AND?: AutomationJobScalarWhereWithAggregatesInput | AutomationJobScalarWhereWithAggregatesInput[]
+    OR?: AutomationJobScalarWhereWithAggregatesInput[]
+    NOT?: AutomationJobScalarWhereWithAggregatesInput | AutomationJobScalarWhereWithAggregatesInput[]
+    jobId?: StringWithAggregatesFilter<"AutomationJob"> | string
+    ruleId?: StringWithAggregatesFilter<"AutomationJob"> | string
+    leadId?: StringWithAggregatesFilter<"AutomationJob"> | string
+    companyId?: StringWithAggregatesFilter<"AutomationJob"> | string
+    status?: StringWithAggregatesFilter<"AutomationJob"> | string
+    scheduledAt?: DateTimeWithAggregatesFilter<"AutomationJob"> | Date | string
+    executedAt?: DateTimeNullableWithAggregatesFilter<"AutomationJob"> | Date | string | null
+    error?: StringNullableWithAggregatesFilter<"AutomationJob"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"AutomationJob"> | Date | string
+  }
+
+  export type CommunicationWhereInput = {
+    AND?: CommunicationWhereInput | CommunicationWhereInput[]
+    OR?: CommunicationWhereInput[]
+    NOT?: CommunicationWhereInput | CommunicationWhereInput[]
+    commId?: StringFilter<"Communication"> | string
+    companyId?: StringFilter<"Communication"> | string
+    leadId?: StringNullableFilter<"Communication"> | string | null
+    channel?: StringFilter<"Communication"> | string
+    direction?: StringFilter<"Communication"> | string
+    status?: StringFilter<"Communication"> | string
+    fromNumber?: StringNullableFilter<"Communication"> | string | null
+    toNumber?: StringNullableFilter<"Communication"> | string | null
+    templateId?: StringNullableFilter<"Communication"> | string | null
+    subject?: StringNullableFilter<"Communication"> | string | null
+    body?: StringFilter<"Communication"> | string
+    watiMessageId?: StringNullableFilter<"Communication"> | string | null
+    metadata?: JsonNullableFilter<"Communication">
+    sentAt?: DateTimeNullableFilter<"Communication"> | Date | string | null
+    deliveredAt?: DateTimeNullableFilter<"Communication"> | Date | string | null
+    readAt?: DateTimeNullableFilter<"Communication"> | Date | string | null
+    userId?: StringNullableFilter<"Communication"> | string | null
+    createdAt?: DateTimeFilter<"Communication"> | Date | string
+    lead?: XOR<LeadNullableRelationFilter, LeadWhereInput> | null
+    template?: XOR<MessageTemplateNullableRelationFilter, MessageTemplateWhereInput> | null
+  }
+
+  export type CommunicationOrderByWithRelationInput = {
+    commId?: SortOrder
+    companyId?: SortOrder
+    leadId?: SortOrderInput | SortOrder
+    channel?: SortOrder
+    direction?: SortOrder
+    status?: SortOrder
+    fromNumber?: SortOrderInput | SortOrder
+    toNumber?: SortOrderInput | SortOrder
+    templateId?: SortOrderInput | SortOrder
+    subject?: SortOrderInput | SortOrder
+    body?: SortOrder
+    watiMessageId?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    sentAt?: SortOrderInput | SortOrder
+    deliveredAt?: SortOrderInput | SortOrder
+    readAt?: SortOrderInput | SortOrder
+    userId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    lead?: LeadOrderByWithRelationInput
+    template?: MessageTemplateOrderByWithRelationInput
+  }
+
+  export type CommunicationWhereUniqueInput = Prisma.AtLeast<{
+    commId?: string
+    AND?: CommunicationWhereInput | CommunicationWhereInput[]
+    OR?: CommunicationWhereInput[]
+    NOT?: CommunicationWhereInput | CommunicationWhereInput[]
+    companyId?: StringFilter<"Communication"> | string
+    leadId?: StringNullableFilter<"Communication"> | string | null
+    channel?: StringFilter<"Communication"> | string
+    direction?: StringFilter<"Communication"> | string
+    status?: StringFilter<"Communication"> | string
+    fromNumber?: StringNullableFilter<"Communication"> | string | null
+    toNumber?: StringNullableFilter<"Communication"> | string | null
+    templateId?: StringNullableFilter<"Communication"> | string | null
+    subject?: StringNullableFilter<"Communication"> | string | null
+    body?: StringFilter<"Communication"> | string
+    watiMessageId?: StringNullableFilter<"Communication"> | string | null
+    metadata?: JsonNullableFilter<"Communication">
+    sentAt?: DateTimeNullableFilter<"Communication"> | Date | string | null
+    deliveredAt?: DateTimeNullableFilter<"Communication"> | Date | string | null
+    readAt?: DateTimeNullableFilter<"Communication"> | Date | string | null
+    userId?: StringNullableFilter<"Communication"> | string | null
+    createdAt?: DateTimeFilter<"Communication"> | Date | string
+    lead?: XOR<LeadNullableRelationFilter, LeadWhereInput> | null
+    template?: XOR<MessageTemplateNullableRelationFilter, MessageTemplateWhereInput> | null
+  }, "commId">
+
+  export type CommunicationOrderByWithAggregationInput = {
+    commId?: SortOrder
+    companyId?: SortOrder
+    leadId?: SortOrderInput | SortOrder
+    channel?: SortOrder
+    direction?: SortOrder
+    status?: SortOrder
+    fromNumber?: SortOrderInput | SortOrder
+    toNumber?: SortOrderInput | SortOrder
+    templateId?: SortOrderInput | SortOrder
+    subject?: SortOrderInput | SortOrder
+    body?: SortOrder
+    watiMessageId?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    sentAt?: SortOrderInput | SortOrder
+    deliveredAt?: SortOrderInput | SortOrder
+    readAt?: SortOrderInput | SortOrder
+    userId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: CommunicationCountOrderByAggregateInput
+    _max?: CommunicationMaxOrderByAggregateInput
+    _min?: CommunicationMinOrderByAggregateInput
+  }
+
+  export type CommunicationScalarWhereWithAggregatesInput = {
+    AND?: CommunicationScalarWhereWithAggregatesInput | CommunicationScalarWhereWithAggregatesInput[]
+    OR?: CommunicationScalarWhereWithAggregatesInput[]
+    NOT?: CommunicationScalarWhereWithAggregatesInput | CommunicationScalarWhereWithAggregatesInput[]
+    commId?: StringWithAggregatesFilter<"Communication"> | string
+    companyId?: StringWithAggregatesFilter<"Communication"> | string
+    leadId?: StringNullableWithAggregatesFilter<"Communication"> | string | null
+    channel?: StringWithAggregatesFilter<"Communication"> | string
+    direction?: StringWithAggregatesFilter<"Communication"> | string
+    status?: StringWithAggregatesFilter<"Communication"> | string
+    fromNumber?: StringNullableWithAggregatesFilter<"Communication"> | string | null
+    toNumber?: StringNullableWithAggregatesFilter<"Communication"> | string | null
+    templateId?: StringNullableWithAggregatesFilter<"Communication"> | string | null
+    subject?: StringNullableWithAggregatesFilter<"Communication"> | string | null
+    body?: StringWithAggregatesFilter<"Communication"> | string
+    watiMessageId?: StringNullableWithAggregatesFilter<"Communication"> | string | null
+    metadata?: JsonNullableWithAggregatesFilter<"Communication">
+    sentAt?: DateTimeNullableWithAggregatesFilter<"Communication"> | Date | string | null
+    deliveredAt?: DateTimeNullableWithAggregatesFilter<"Communication"> | Date | string | null
+    readAt?: DateTimeNullableWithAggregatesFilter<"Communication"> | Date | string | null
+    userId?: StringNullableWithAggregatesFilter<"Communication"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Communication"> | Date | string
+  }
+
+  export type AutoReplyRuleWhereInput = {
+    AND?: AutoReplyRuleWhereInput | AutoReplyRuleWhereInput[]
+    OR?: AutoReplyRuleWhereInput[]
+    NOT?: AutoReplyRuleWhereInput | AutoReplyRuleWhereInput[]
+    replyRuleId?: StringFilter<"AutoReplyRule"> | string
+    companyId?: StringFilter<"AutoReplyRule"> | string
+    keyword?: StringFilter<"AutoReplyRule"> | string
+    matchType?: StringFilter<"AutoReplyRule"> | string
+    replyBody?: StringFilter<"AutoReplyRule"> | string
+    isActive?: BoolFilter<"AutoReplyRule"> | boolean
+    priority?: IntFilter<"AutoReplyRule"> | number
+    createdAt?: DateTimeFilter<"AutoReplyRule"> | Date | string
+    updatedAt?: DateTimeFilter<"AutoReplyRule"> | Date | string
+    company?: XOR<CompanyRelationFilter, CompanyWhereInput>
+  }
+
+  export type AutoReplyRuleOrderByWithRelationInput = {
+    replyRuleId?: SortOrder
+    companyId?: SortOrder
+    keyword?: SortOrder
+    matchType?: SortOrder
+    replyBody?: SortOrder
+    isActive?: SortOrder
+    priority?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    company?: CompanyOrderByWithRelationInput
+  }
+
+  export type AutoReplyRuleWhereUniqueInput = Prisma.AtLeast<{
+    replyRuleId?: string
+    AND?: AutoReplyRuleWhereInput | AutoReplyRuleWhereInput[]
+    OR?: AutoReplyRuleWhereInput[]
+    NOT?: AutoReplyRuleWhereInput | AutoReplyRuleWhereInput[]
+    companyId?: StringFilter<"AutoReplyRule"> | string
+    keyword?: StringFilter<"AutoReplyRule"> | string
+    matchType?: StringFilter<"AutoReplyRule"> | string
+    replyBody?: StringFilter<"AutoReplyRule"> | string
+    isActive?: BoolFilter<"AutoReplyRule"> | boolean
+    priority?: IntFilter<"AutoReplyRule"> | number
+    createdAt?: DateTimeFilter<"AutoReplyRule"> | Date | string
+    updatedAt?: DateTimeFilter<"AutoReplyRule"> | Date | string
+    company?: XOR<CompanyRelationFilter, CompanyWhereInput>
+  }, "replyRuleId">
+
+  export type AutoReplyRuleOrderByWithAggregationInput = {
+    replyRuleId?: SortOrder
+    companyId?: SortOrder
+    keyword?: SortOrder
+    matchType?: SortOrder
+    replyBody?: SortOrder
+    isActive?: SortOrder
+    priority?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: AutoReplyRuleCountOrderByAggregateInput
+    _avg?: AutoReplyRuleAvgOrderByAggregateInput
+    _max?: AutoReplyRuleMaxOrderByAggregateInput
+    _min?: AutoReplyRuleMinOrderByAggregateInput
+    _sum?: AutoReplyRuleSumOrderByAggregateInput
+  }
+
+  export type AutoReplyRuleScalarWhereWithAggregatesInput = {
+    AND?: AutoReplyRuleScalarWhereWithAggregatesInput | AutoReplyRuleScalarWhereWithAggregatesInput[]
+    OR?: AutoReplyRuleScalarWhereWithAggregatesInput[]
+    NOT?: AutoReplyRuleScalarWhereWithAggregatesInput | AutoReplyRuleScalarWhereWithAggregatesInput[]
+    replyRuleId?: StringWithAggregatesFilter<"AutoReplyRule"> | string
+    companyId?: StringWithAggregatesFilter<"AutoReplyRule"> | string
+    keyword?: StringWithAggregatesFilter<"AutoReplyRule"> | string
+    matchType?: StringWithAggregatesFilter<"AutoReplyRule"> | string
+    replyBody?: StringWithAggregatesFilter<"AutoReplyRule"> | string
+    isActive?: BoolWithAggregatesFilter<"AutoReplyRule"> | boolean
+    priority?: IntWithAggregatesFilter<"AutoReplyRule"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"AutoReplyRule"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"AutoReplyRule"> | Date | string
+  }
+
+  export type CampaignWhereInput = {
+    AND?: CampaignWhereInput | CampaignWhereInput[]
+    OR?: CampaignWhereInput[]
+    NOT?: CampaignWhereInput | CampaignWhereInput[]
+    campaignId?: StringFilter<"Campaign"> | string
+    companyId?: StringFilter<"Campaign"> | string
+    name?: StringFilter<"Campaign"> | string
+    description?: StringNullableFilter<"Campaign"> | string | null
+    channel?: StringFilter<"Campaign"> | string
+    status?: StringFilter<"Campaign"> | string
+    templateId?: StringNullableFilter<"Campaign"> | string | null
+    subject?: StringNullableFilter<"Campaign"> | string | null
+    body?: StringNullableFilter<"Campaign"> | string | null
+    filters?: JsonNullableFilter<"Campaign">
+    scheduledAt?: DateTimeNullableFilter<"Campaign"> | Date | string | null
+    startedAt?: DateTimeNullableFilter<"Campaign"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"Campaign"> | Date | string | null
+    totalLeads?: IntFilter<"Campaign"> | number
+    sentCount?: IntFilter<"Campaign"> | number
+    deliveredCount?: IntFilter<"Campaign"> | number
+    failedCount?: IntFilter<"Campaign"> | number
+    createdById?: StringNullableFilter<"Campaign"> | string | null
+    createdAt?: DateTimeFilter<"Campaign"> | Date | string
+    updatedAt?: DateTimeFilter<"Campaign"> | Date | string
+    company?: XOR<CompanyRelationFilter, CompanyWhereInput>
+    campaignLeads?: CampaignLeadListRelationFilter
+  }
+
+  export type CampaignOrderByWithRelationInput = {
+    campaignId?: SortOrder
+    companyId?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    channel?: SortOrder
+    status?: SortOrder
+    templateId?: SortOrderInput | SortOrder
+    subject?: SortOrderInput | SortOrder
+    body?: SortOrderInput | SortOrder
+    filters?: SortOrderInput | SortOrder
+    scheduledAt?: SortOrderInput | SortOrder
+    startedAt?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    totalLeads?: SortOrder
+    sentCount?: SortOrder
+    deliveredCount?: SortOrder
+    failedCount?: SortOrder
+    createdById?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    company?: CompanyOrderByWithRelationInput
+    campaignLeads?: CampaignLeadOrderByRelationAggregateInput
+  }
+
+  export type CampaignWhereUniqueInput = Prisma.AtLeast<{
+    campaignId?: string
+    AND?: CampaignWhereInput | CampaignWhereInput[]
+    OR?: CampaignWhereInput[]
+    NOT?: CampaignWhereInput | CampaignWhereInput[]
+    companyId?: StringFilter<"Campaign"> | string
+    name?: StringFilter<"Campaign"> | string
+    description?: StringNullableFilter<"Campaign"> | string | null
+    channel?: StringFilter<"Campaign"> | string
+    status?: StringFilter<"Campaign"> | string
+    templateId?: StringNullableFilter<"Campaign"> | string | null
+    subject?: StringNullableFilter<"Campaign"> | string | null
+    body?: StringNullableFilter<"Campaign"> | string | null
+    filters?: JsonNullableFilter<"Campaign">
+    scheduledAt?: DateTimeNullableFilter<"Campaign"> | Date | string | null
+    startedAt?: DateTimeNullableFilter<"Campaign"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"Campaign"> | Date | string | null
+    totalLeads?: IntFilter<"Campaign"> | number
+    sentCount?: IntFilter<"Campaign"> | number
+    deliveredCount?: IntFilter<"Campaign"> | number
+    failedCount?: IntFilter<"Campaign"> | number
+    createdById?: StringNullableFilter<"Campaign"> | string | null
+    createdAt?: DateTimeFilter<"Campaign"> | Date | string
+    updatedAt?: DateTimeFilter<"Campaign"> | Date | string
+    company?: XOR<CompanyRelationFilter, CompanyWhereInput>
+    campaignLeads?: CampaignLeadListRelationFilter
+  }, "campaignId">
+
+  export type CampaignOrderByWithAggregationInput = {
+    campaignId?: SortOrder
+    companyId?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    channel?: SortOrder
+    status?: SortOrder
+    templateId?: SortOrderInput | SortOrder
+    subject?: SortOrderInput | SortOrder
+    body?: SortOrderInput | SortOrder
+    filters?: SortOrderInput | SortOrder
+    scheduledAt?: SortOrderInput | SortOrder
+    startedAt?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    totalLeads?: SortOrder
+    sentCount?: SortOrder
+    deliveredCount?: SortOrder
+    failedCount?: SortOrder
+    createdById?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: CampaignCountOrderByAggregateInput
+    _avg?: CampaignAvgOrderByAggregateInput
+    _max?: CampaignMaxOrderByAggregateInput
+    _min?: CampaignMinOrderByAggregateInput
+    _sum?: CampaignSumOrderByAggregateInput
+  }
+
+  export type CampaignScalarWhereWithAggregatesInput = {
+    AND?: CampaignScalarWhereWithAggregatesInput | CampaignScalarWhereWithAggregatesInput[]
+    OR?: CampaignScalarWhereWithAggregatesInput[]
+    NOT?: CampaignScalarWhereWithAggregatesInput | CampaignScalarWhereWithAggregatesInput[]
+    campaignId?: StringWithAggregatesFilter<"Campaign"> | string
+    companyId?: StringWithAggregatesFilter<"Campaign"> | string
+    name?: StringWithAggregatesFilter<"Campaign"> | string
+    description?: StringNullableWithAggregatesFilter<"Campaign"> | string | null
+    channel?: StringWithAggregatesFilter<"Campaign"> | string
+    status?: StringWithAggregatesFilter<"Campaign"> | string
+    templateId?: StringNullableWithAggregatesFilter<"Campaign"> | string | null
+    subject?: StringNullableWithAggregatesFilter<"Campaign"> | string | null
+    body?: StringNullableWithAggregatesFilter<"Campaign"> | string | null
+    filters?: JsonNullableWithAggregatesFilter<"Campaign">
+    scheduledAt?: DateTimeNullableWithAggregatesFilter<"Campaign"> | Date | string | null
+    startedAt?: DateTimeNullableWithAggregatesFilter<"Campaign"> | Date | string | null
+    completedAt?: DateTimeNullableWithAggregatesFilter<"Campaign"> | Date | string | null
+    totalLeads?: IntWithAggregatesFilter<"Campaign"> | number
+    sentCount?: IntWithAggregatesFilter<"Campaign"> | number
+    deliveredCount?: IntWithAggregatesFilter<"Campaign"> | number
+    failedCount?: IntWithAggregatesFilter<"Campaign"> | number
+    createdById?: StringNullableWithAggregatesFilter<"Campaign"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Campaign"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Campaign"> | Date | string
+  }
+
+  export type CampaignLeadWhereInput = {
+    AND?: CampaignLeadWhereInput | CampaignLeadWhereInput[]
+    OR?: CampaignLeadWhereInput[]
+    NOT?: CampaignLeadWhereInput | CampaignLeadWhereInput[]
+    id?: StringFilter<"CampaignLead"> | string
+    campaignId?: StringFilter<"CampaignLead"> | string
+    leadId?: StringFilter<"CampaignLead"> | string
+    status?: StringFilter<"CampaignLead"> | string
+    sentAt?: DateTimeNullableFilter<"CampaignLead"> | Date | string | null
+    deliveredAt?: DateTimeNullableFilter<"CampaignLead"> | Date | string | null
+    error?: StringNullableFilter<"CampaignLead"> | string | null
+    createdAt?: DateTimeFilter<"CampaignLead"> | Date | string
+    campaign?: XOR<CampaignRelationFilter, CampaignWhereInput>
+    lead?: XOR<LeadRelationFilter, LeadWhereInput>
+  }
+
+  export type CampaignLeadOrderByWithRelationInput = {
+    id?: SortOrder
+    campaignId?: SortOrder
+    leadId?: SortOrder
+    status?: SortOrder
+    sentAt?: SortOrderInput | SortOrder
+    deliveredAt?: SortOrderInput | SortOrder
+    error?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    campaign?: CampaignOrderByWithRelationInput
+    lead?: LeadOrderByWithRelationInput
+  }
+
+  export type CampaignLeadWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    campaignId_leadId?: CampaignLeadCampaignIdLeadIdCompoundUniqueInput
+    AND?: CampaignLeadWhereInput | CampaignLeadWhereInput[]
+    OR?: CampaignLeadWhereInput[]
+    NOT?: CampaignLeadWhereInput | CampaignLeadWhereInput[]
+    campaignId?: StringFilter<"CampaignLead"> | string
+    leadId?: StringFilter<"CampaignLead"> | string
+    status?: StringFilter<"CampaignLead"> | string
+    sentAt?: DateTimeNullableFilter<"CampaignLead"> | Date | string | null
+    deliveredAt?: DateTimeNullableFilter<"CampaignLead"> | Date | string | null
+    error?: StringNullableFilter<"CampaignLead"> | string | null
+    createdAt?: DateTimeFilter<"CampaignLead"> | Date | string
+    campaign?: XOR<CampaignRelationFilter, CampaignWhereInput>
+    lead?: XOR<LeadRelationFilter, LeadWhereInput>
+  }, "id" | "campaignId_leadId">
+
+  export type CampaignLeadOrderByWithAggregationInput = {
+    id?: SortOrder
+    campaignId?: SortOrder
+    leadId?: SortOrder
+    status?: SortOrder
+    sentAt?: SortOrderInput | SortOrder
+    deliveredAt?: SortOrderInput | SortOrder
+    error?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: CampaignLeadCountOrderByAggregateInput
+    _max?: CampaignLeadMaxOrderByAggregateInput
+    _min?: CampaignLeadMinOrderByAggregateInput
+  }
+
+  export type CampaignLeadScalarWhereWithAggregatesInput = {
+    AND?: CampaignLeadScalarWhereWithAggregatesInput | CampaignLeadScalarWhereWithAggregatesInput[]
+    OR?: CampaignLeadScalarWhereWithAggregatesInput[]
+    NOT?: CampaignLeadScalarWhereWithAggregatesInput | CampaignLeadScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"CampaignLead"> | string
+    campaignId?: StringWithAggregatesFilter<"CampaignLead"> | string
+    leadId?: StringWithAggregatesFilter<"CampaignLead"> | string
+    status?: StringWithAggregatesFilter<"CampaignLead"> | string
+    sentAt?: DateTimeNullableWithAggregatesFilter<"CampaignLead"> | Date | string | null
+    deliveredAt?: DateTimeNullableWithAggregatesFilter<"CampaignLead"> | Date | string | null
+    error?: StringNullableWithAggregatesFilter<"CampaignLead"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"CampaignLead"> | Date | string
+  }
+
   export type CompanyCreateInput = {
     companyId?: string
     name: string
@@ -14812,6 +23995,10 @@ export namespace Prisma {
     invoices?: InvoiceCreateNestedManyWithoutCompanyInput
     webhooks?: WebhookCreateNestedManyWithoutCompanyInput
     clients?: ClientCreateNestedManyWithoutCompanyInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutCompanyInput
+    automationRules?: AutomationRuleCreateNestedManyWithoutCompanyInput
+    campaigns?: CampaignCreateNestedManyWithoutCompanyInput
+    autoReplyRules?: AutoReplyRuleCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyUncheckedCreateInput = {
@@ -14842,6 +24029,10 @@ export namespace Prisma {
     invoices?: InvoiceUncheckedCreateNestedManyWithoutCompanyInput
     webhooks?: WebhookUncheckedCreateNestedManyWithoutCompanyInput
     clients?: ClientUncheckedCreateNestedManyWithoutCompanyInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutCompanyInput
+    automationRules?: AutomationRuleUncheckedCreateNestedManyWithoutCompanyInput
+    campaigns?: CampaignUncheckedCreateNestedManyWithoutCompanyInput
+    autoReplyRules?: AutoReplyRuleUncheckedCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyUpdateInput = {
@@ -14872,6 +24063,10 @@ export namespace Prisma {
     invoices?: InvoiceUpdateManyWithoutCompanyNestedInput
     webhooks?: WebhookUpdateManyWithoutCompanyNestedInput
     clients?: ClientUpdateManyWithoutCompanyNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutCompanyNestedInput
+    automationRules?: AutomationRuleUpdateManyWithoutCompanyNestedInput
+    campaigns?: CampaignUpdateManyWithoutCompanyNestedInput
+    autoReplyRules?: AutoReplyRuleUpdateManyWithoutCompanyNestedInput
   }
 
   export type CompanyUncheckedUpdateInput = {
@@ -14902,6 +24097,10 @@ export namespace Prisma {
     invoices?: InvoiceUncheckedUpdateManyWithoutCompanyNestedInput
     webhooks?: WebhookUncheckedUpdateManyWithoutCompanyNestedInput
     clients?: ClientUncheckedUpdateManyWithoutCompanyNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutCompanyNestedInput
+    automationRules?: AutomationRuleUncheckedUpdateManyWithoutCompanyNestedInput
+    campaigns?: CampaignUncheckedUpdateManyWithoutCompanyNestedInput
+    autoReplyRules?: AutoReplyRuleUncheckedUpdateManyWithoutCompanyNestedInput
   }
 
   export type CompanyCreateManyInput = {
@@ -15194,12 +24393,16 @@ export namespace Prisma {
     isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    country?: string | null
+    service?: string | null
     company: CompanyCreateNestedOneWithoutLeadsInput
     assignedTo?: UserCreateNestedOneWithoutAssignedLeadsInput
     activities?: ActivityCreateNestedManyWithoutLeadInput
     deals?: DealCreateNestedManyWithoutLeadInput
     quotations?: QuotationCreateNestedManyWithoutLeadInput
     invoices?: InvoiceCreateNestedManyWithoutLeadInput
+    communications?: CommunicationCreateNestedManyWithoutLeadInput
+    campaignLeads?: CampaignLeadCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUncheckedCreateInput = {
@@ -15226,10 +24429,14 @@ export namespace Prisma {
     isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    country?: string | null
+    service?: string | null
     activities?: ActivityUncheckedCreateNestedManyWithoutLeadInput
     deals?: DealUncheckedCreateNestedManyWithoutLeadInput
     quotations?: QuotationUncheckedCreateNestedManyWithoutLeadInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutLeadInput
+    communications?: CommunicationUncheckedCreateNestedManyWithoutLeadInput
+    campaignLeads?: CampaignLeadUncheckedCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUpdateInput = {
@@ -15254,12 +24461,16 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    service?: NullableStringFieldUpdateOperationsInput | string | null
     company?: CompanyUpdateOneRequiredWithoutLeadsNestedInput
     assignedTo?: UserUpdateOneWithoutAssignedLeadsNestedInput
     activities?: ActivityUpdateManyWithoutLeadNestedInput
     deals?: DealUpdateManyWithoutLeadNestedInput
     quotations?: QuotationUpdateManyWithoutLeadNestedInput
     invoices?: InvoiceUpdateManyWithoutLeadNestedInput
+    communications?: CommunicationUpdateManyWithoutLeadNestedInput
+    campaignLeads?: CampaignLeadUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateInput = {
@@ -15286,10 +24497,14 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    service?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityUncheckedUpdateManyWithoutLeadNestedInput
     deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
     quotations?: QuotationUncheckedUpdateManyWithoutLeadNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutLeadNestedInput
+    communications?: CommunicationUncheckedUpdateManyWithoutLeadNestedInput
+    campaignLeads?: CampaignLeadUncheckedUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadCreateManyInput = {
@@ -15316,6 +24531,8 @@ export namespace Prisma {
     isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    country?: string | null
+    service?: string | null
   }
 
   export type LeadUpdateManyMutationInput = {
@@ -15340,6 +24557,8 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    service?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type LeadUncheckedUpdateManyInput = {
@@ -15366,6 +24585,8 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    service?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ActivityCreateInput = {
@@ -16187,6 +25408,775 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type MessageTemplateCreateInput = {
+    templateId?: string
+    name: string
+    category?: string
+    channel?: string
+    subject?: string | null
+    body: string
+    variables?: MessageTemplateCreatevariablesInput | string[]
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    company: CompanyCreateNestedOneWithoutMessageTemplatesInput
+    automationRules?: AutomationRuleCreateNestedManyWithoutTemplateInput
+    communications?: CommunicationCreateNestedManyWithoutTemplateInput
+  }
+
+  export type MessageTemplateUncheckedCreateInput = {
+    templateId?: string
+    companyId: string
+    name: string
+    category?: string
+    channel?: string
+    subject?: string | null
+    body: string
+    variables?: MessageTemplateCreatevariablesInput | string[]
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    automationRules?: AutomationRuleUncheckedCreateNestedManyWithoutTemplateInput
+    communications?: CommunicationUncheckedCreateNestedManyWithoutTemplateInput
+  }
+
+  export type MessageTemplateUpdateInput = {
+    templateId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    channel?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    variables?: MessageTemplateUpdatevariablesInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    company?: CompanyUpdateOneRequiredWithoutMessageTemplatesNestedInput
+    automationRules?: AutomationRuleUpdateManyWithoutTemplateNestedInput
+    communications?: CommunicationUpdateManyWithoutTemplateNestedInput
+  }
+
+  export type MessageTemplateUncheckedUpdateInput = {
+    templateId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    channel?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    variables?: MessageTemplateUpdatevariablesInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    automationRules?: AutomationRuleUncheckedUpdateManyWithoutTemplateNestedInput
+    communications?: CommunicationUncheckedUpdateManyWithoutTemplateNestedInput
+  }
+
+  export type MessageTemplateCreateManyInput = {
+    templateId?: string
+    companyId: string
+    name: string
+    category?: string
+    channel?: string
+    subject?: string | null
+    body: string
+    variables?: MessageTemplateCreatevariablesInput | string[]
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MessageTemplateUpdateManyMutationInput = {
+    templateId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    channel?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    variables?: MessageTemplateUpdatevariablesInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MessageTemplateUncheckedUpdateManyInput = {
+    templateId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    channel?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    variables?: MessageTemplateUpdatevariablesInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AutomationRuleCreateInput = {
+    ruleId?: string
+    name: string
+    isActive?: boolean
+    trigger: string
+    triggerValue?: string | null
+    channel?: string
+    delayMinutes?: number
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    executionCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    company: CompanyCreateNestedOneWithoutAutomationRulesInput
+    template: MessageTemplateCreateNestedOneWithoutAutomationRulesInput
+    jobs?: AutomationJobCreateNestedManyWithoutRuleInput
+  }
+
+  export type AutomationRuleUncheckedCreateInput = {
+    ruleId?: string
+    companyId: string
+    name: string
+    isActive?: boolean
+    trigger: string
+    triggerValue?: string | null
+    channel?: string
+    templateId: string
+    delayMinutes?: number
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    executionCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    jobs?: AutomationJobUncheckedCreateNestedManyWithoutRuleInput
+  }
+
+  export type AutomationRuleUpdateInput = {
+    ruleId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    trigger?: StringFieldUpdateOperationsInput | string
+    triggerValue?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    delayMinutes?: IntFieldUpdateOperationsInput | number
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    executionCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    company?: CompanyUpdateOneRequiredWithoutAutomationRulesNestedInput
+    template?: MessageTemplateUpdateOneRequiredWithoutAutomationRulesNestedInput
+    jobs?: AutomationJobUpdateManyWithoutRuleNestedInput
+  }
+
+  export type AutomationRuleUncheckedUpdateInput = {
+    ruleId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    trigger?: StringFieldUpdateOperationsInput | string
+    triggerValue?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    delayMinutes?: IntFieldUpdateOperationsInput | number
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    executionCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    jobs?: AutomationJobUncheckedUpdateManyWithoutRuleNestedInput
+  }
+
+  export type AutomationRuleCreateManyInput = {
+    ruleId?: string
+    companyId: string
+    name: string
+    isActive?: boolean
+    trigger: string
+    triggerValue?: string | null
+    channel?: string
+    templateId: string
+    delayMinutes?: number
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    executionCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AutomationRuleUpdateManyMutationInput = {
+    ruleId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    trigger?: StringFieldUpdateOperationsInput | string
+    triggerValue?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    delayMinutes?: IntFieldUpdateOperationsInput | number
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    executionCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AutomationRuleUncheckedUpdateManyInput = {
+    ruleId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    trigger?: StringFieldUpdateOperationsInput | string
+    triggerValue?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    delayMinutes?: IntFieldUpdateOperationsInput | number
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    executionCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AutomationJobCreateInput = {
+    jobId?: string
+    leadId: string
+    companyId: string
+    status?: string
+    scheduledAt: Date | string
+    executedAt?: Date | string | null
+    error?: string | null
+    createdAt?: Date | string
+    rule: AutomationRuleCreateNestedOneWithoutJobsInput
+  }
+
+  export type AutomationJobUncheckedCreateInput = {
+    jobId?: string
+    ruleId: string
+    leadId: string
+    companyId: string
+    status?: string
+    scheduledAt: Date | string
+    executedAt?: Date | string | null
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AutomationJobUpdateInput = {
+    jobId?: StringFieldUpdateOperationsInput | string
+    leadId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    scheduledAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    executedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rule?: AutomationRuleUpdateOneRequiredWithoutJobsNestedInput
+  }
+
+  export type AutomationJobUncheckedUpdateInput = {
+    jobId?: StringFieldUpdateOperationsInput | string
+    ruleId?: StringFieldUpdateOperationsInput | string
+    leadId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    scheduledAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    executedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AutomationJobCreateManyInput = {
+    jobId?: string
+    ruleId: string
+    leadId: string
+    companyId: string
+    status?: string
+    scheduledAt: Date | string
+    executedAt?: Date | string | null
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AutomationJobUpdateManyMutationInput = {
+    jobId?: StringFieldUpdateOperationsInput | string
+    leadId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    scheduledAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    executedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AutomationJobUncheckedUpdateManyInput = {
+    jobId?: StringFieldUpdateOperationsInput | string
+    ruleId?: StringFieldUpdateOperationsInput | string
+    leadId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    scheduledAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    executedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CommunicationCreateInput = {
+    commId?: string
+    companyId: string
+    channel: string
+    direction?: string
+    status?: string
+    fromNumber?: string | null
+    toNumber?: string | null
+    subject?: string | null
+    body: string
+    watiMessageId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    readAt?: Date | string | null
+    userId?: string | null
+    createdAt?: Date | string
+    lead?: LeadCreateNestedOneWithoutCommunicationsInput
+    template?: MessageTemplateCreateNestedOneWithoutCommunicationsInput
+  }
+
+  export type CommunicationUncheckedCreateInput = {
+    commId?: string
+    companyId: string
+    leadId?: string | null
+    channel: string
+    direction?: string
+    status?: string
+    fromNumber?: string | null
+    toNumber?: string | null
+    templateId?: string | null
+    subject?: string | null
+    body: string
+    watiMessageId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    readAt?: Date | string | null
+    userId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type CommunicationUpdateInput = {
+    commId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    channel?: StringFieldUpdateOperationsInput | string
+    direction?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    fromNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    toNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    watiMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lead?: LeadUpdateOneWithoutCommunicationsNestedInput
+    template?: MessageTemplateUpdateOneWithoutCommunicationsNestedInput
+  }
+
+  export type CommunicationUncheckedUpdateInput = {
+    commId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    leadId?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    direction?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    fromNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    toNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    watiMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CommunicationCreateManyInput = {
+    commId?: string
+    companyId: string
+    leadId?: string | null
+    channel: string
+    direction?: string
+    status?: string
+    fromNumber?: string | null
+    toNumber?: string | null
+    templateId?: string | null
+    subject?: string | null
+    body: string
+    watiMessageId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    readAt?: Date | string | null
+    userId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type CommunicationUpdateManyMutationInput = {
+    commId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    channel?: StringFieldUpdateOperationsInput | string
+    direction?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    fromNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    toNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    watiMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CommunicationUncheckedUpdateManyInput = {
+    commId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    leadId?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    direction?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    fromNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    toNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    watiMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AutoReplyRuleCreateInput = {
+    replyRuleId?: string
+    keyword: string
+    matchType?: string
+    replyBody: string
+    isActive?: boolean
+    priority?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    company: CompanyCreateNestedOneWithoutAutoReplyRulesInput
+  }
+
+  export type AutoReplyRuleUncheckedCreateInput = {
+    replyRuleId?: string
+    companyId: string
+    keyword: string
+    matchType?: string
+    replyBody: string
+    isActive?: boolean
+    priority?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AutoReplyRuleUpdateInput = {
+    replyRuleId?: StringFieldUpdateOperationsInput | string
+    keyword?: StringFieldUpdateOperationsInput | string
+    matchType?: StringFieldUpdateOperationsInput | string
+    replyBody?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    priority?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    company?: CompanyUpdateOneRequiredWithoutAutoReplyRulesNestedInput
+  }
+
+  export type AutoReplyRuleUncheckedUpdateInput = {
+    replyRuleId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    keyword?: StringFieldUpdateOperationsInput | string
+    matchType?: StringFieldUpdateOperationsInput | string
+    replyBody?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    priority?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AutoReplyRuleCreateManyInput = {
+    replyRuleId?: string
+    companyId: string
+    keyword: string
+    matchType?: string
+    replyBody: string
+    isActive?: boolean
+    priority?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AutoReplyRuleUpdateManyMutationInput = {
+    replyRuleId?: StringFieldUpdateOperationsInput | string
+    keyword?: StringFieldUpdateOperationsInput | string
+    matchType?: StringFieldUpdateOperationsInput | string
+    replyBody?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    priority?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AutoReplyRuleUncheckedUpdateManyInput = {
+    replyRuleId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    keyword?: StringFieldUpdateOperationsInput | string
+    matchType?: StringFieldUpdateOperationsInput | string
+    replyBody?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    priority?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CampaignCreateInput = {
+    campaignId?: string
+    name: string
+    description?: string | null
+    channel?: string
+    status?: string
+    templateId?: string | null
+    subject?: string | null
+    body?: string | null
+    filters?: NullableJsonNullValueInput | InputJsonValue
+    scheduledAt?: Date | string | null
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    totalLeads?: number
+    sentCount?: number
+    deliveredCount?: number
+    failedCount?: number
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    company: CompanyCreateNestedOneWithoutCampaignsInput
+    campaignLeads?: CampaignLeadCreateNestedManyWithoutCampaignInput
+  }
+
+  export type CampaignUncheckedCreateInput = {
+    campaignId?: string
+    companyId: string
+    name: string
+    description?: string | null
+    channel?: string
+    status?: string
+    templateId?: string | null
+    subject?: string | null
+    body?: string | null
+    filters?: NullableJsonNullValueInput | InputJsonValue
+    scheduledAt?: Date | string | null
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    totalLeads?: number
+    sentCount?: number
+    deliveredCount?: number
+    failedCount?: number
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    campaignLeads?: CampaignLeadUncheckedCreateNestedManyWithoutCampaignInput
+  }
+
+  export type CampaignUpdateInput = {
+    campaignId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    filters?: NullableJsonNullValueInput | InputJsonValue
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    totalLeads?: IntFieldUpdateOperationsInput | number
+    sentCount?: IntFieldUpdateOperationsInput | number
+    deliveredCount?: IntFieldUpdateOperationsInput | number
+    failedCount?: IntFieldUpdateOperationsInput | number
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    company?: CompanyUpdateOneRequiredWithoutCampaignsNestedInput
+    campaignLeads?: CampaignLeadUpdateManyWithoutCampaignNestedInput
+  }
+
+  export type CampaignUncheckedUpdateInput = {
+    campaignId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    filters?: NullableJsonNullValueInput | InputJsonValue
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    totalLeads?: IntFieldUpdateOperationsInput | number
+    sentCount?: IntFieldUpdateOperationsInput | number
+    deliveredCount?: IntFieldUpdateOperationsInput | number
+    failedCount?: IntFieldUpdateOperationsInput | number
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    campaignLeads?: CampaignLeadUncheckedUpdateManyWithoutCampaignNestedInput
+  }
+
+  export type CampaignCreateManyInput = {
+    campaignId?: string
+    companyId: string
+    name: string
+    description?: string | null
+    channel?: string
+    status?: string
+    templateId?: string | null
+    subject?: string | null
+    body?: string | null
+    filters?: NullableJsonNullValueInput | InputJsonValue
+    scheduledAt?: Date | string | null
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    totalLeads?: number
+    sentCount?: number
+    deliveredCount?: number
+    failedCount?: number
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CampaignUpdateManyMutationInput = {
+    campaignId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    filters?: NullableJsonNullValueInput | InputJsonValue
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    totalLeads?: IntFieldUpdateOperationsInput | number
+    sentCount?: IntFieldUpdateOperationsInput | number
+    deliveredCount?: IntFieldUpdateOperationsInput | number
+    failedCount?: IntFieldUpdateOperationsInput | number
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CampaignUncheckedUpdateManyInput = {
+    campaignId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    filters?: NullableJsonNullValueInput | InputJsonValue
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    totalLeads?: IntFieldUpdateOperationsInput | number
+    sentCount?: IntFieldUpdateOperationsInput | number
+    deliveredCount?: IntFieldUpdateOperationsInput | number
+    failedCount?: IntFieldUpdateOperationsInput | number
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CampaignLeadCreateInput = {
+    id?: string
+    status?: string
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    error?: string | null
+    createdAt?: Date | string
+    campaign: CampaignCreateNestedOneWithoutCampaignLeadsInput
+    lead: LeadCreateNestedOneWithoutCampaignLeadsInput
+  }
+
+  export type CampaignLeadUncheckedCreateInput = {
+    id?: string
+    campaignId: string
+    leadId: string
+    status?: string
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type CampaignLeadUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    campaign?: CampaignUpdateOneRequiredWithoutCampaignLeadsNestedInput
+    lead?: LeadUpdateOneRequiredWithoutCampaignLeadsNestedInput
+  }
+
+  export type CampaignLeadUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    campaignId?: StringFieldUpdateOperationsInput | string
+    leadId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CampaignLeadCreateManyInput = {
+    id?: string
+    campaignId: string
+    leadId: string
+    status?: string
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type CampaignLeadUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CampaignLeadUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    campaignId?: StringFieldUpdateOperationsInput | string
+    leadId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -16332,6 +26322,30 @@ export namespace Prisma {
     none?: ClientWhereInput
   }
 
+  export type MessageTemplateListRelationFilter = {
+    every?: MessageTemplateWhereInput
+    some?: MessageTemplateWhereInput
+    none?: MessageTemplateWhereInput
+  }
+
+  export type AutomationRuleListRelationFilter = {
+    every?: AutomationRuleWhereInput
+    some?: AutomationRuleWhereInput
+    none?: AutomationRuleWhereInput
+  }
+
+  export type CampaignListRelationFilter = {
+    every?: CampaignWhereInput
+    some?: CampaignWhereInput
+    none?: CampaignWhereInput
+  }
+
+  export type AutoReplyRuleListRelationFilter = {
+    every?: AutoReplyRuleWhereInput
+    some?: AutoReplyRuleWhereInput
+    none?: AutoReplyRuleWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -16362,6 +26376,22 @@ export namespace Prisma {
   }
 
   export type ClientOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type MessageTemplateOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AutomationRuleOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type CampaignOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AutoReplyRuleOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -16731,6 +26761,26 @@ export namespace Prisma {
     isNot?: UserWhereInput | null
   }
 
+  export type CommunicationListRelationFilter = {
+    every?: CommunicationWhereInput
+    some?: CommunicationWhereInput
+    none?: CommunicationWhereInput
+  }
+
+  export type CampaignLeadListRelationFilter = {
+    every?: CampaignLeadWhereInput
+    some?: CampaignLeadWhereInput
+    none?: CampaignLeadWhereInput
+  }
+
+  export type CommunicationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type CampaignLeadOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type LeadCompanyIdEmailCompoundUniqueInput = {
     companyId: string
     email: string
@@ -16760,6 +26810,8 @@ export namespace Prisma {
     isDeleted?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    country?: SortOrder
+    service?: SortOrder
   }
 
   export type LeadAvgOrderByAggregateInput = {
@@ -16788,6 +26840,8 @@ export namespace Prisma {
     isDeleted?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    country?: SortOrder
+    service?: SortOrder
   }
 
   export type LeadMinOrderByAggregateInput = {
@@ -16811,6 +26865,8 @@ export namespace Prisma {
     isDeleted?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    country?: SortOrder
+    service?: SortOrder
   }
 
   export type LeadSumOrderByAggregateInput = {
@@ -17296,6 +27352,397 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type MessageTemplateCountOrderByAggregateInput = {
+    templateId?: SortOrder
+    companyId?: SortOrder
+    name?: SortOrder
+    category?: SortOrder
+    channel?: SortOrder
+    subject?: SortOrder
+    body?: SortOrder
+    variables?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type MessageTemplateMaxOrderByAggregateInput = {
+    templateId?: SortOrder
+    companyId?: SortOrder
+    name?: SortOrder
+    category?: SortOrder
+    channel?: SortOrder
+    subject?: SortOrder
+    body?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type MessageTemplateMinOrderByAggregateInput = {
+    templateId?: SortOrder
+    companyId?: SortOrder
+    name?: SortOrder
+    category?: SortOrder
+    channel?: SortOrder
+    subject?: SortOrder
+    body?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type MessageTemplateRelationFilter = {
+    is?: MessageTemplateWhereInput
+    isNot?: MessageTemplateWhereInput
+  }
+
+  export type AutomationJobListRelationFilter = {
+    every?: AutomationJobWhereInput
+    some?: AutomationJobWhereInput
+    none?: AutomationJobWhereInput
+  }
+
+  export type AutomationJobOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AutomationRuleCountOrderByAggregateInput = {
+    ruleId?: SortOrder
+    companyId?: SortOrder
+    name?: SortOrder
+    isActive?: SortOrder
+    trigger?: SortOrder
+    triggerValue?: SortOrder
+    channel?: SortOrder
+    templateId?: SortOrder
+    delayMinutes?: SortOrder
+    conditions?: SortOrder
+    executionCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AutomationRuleAvgOrderByAggregateInput = {
+    delayMinutes?: SortOrder
+    executionCount?: SortOrder
+  }
+
+  export type AutomationRuleMaxOrderByAggregateInput = {
+    ruleId?: SortOrder
+    companyId?: SortOrder
+    name?: SortOrder
+    isActive?: SortOrder
+    trigger?: SortOrder
+    triggerValue?: SortOrder
+    channel?: SortOrder
+    templateId?: SortOrder
+    delayMinutes?: SortOrder
+    executionCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AutomationRuleMinOrderByAggregateInput = {
+    ruleId?: SortOrder
+    companyId?: SortOrder
+    name?: SortOrder
+    isActive?: SortOrder
+    trigger?: SortOrder
+    triggerValue?: SortOrder
+    channel?: SortOrder
+    templateId?: SortOrder
+    delayMinutes?: SortOrder
+    executionCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AutomationRuleSumOrderByAggregateInput = {
+    delayMinutes?: SortOrder
+    executionCount?: SortOrder
+  }
+
+  export type AutomationRuleRelationFilter = {
+    is?: AutomationRuleWhereInput
+    isNot?: AutomationRuleWhereInput
+  }
+
+  export type AutomationJobCountOrderByAggregateInput = {
+    jobId?: SortOrder
+    ruleId?: SortOrder
+    leadId?: SortOrder
+    companyId?: SortOrder
+    status?: SortOrder
+    scheduledAt?: SortOrder
+    executedAt?: SortOrder
+    error?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AutomationJobMaxOrderByAggregateInput = {
+    jobId?: SortOrder
+    ruleId?: SortOrder
+    leadId?: SortOrder
+    companyId?: SortOrder
+    status?: SortOrder
+    scheduledAt?: SortOrder
+    executedAt?: SortOrder
+    error?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AutomationJobMinOrderByAggregateInput = {
+    jobId?: SortOrder
+    ruleId?: SortOrder
+    leadId?: SortOrder
+    companyId?: SortOrder
+    status?: SortOrder
+    scheduledAt?: SortOrder
+    executedAt?: SortOrder
+    error?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type MessageTemplateNullableRelationFilter = {
+    is?: MessageTemplateWhereInput | null
+    isNot?: MessageTemplateWhereInput | null
+  }
+
+  export type CommunicationCountOrderByAggregateInput = {
+    commId?: SortOrder
+    companyId?: SortOrder
+    leadId?: SortOrder
+    channel?: SortOrder
+    direction?: SortOrder
+    status?: SortOrder
+    fromNumber?: SortOrder
+    toNumber?: SortOrder
+    templateId?: SortOrder
+    subject?: SortOrder
+    body?: SortOrder
+    watiMessageId?: SortOrder
+    metadata?: SortOrder
+    sentAt?: SortOrder
+    deliveredAt?: SortOrder
+    readAt?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type CommunicationMaxOrderByAggregateInput = {
+    commId?: SortOrder
+    companyId?: SortOrder
+    leadId?: SortOrder
+    channel?: SortOrder
+    direction?: SortOrder
+    status?: SortOrder
+    fromNumber?: SortOrder
+    toNumber?: SortOrder
+    templateId?: SortOrder
+    subject?: SortOrder
+    body?: SortOrder
+    watiMessageId?: SortOrder
+    sentAt?: SortOrder
+    deliveredAt?: SortOrder
+    readAt?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type CommunicationMinOrderByAggregateInput = {
+    commId?: SortOrder
+    companyId?: SortOrder
+    leadId?: SortOrder
+    channel?: SortOrder
+    direction?: SortOrder
+    status?: SortOrder
+    fromNumber?: SortOrder
+    toNumber?: SortOrder
+    templateId?: SortOrder
+    subject?: SortOrder
+    body?: SortOrder
+    watiMessageId?: SortOrder
+    sentAt?: SortOrder
+    deliveredAt?: SortOrder
+    readAt?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AutoReplyRuleCountOrderByAggregateInput = {
+    replyRuleId?: SortOrder
+    companyId?: SortOrder
+    keyword?: SortOrder
+    matchType?: SortOrder
+    replyBody?: SortOrder
+    isActive?: SortOrder
+    priority?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AutoReplyRuleAvgOrderByAggregateInput = {
+    priority?: SortOrder
+  }
+
+  export type AutoReplyRuleMaxOrderByAggregateInput = {
+    replyRuleId?: SortOrder
+    companyId?: SortOrder
+    keyword?: SortOrder
+    matchType?: SortOrder
+    replyBody?: SortOrder
+    isActive?: SortOrder
+    priority?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AutoReplyRuleMinOrderByAggregateInput = {
+    replyRuleId?: SortOrder
+    companyId?: SortOrder
+    keyword?: SortOrder
+    matchType?: SortOrder
+    replyBody?: SortOrder
+    isActive?: SortOrder
+    priority?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AutoReplyRuleSumOrderByAggregateInput = {
+    priority?: SortOrder
+  }
+
+  export type CampaignCountOrderByAggregateInput = {
+    campaignId?: SortOrder
+    companyId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    channel?: SortOrder
+    status?: SortOrder
+    templateId?: SortOrder
+    subject?: SortOrder
+    body?: SortOrder
+    filters?: SortOrder
+    scheduledAt?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+    totalLeads?: SortOrder
+    sentCount?: SortOrder
+    deliveredCount?: SortOrder
+    failedCount?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CampaignAvgOrderByAggregateInput = {
+    totalLeads?: SortOrder
+    sentCount?: SortOrder
+    deliveredCount?: SortOrder
+    failedCount?: SortOrder
+  }
+
+  export type CampaignMaxOrderByAggregateInput = {
+    campaignId?: SortOrder
+    companyId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    channel?: SortOrder
+    status?: SortOrder
+    templateId?: SortOrder
+    subject?: SortOrder
+    body?: SortOrder
+    scheduledAt?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+    totalLeads?: SortOrder
+    sentCount?: SortOrder
+    deliveredCount?: SortOrder
+    failedCount?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CampaignMinOrderByAggregateInput = {
+    campaignId?: SortOrder
+    companyId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    channel?: SortOrder
+    status?: SortOrder
+    templateId?: SortOrder
+    subject?: SortOrder
+    body?: SortOrder
+    scheduledAt?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+    totalLeads?: SortOrder
+    sentCount?: SortOrder
+    deliveredCount?: SortOrder
+    failedCount?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CampaignSumOrderByAggregateInput = {
+    totalLeads?: SortOrder
+    sentCount?: SortOrder
+    deliveredCount?: SortOrder
+    failedCount?: SortOrder
+  }
+
+  export type CampaignRelationFilter = {
+    is?: CampaignWhereInput
+    isNot?: CampaignWhereInput
+  }
+
+  export type LeadRelationFilter = {
+    is?: LeadWhereInput
+    isNot?: LeadWhereInput
+  }
+
+  export type CampaignLeadCampaignIdLeadIdCompoundUniqueInput = {
+    campaignId: string
+    leadId: string
+  }
+
+  export type CampaignLeadCountOrderByAggregateInput = {
+    id?: SortOrder
+    campaignId?: SortOrder
+    leadId?: SortOrder
+    status?: SortOrder
+    sentAt?: SortOrder
+    deliveredAt?: SortOrder
+    error?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type CampaignLeadMaxOrderByAggregateInput = {
+    id?: SortOrder
+    campaignId?: SortOrder
+    leadId?: SortOrder
+    status?: SortOrder
+    sentAt?: SortOrder
+    deliveredAt?: SortOrder
+    error?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type CampaignLeadMinOrderByAggregateInput = {
+    id?: SortOrder
+    campaignId?: SortOrder
+    leadId?: SortOrder
+    status?: SortOrder
+    sentAt?: SortOrder
+    deliveredAt?: SortOrder
+    error?: SortOrder
+    createdAt?: SortOrder
+  }
+
   export type UserCreateNestedManyWithoutCompanyInput = {
     create?: XOR<UserCreateWithoutCompanyInput, UserUncheckedCreateWithoutCompanyInput> | UserCreateWithoutCompanyInput[] | UserUncheckedCreateWithoutCompanyInput[]
     connectOrCreate?: UserCreateOrConnectWithoutCompanyInput | UserCreateOrConnectWithoutCompanyInput[]
@@ -17345,6 +27792,34 @@ export namespace Prisma {
     connect?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
   }
 
+  export type MessageTemplateCreateNestedManyWithoutCompanyInput = {
+    create?: XOR<MessageTemplateCreateWithoutCompanyInput, MessageTemplateUncheckedCreateWithoutCompanyInput> | MessageTemplateCreateWithoutCompanyInput[] | MessageTemplateUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: MessageTemplateCreateOrConnectWithoutCompanyInput | MessageTemplateCreateOrConnectWithoutCompanyInput[]
+    createMany?: MessageTemplateCreateManyCompanyInputEnvelope
+    connect?: MessageTemplateWhereUniqueInput | MessageTemplateWhereUniqueInput[]
+  }
+
+  export type AutomationRuleCreateNestedManyWithoutCompanyInput = {
+    create?: XOR<AutomationRuleCreateWithoutCompanyInput, AutomationRuleUncheckedCreateWithoutCompanyInput> | AutomationRuleCreateWithoutCompanyInput[] | AutomationRuleUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: AutomationRuleCreateOrConnectWithoutCompanyInput | AutomationRuleCreateOrConnectWithoutCompanyInput[]
+    createMany?: AutomationRuleCreateManyCompanyInputEnvelope
+    connect?: AutomationRuleWhereUniqueInput | AutomationRuleWhereUniqueInput[]
+  }
+
+  export type CampaignCreateNestedManyWithoutCompanyInput = {
+    create?: XOR<CampaignCreateWithoutCompanyInput, CampaignUncheckedCreateWithoutCompanyInput> | CampaignCreateWithoutCompanyInput[] | CampaignUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: CampaignCreateOrConnectWithoutCompanyInput | CampaignCreateOrConnectWithoutCompanyInput[]
+    createMany?: CampaignCreateManyCompanyInputEnvelope
+    connect?: CampaignWhereUniqueInput | CampaignWhereUniqueInput[]
+  }
+
+  export type AutoReplyRuleCreateNestedManyWithoutCompanyInput = {
+    create?: XOR<AutoReplyRuleCreateWithoutCompanyInput, AutoReplyRuleUncheckedCreateWithoutCompanyInput> | AutoReplyRuleCreateWithoutCompanyInput[] | AutoReplyRuleUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: AutoReplyRuleCreateOrConnectWithoutCompanyInput | AutoReplyRuleCreateOrConnectWithoutCompanyInput[]
+    createMany?: AutoReplyRuleCreateManyCompanyInputEnvelope
+    connect?: AutoReplyRuleWhereUniqueInput | AutoReplyRuleWhereUniqueInput[]
+  }
+
   export type UserUncheckedCreateNestedManyWithoutCompanyInput = {
     create?: XOR<UserCreateWithoutCompanyInput, UserUncheckedCreateWithoutCompanyInput> | UserCreateWithoutCompanyInput[] | UserUncheckedCreateWithoutCompanyInput[]
     connectOrCreate?: UserCreateOrConnectWithoutCompanyInput | UserCreateOrConnectWithoutCompanyInput[]
@@ -17392,6 +27867,34 @@ export namespace Prisma {
     connectOrCreate?: ClientCreateOrConnectWithoutCompanyInput | ClientCreateOrConnectWithoutCompanyInput[]
     createMany?: ClientCreateManyCompanyInputEnvelope
     connect?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
+  }
+
+  export type MessageTemplateUncheckedCreateNestedManyWithoutCompanyInput = {
+    create?: XOR<MessageTemplateCreateWithoutCompanyInput, MessageTemplateUncheckedCreateWithoutCompanyInput> | MessageTemplateCreateWithoutCompanyInput[] | MessageTemplateUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: MessageTemplateCreateOrConnectWithoutCompanyInput | MessageTemplateCreateOrConnectWithoutCompanyInput[]
+    createMany?: MessageTemplateCreateManyCompanyInputEnvelope
+    connect?: MessageTemplateWhereUniqueInput | MessageTemplateWhereUniqueInput[]
+  }
+
+  export type AutomationRuleUncheckedCreateNestedManyWithoutCompanyInput = {
+    create?: XOR<AutomationRuleCreateWithoutCompanyInput, AutomationRuleUncheckedCreateWithoutCompanyInput> | AutomationRuleCreateWithoutCompanyInput[] | AutomationRuleUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: AutomationRuleCreateOrConnectWithoutCompanyInput | AutomationRuleCreateOrConnectWithoutCompanyInput[]
+    createMany?: AutomationRuleCreateManyCompanyInputEnvelope
+    connect?: AutomationRuleWhereUniqueInput | AutomationRuleWhereUniqueInput[]
+  }
+
+  export type CampaignUncheckedCreateNestedManyWithoutCompanyInput = {
+    create?: XOR<CampaignCreateWithoutCompanyInput, CampaignUncheckedCreateWithoutCompanyInput> | CampaignCreateWithoutCompanyInput[] | CampaignUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: CampaignCreateOrConnectWithoutCompanyInput | CampaignCreateOrConnectWithoutCompanyInput[]
+    createMany?: CampaignCreateManyCompanyInputEnvelope
+    connect?: CampaignWhereUniqueInput | CampaignWhereUniqueInput[]
+  }
+
+  export type AutoReplyRuleUncheckedCreateNestedManyWithoutCompanyInput = {
+    create?: XOR<AutoReplyRuleCreateWithoutCompanyInput, AutoReplyRuleUncheckedCreateWithoutCompanyInput> | AutoReplyRuleCreateWithoutCompanyInput[] | AutoReplyRuleUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: AutoReplyRuleCreateOrConnectWithoutCompanyInput | AutoReplyRuleCreateOrConnectWithoutCompanyInput[]
+    createMany?: AutoReplyRuleCreateManyCompanyInputEnvelope
+    connect?: AutoReplyRuleWhereUniqueInput | AutoReplyRuleWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -17512,6 +28015,62 @@ export namespace Prisma {
     deleteMany?: ClientScalarWhereInput | ClientScalarWhereInput[]
   }
 
+  export type MessageTemplateUpdateManyWithoutCompanyNestedInput = {
+    create?: XOR<MessageTemplateCreateWithoutCompanyInput, MessageTemplateUncheckedCreateWithoutCompanyInput> | MessageTemplateCreateWithoutCompanyInput[] | MessageTemplateUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: MessageTemplateCreateOrConnectWithoutCompanyInput | MessageTemplateCreateOrConnectWithoutCompanyInput[]
+    upsert?: MessageTemplateUpsertWithWhereUniqueWithoutCompanyInput | MessageTemplateUpsertWithWhereUniqueWithoutCompanyInput[]
+    createMany?: MessageTemplateCreateManyCompanyInputEnvelope
+    set?: MessageTemplateWhereUniqueInput | MessageTemplateWhereUniqueInput[]
+    disconnect?: MessageTemplateWhereUniqueInput | MessageTemplateWhereUniqueInput[]
+    delete?: MessageTemplateWhereUniqueInput | MessageTemplateWhereUniqueInput[]
+    connect?: MessageTemplateWhereUniqueInput | MessageTemplateWhereUniqueInput[]
+    update?: MessageTemplateUpdateWithWhereUniqueWithoutCompanyInput | MessageTemplateUpdateWithWhereUniqueWithoutCompanyInput[]
+    updateMany?: MessageTemplateUpdateManyWithWhereWithoutCompanyInput | MessageTemplateUpdateManyWithWhereWithoutCompanyInput[]
+    deleteMany?: MessageTemplateScalarWhereInput | MessageTemplateScalarWhereInput[]
+  }
+
+  export type AutomationRuleUpdateManyWithoutCompanyNestedInput = {
+    create?: XOR<AutomationRuleCreateWithoutCompanyInput, AutomationRuleUncheckedCreateWithoutCompanyInput> | AutomationRuleCreateWithoutCompanyInput[] | AutomationRuleUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: AutomationRuleCreateOrConnectWithoutCompanyInput | AutomationRuleCreateOrConnectWithoutCompanyInput[]
+    upsert?: AutomationRuleUpsertWithWhereUniqueWithoutCompanyInput | AutomationRuleUpsertWithWhereUniqueWithoutCompanyInput[]
+    createMany?: AutomationRuleCreateManyCompanyInputEnvelope
+    set?: AutomationRuleWhereUniqueInput | AutomationRuleWhereUniqueInput[]
+    disconnect?: AutomationRuleWhereUniqueInput | AutomationRuleWhereUniqueInput[]
+    delete?: AutomationRuleWhereUniqueInput | AutomationRuleWhereUniqueInput[]
+    connect?: AutomationRuleWhereUniqueInput | AutomationRuleWhereUniqueInput[]
+    update?: AutomationRuleUpdateWithWhereUniqueWithoutCompanyInput | AutomationRuleUpdateWithWhereUniqueWithoutCompanyInput[]
+    updateMany?: AutomationRuleUpdateManyWithWhereWithoutCompanyInput | AutomationRuleUpdateManyWithWhereWithoutCompanyInput[]
+    deleteMany?: AutomationRuleScalarWhereInput | AutomationRuleScalarWhereInput[]
+  }
+
+  export type CampaignUpdateManyWithoutCompanyNestedInput = {
+    create?: XOR<CampaignCreateWithoutCompanyInput, CampaignUncheckedCreateWithoutCompanyInput> | CampaignCreateWithoutCompanyInput[] | CampaignUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: CampaignCreateOrConnectWithoutCompanyInput | CampaignCreateOrConnectWithoutCompanyInput[]
+    upsert?: CampaignUpsertWithWhereUniqueWithoutCompanyInput | CampaignUpsertWithWhereUniqueWithoutCompanyInput[]
+    createMany?: CampaignCreateManyCompanyInputEnvelope
+    set?: CampaignWhereUniqueInput | CampaignWhereUniqueInput[]
+    disconnect?: CampaignWhereUniqueInput | CampaignWhereUniqueInput[]
+    delete?: CampaignWhereUniqueInput | CampaignWhereUniqueInput[]
+    connect?: CampaignWhereUniqueInput | CampaignWhereUniqueInput[]
+    update?: CampaignUpdateWithWhereUniqueWithoutCompanyInput | CampaignUpdateWithWhereUniqueWithoutCompanyInput[]
+    updateMany?: CampaignUpdateManyWithWhereWithoutCompanyInput | CampaignUpdateManyWithWhereWithoutCompanyInput[]
+    deleteMany?: CampaignScalarWhereInput | CampaignScalarWhereInput[]
+  }
+
+  export type AutoReplyRuleUpdateManyWithoutCompanyNestedInput = {
+    create?: XOR<AutoReplyRuleCreateWithoutCompanyInput, AutoReplyRuleUncheckedCreateWithoutCompanyInput> | AutoReplyRuleCreateWithoutCompanyInput[] | AutoReplyRuleUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: AutoReplyRuleCreateOrConnectWithoutCompanyInput | AutoReplyRuleCreateOrConnectWithoutCompanyInput[]
+    upsert?: AutoReplyRuleUpsertWithWhereUniqueWithoutCompanyInput | AutoReplyRuleUpsertWithWhereUniqueWithoutCompanyInput[]
+    createMany?: AutoReplyRuleCreateManyCompanyInputEnvelope
+    set?: AutoReplyRuleWhereUniqueInput | AutoReplyRuleWhereUniqueInput[]
+    disconnect?: AutoReplyRuleWhereUniqueInput | AutoReplyRuleWhereUniqueInput[]
+    delete?: AutoReplyRuleWhereUniqueInput | AutoReplyRuleWhereUniqueInput[]
+    connect?: AutoReplyRuleWhereUniqueInput | AutoReplyRuleWhereUniqueInput[]
+    update?: AutoReplyRuleUpdateWithWhereUniqueWithoutCompanyInput | AutoReplyRuleUpdateWithWhereUniqueWithoutCompanyInput[]
+    updateMany?: AutoReplyRuleUpdateManyWithWhereWithoutCompanyInput | AutoReplyRuleUpdateManyWithWhereWithoutCompanyInput[]
+    deleteMany?: AutoReplyRuleScalarWhereInput | AutoReplyRuleScalarWhereInput[]
+  }
+
   export type UserUncheckedUpdateManyWithoutCompanyNestedInput = {
     create?: XOR<UserCreateWithoutCompanyInput, UserUncheckedCreateWithoutCompanyInput> | UserCreateWithoutCompanyInput[] | UserUncheckedCreateWithoutCompanyInput[]
     connectOrCreate?: UserCreateOrConnectWithoutCompanyInput | UserCreateOrConnectWithoutCompanyInput[]
@@ -17608,6 +28167,62 @@ export namespace Prisma {
     update?: ClientUpdateWithWhereUniqueWithoutCompanyInput | ClientUpdateWithWhereUniqueWithoutCompanyInput[]
     updateMany?: ClientUpdateManyWithWhereWithoutCompanyInput | ClientUpdateManyWithWhereWithoutCompanyInput[]
     deleteMany?: ClientScalarWhereInput | ClientScalarWhereInput[]
+  }
+
+  export type MessageTemplateUncheckedUpdateManyWithoutCompanyNestedInput = {
+    create?: XOR<MessageTemplateCreateWithoutCompanyInput, MessageTemplateUncheckedCreateWithoutCompanyInput> | MessageTemplateCreateWithoutCompanyInput[] | MessageTemplateUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: MessageTemplateCreateOrConnectWithoutCompanyInput | MessageTemplateCreateOrConnectWithoutCompanyInput[]
+    upsert?: MessageTemplateUpsertWithWhereUniqueWithoutCompanyInput | MessageTemplateUpsertWithWhereUniqueWithoutCompanyInput[]
+    createMany?: MessageTemplateCreateManyCompanyInputEnvelope
+    set?: MessageTemplateWhereUniqueInput | MessageTemplateWhereUniqueInput[]
+    disconnect?: MessageTemplateWhereUniqueInput | MessageTemplateWhereUniqueInput[]
+    delete?: MessageTemplateWhereUniqueInput | MessageTemplateWhereUniqueInput[]
+    connect?: MessageTemplateWhereUniqueInput | MessageTemplateWhereUniqueInput[]
+    update?: MessageTemplateUpdateWithWhereUniqueWithoutCompanyInput | MessageTemplateUpdateWithWhereUniqueWithoutCompanyInput[]
+    updateMany?: MessageTemplateUpdateManyWithWhereWithoutCompanyInput | MessageTemplateUpdateManyWithWhereWithoutCompanyInput[]
+    deleteMany?: MessageTemplateScalarWhereInput | MessageTemplateScalarWhereInput[]
+  }
+
+  export type AutomationRuleUncheckedUpdateManyWithoutCompanyNestedInput = {
+    create?: XOR<AutomationRuleCreateWithoutCompanyInput, AutomationRuleUncheckedCreateWithoutCompanyInput> | AutomationRuleCreateWithoutCompanyInput[] | AutomationRuleUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: AutomationRuleCreateOrConnectWithoutCompanyInput | AutomationRuleCreateOrConnectWithoutCompanyInput[]
+    upsert?: AutomationRuleUpsertWithWhereUniqueWithoutCompanyInput | AutomationRuleUpsertWithWhereUniqueWithoutCompanyInput[]
+    createMany?: AutomationRuleCreateManyCompanyInputEnvelope
+    set?: AutomationRuleWhereUniqueInput | AutomationRuleWhereUniqueInput[]
+    disconnect?: AutomationRuleWhereUniqueInput | AutomationRuleWhereUniqueInput[]
+    delete?: AutomationRuleWhereUniqueInput | AutomationRuleWhereUniqueInput[]
+    connect?: AutomationRuleWhereUniqueInput | AutomationRuleWhereUniqueInput[]
+    update?: AutomationRuleUpdateWithWhereUniqueWithoutCompanyInput | AutomationRuleUpdateWithWhereUniqueWithoutCompanyInput[]
+    updateMany?: AutomationRuleUpdateManyWithWhereWithoutCompanyInput | AutomationRuleUpdateManyWithWhereWithoutCompanyInput[]
+    deleteMany?: AutomationRuleScalarWhereInput | AutomationRuleScalarWhereInput[]
+  }
+
+  export type CampaignUncheckedUpdateManyWithoutCompanyNestedInput = {
+    create?: XOR<CampaignCreateWithoutCompanyInput, CampaignUncheckedCreateWithoutCompanyInput> | CampaignCreateWithoutCompanyInput[] | CampaignUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: CampaignCreateOrConnectWithoutCompanyInput | CampaignCreateOrConnectWithoutCompanyInput[]
+    upsert?: CampaignUpsertWithWhereUniqueWithoutCompanyInput | CampaignUpsertWithWhereUniqueWithoutCompanyInput[]
+    createMany?: CampaignCreateManyCompanyInputEnvelope
+    set?: CampaignWhereUniqueInput | CampaignWhereUniqueInput[]
+    disconnect?: CampaignWhereUniqueInput | CampaignWhereUniqueInput[]
+    delete?: CampaignWhereUniqueInput | CampaignWhereUniqueInput[]
+    connect?: CampaignWhereUniqueInput | CampaignWhereUniqueInput[]
+    update?: CampaignUpdateWithWhereUniqueWithoutCompanyInput | CampaignUpdateWithWhereUniqueWithoutCompanyInput[]
+    updateMany?: CampaignUpdateManyWithWhereWithoutCompanyInput | CampaignUpdateManyWithWhereWithoutCompanyInput[]
+    deleteMany?: CampaignScalarWhereInput | CampaignScalarWhereInput[]
+  }
+
+  export type AutoReplyRuleUncheckedUpdateManyWithoutCompanyNestedInput = {
+    create?: XOR<AutoReplyRuleCreateWithoutCompanyInput, AutoReplyRuleUncheckedCreateWithoutCompanyInput> | AutoReplyRuleCreateWithoutCompanyInput[] | AutoReplyRuleUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: AutoReplyRuleCreateOrConnectWithoutCompanyInput | AutoReplyRuleCreateOrConnectWithoutCompanyInput[]
+    upsert?: AutoReplyRuleUpsertWithWhereUniqueWithoutCompanyInput | AutoReplyRuleUpsertWithWhereUniqueWithoutCompanyInput[]
+    createMany?: AutoReplyRuleCreateManyCompanyInputEnvelope
+    set?: AutoReplyRuleWhereUniqueInput | AutoReplyRuleWhereUniqueInput[]
+    disconnect?: AutoReplyRuleWhereUniqueInput | AutoReplyRuleWhereUniqueInput[]
+    delete?: AutoReplyRuleWhereUniqueInput | AutoReplyRuleWhereUniqueInput[]
+    connect?: AutoReplyRuleWhereUniqueInput | AutoReplyRuleWhereUniqueInput[]
+    update?: AutoReplyRuleUpdateWithWhereUniqueWithoutCompanyInput | AutoReplyRuleUpdateWithWhereUniqueWithoutCompanyInput[]
+    updateMany?: AutoReplyRuleUpdateManyWithWhereWithoutCompanyInput | AutoReplyRuleUpdateManyWithWhereWithoutCompanyInput[]
+    deleteMany?: AutoReplyRuleScalarWhereInput | AutoReplyRuleScalarWhereInput[]
   }
 
   export type CompanyCreateNestedOneWithoutUsersInput = {
@@ -17818,6 +28433,20 @@ export namespace Prisma {
     connect?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
   }
 
+  export type CommunicationCreateNestedManyWithoutLeadInput = {
+    create?: XOR<CommunicationCreateWithoutLeadInput, CommunicationUncheckedCreateWithoutLeadInput> | CommunicationCreateWithoutLeadInput[] | CommunicationUncheckedCreateWithoutLeadInput[]
+    connectOrCreate?: CommunicationCreateOrConnectWithoutLeadInput | CommunicationCreateOrConnectWithoutLeadInput[]
+    createMany?: CommunicationCreateManyLeadInputEnvelope
+    connect?: CommunicationWhereUniqueInput | CommunicationWhereUniqueInput[]
+  }
+
+  export type CampaignLeadCreateNestedManyWithoutLeadInput = {
+    create?: XOR<CampaignLeadCreateWithoutLeadInput, CampaignLeadUncheckedCreateWithoutLeadInput> | CampaignLeadCreateWithoutLeadInput[] | CampaignLeadUncheckedCreateWithoutLeadInput[]
+    connectOrCreate?: CampaignLeadCreateOrConnectWithoutLeadInput | CampaignLeadCreateOrConnectWithoutLeadInput[]
+    createMany?: CampaignLeadCreateManyLeadInputEnvelope
+    connect?: CampaignLeadWhereUniqueInput | CampaignLeadWhereUniqueInput[]
+  }
+
   export type ActivityUncheckedCreateNestedManyWithoutLeadInput = {
     create?: XOR<ActivityCreateWithoutLeadInput, ActivityUncheckedCreateWithoutLeadInput> | ActivityCreateWithoutLeadInput[] | ActivityUncheckedCreateWithoutLeadInput[]
     connectOrCreate?: ActivityCreateOrConnectWithoutLeadInput | ActivityCreateOrConnectWithoutLeadInput[]
@@ -17844,6 +28473,20 @@ export namespace Prisma {
     connectOrCreate?: InvoiceCreateOrConnectWithoutLeadInput | InvoiceCreateOrConnectWithoutLeadInput[]
     createMany?: InvoiceCreateManyLeadInputEnvelope
     connect?: InvoiceWhereUniqueInput | InvoiceWhereUniqueInput[]
+  }
+
+  export type CommunicationUncheckedCreateNestedManyWithoutLeadInput = {
+    create?: XOR<CommunicationCreateWithoutLeadInput, CommunicationUncheckedCreateWithoutLeadInput> | CommunicationCreateWithoutLeadInput[] | CommunicationUncheckedCreateWithoutLeadInput[]
+    connectOrCreate?: CommunicationCreateOrConnectWithoutLeadInput | CommunicationCreateOrConnectWithoutLeadInput[]
+    createMany?: CommunicationCreateManyLeadInputEnvelope
+    connect?: CommunicationWhereUniqueInput | CommunicationWhereUniqueInput[]
+  }
+
+  export type CampaignLeadUncheckedCreateNestedManyWithoutLeadInput = {
+    create?: XOR<CampaignLeadCreateWithoutLeadInput, CampaignLeadUncheckedCreateWithoutLeadInput> | CampaignLeadCreateWithoutLeadInput[] | CampaignLeadUncheckedCreateWithoutLeadInput[]
+    connectOrCreate?: CampaignLeadCreateOrConnectWithoutLeadInput | CampaignLeadCreateOrConnectWithoutLeadInput[]
+    createMany?: CampaignLeadCreateManyLeadInputEnvelope
+    connect?: CampaignLeadWhereUniqueInput | CampaignLeadWhereUniqueInput[]
   }
 
   export type NullableFloatFieldUpdateOperationsInput = {
@@ -17941,6 +28584,34 @@ export namespace Prisma {
     deleteMany?: InvoiceScalarWhereInput | InvoiceScalarWhereInput[]
   }
 
+  export type CommunicationUpdateManyWithoutLeadNestedInput = {
+    create?: XOR<CommunicationCreateWithoutLeadInput, CommunicationUncheckedCreateWithoutLeadInput> | CommunicationCreateWithoutLeadInput[] | CommunicationUncheckedCreateWithoutLeadInput[]
+    connectOrCreate?: CommunicationCreateOrConnectWithoutLeadInput | CommunicationCreateOrConnectWithoutLeadInput[]
+    upsert?: CommunicationUpsertWithWhereUniqueWithoutLeadInput | CommunicationUpsertWithWhereUniqueWithoutLeadInput[]
+    createMany?: CommunicationCreateManyLeadInputEnvelope
+    set?: CommunicationWhereUniqueInput | CommunicationWhereUniqueInput[]
+    disconnect?: CommunicationWhereUniqueInput | CommunicationWhereUniqueInput[]
+    delete?: CommunicationWhereUniqueInput | CommunicationWhereUniqueInput[]
+    connect?: CommunicationWhereUniqueInput | CommunicationWhereUniqueInput[]
+    update?: CommunicationUpdateWithWhereUniqueWithoutLeadInput | CommunicationUpdateWithWhereUniqueWithoutLeadInput[]
+    updateMany?: CommunicationUpdateManyWithWhereWithoutLeadInput | CommunicationUpdateManyWithWhereWithoutLeadInput[]
+    deleteMany?: CommunicationScalarWhereInput | CommunicationScalarWhereInput[]
+  }
+
+  export type CampaignLeadUpdateManyWithoutLeadNestedInput = {
+    create?: XOR<CampaignLeadCreateWithoutLeadInput, CampaignLeadUncheckedCreateWithoutLeadInput> | CampaignLeadCreateWithoutLeadInput[] | CampaignLeadUncheckedCreateWithoutLeadInput[]
+    connectOrCreate?: CampaignLeadCreateOrConnectWithoutLeadInput | CampaignLeadCreateOrConnectWithoutLeadInput[]
+    upsert?: CampaignLeadUpsertWithWhereUniqueWithoutLeadInput | CampaignLeadUpsertWithWhereUniqueWithoutLeadInput[]
+    createMany?: CampaignLeadCreateManyLeadInputEnvelope
+    set?: CampaignLeadWhereUniqueInput | CampaignLeadWhereUniqueInput[]
+    disconnect?: CampaignLeadWhereUniqueInput | CampaignLeadWhereUniqueInput[]
+    delete?: CampaignLeadWhereUniqueInput | CampaignLeadWhereUniqueInput[]
+    connect?: CampaignLeadWhereUniqueInput | CampaignLeadWhereUniqueInput[]
+    update?: CampaignLeadUpdateWithWhereUniqueWithoutLeadInput | CampaignLeadUpdateWithWhereUniqueWithoutLeadInput[]
+    updateMany?: CampaignLeadUpdateManyWithWhereWithoutLeadInput | CampaignLeadUpdateManyWithWhereWithoutLeadInput[]
+    deleteMany?: CampaignLeadScalarWhereInput | CampaignLeadScalarWhereInput[]
+  }
+
   export type ActivityUncheckedUpdateManyWithoutLeadNestedInput = {
     create?: XOR<ActivityCreateWithoutLeadInput, ActivityUncheckedCreateWithoutLeadInput> | ActivityCreateWithoutLeadInput[] | ActivityUncheckedCreateWithoutLeadInput[]
     connectOrCreate?: ActivityCreateOrConnectWithoutLeadInput | ActivityCreateOrConnectWithoutLeadInput[]
@@ -17995,6 +28666,34 @@ export namespace Prisma {
     update?: InvoiceUpdateWithWhereUniqueWithoutLeadInput | InvoiceUpdateWithWhereUniqueWithoutLeadInput[]
     updateMany?: InvoiceUpdateManyWithWhereWithoutLeadInput | InvoiceUpdateManyWithWhereWithoutLeadInput[]
     deleteMany?: InvoiceScalarWhereInput | InvoiceScalarWhereInput[]
+  }
+
+  export type CommunicationUncheckedUpdateManyWithoutLeadNestedInput = {
+    create?: XOR<CommunicationCreateWithoutLeadInput, CommunicationUncheckedCreateWithoutLeadInput> | CommunicationCreateWithoutLeadInput[] | CommunicationUncheckedCreateWithoutLeadInput[]
+    connectOrCreate?: CommunicationCreateOrConnectWithoutLeadInput | CommunicationCreateOrConnectWithoutLeadInput[]
+    upsert?: CommunicationUpsertWithWhereUniqueWithoutLeadInput | CommunicationUpsertWithWhereUniqueWithoutLeadInput[]
+    createMany?: CommunicationCreateManyLeadInputEnvelope
+    set?: CommunicationWhereUniqueInput | CommunicationWhereUniqueInput[]
+    disconnect?: CommunicationWhereUniqueInput | CommunicationWhereUniqueInput[]
+    delete?: CommunicationWhereUniqueInput | CommunicationWhereUniqueInput[]
+    connect?: CommunicationWhereUniqueInput | CommunicationWhereUniqueInput[]
+    update?: CommunicationUpdateWithWhereUniqueWithoutLeadInput | CommunicationUpdateWithWhereUniqueWithoutLeadInput[]
+    updateMany?: CommunicationUpdateManyWithWhereWithoutLeadInput | CommunicationUpdateManyWithWhereWithoutLeadInput[]
+    deleteMany?: CommunicationScalarWhereInput | CommunicationScalarWhereInput[]
+  }
+
+  export type CampaignLeadUncheckedUpdateManyWithoutLeadNestedInput = {
+    create?: XOR<CampaignLeadCreateWithoutLeadInput, CampaignLeadUncheckedCreateWithoutLeadInput> | CampaignLeadCreateWithoutLeadInput[] | CampaignLeadUncheckedCreateWithoutLeadInput[]
+    connectOrCreate?: CampaignLeadCreateOrConnectWithoutLeadInput | CampaignLeadCreateOrConnectWithoutLeadInput[]
+    upsert?: CampaignLeadUpsertWithWhereUniqueWithoutLeadInput | CampaignLeadUpsertWithWhereUniqueWithoutLeadInput[]
+    createMany?: CampaignLeadCreateManyLeadInputEnvelope
+    set?: CampaignLeadWhereUniqueInput | CampaignLeadWhereUniqueInput[]
+    disconnect?: CampaignLeadWhereUniqueInput | CampaignLeadWhereUniqueInput[]
+    delete?: CampaignLeadWhereUniqueInput | CampaignLeadWhereUniqueInput[]
+    connect?: CampaignLeadWhereUniqueInput | CampaignLeadWhereUniqueInput[]
+    update?: CampaignLeadUpdateWithWhereUniqueWithoutLeadInput | CampaignLeadUpdateWithWhereUniqueWithoutLeadInput[]
+    updateMany?: CampaignLeadUpdateManyWithWhereWithoutLeadInput | CampaignLeadUpdateManyWithWhereWithoutLeadInput[]
+    deleteMany?: CampaignLeadScalarWhereInput | CampaignLeadScalarWhereInput[]
   }
 
   export type LeadCreateNestedOneWithoutActivitiesInput = {
@@ -18237,6 +28936,327 @@ export namespace Prisma {
     upsert?: CompanyUpsertWithoutWebhooksInput
     connect?: CompanyWhereUniqueInput
     update?: XOR<XOR<CompanyUpdateToOneWithWhereWithoutWebhooksInput, CompanyUpdateWithoutWebhooksInput>, CompanyUncheckedUpdateWithoutWebhooksInput>
+  }
+
+  export type MessageTemplateCreatevariablesInput = {
+    set: string[]
+  }
+
+  export type CompanyCreateNestedOneWithoutMessageTemplatesInput = {
+    create?: XOR<CompanyCreateWithoutMessageTemplatesInput, CompanyUncheckedCreateWithoutMessageTemplatesInput>
+    connectOrCreate?: CompanyCreateOrConnectWithoutMessageTemplatesInput
+    connect?: CompanyWhereUniqueInput
+  }
+
+  export type AutomationRuleCreateNestedManyWithoutTemplateInput = {
+    create?: XOR<AutomationRuleCreateWithoutTemplateInput, AutomationRuleUncheckedCreateWithoutTemplateInput> | AutomationRuleCreateWithoutTemplateInput[] | AutomationRuleUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: AutomationRuleCreateOrConnectWithoutTemplateInput | AutomationRuleCreateOrConnectWithoutTemplateInput[]
+    createMany?: AutomationRuleCreateManyTemplateInputEnvelope
+    connect?: AutomationRuleWhereUniqueInput | AutomationRuleWhereUniqueInput[]
+  }
+
+  export type CommunicationCreateNestedManyWithoutTemplateInput = {
+    create?: XOR<CommunicationCreateWithoutTemplateInput, CommunicationUncheckedCreateWithoutTemplateInput> | CommunicationCreateWithoutTemplateInput[] | CommunicationUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: CommunicationCreateOrConnectWithoutTemplateInput | CommunicationCreateOrConnectWithoutTemplateInput[]
+    createMany?: CommunicationCreateManyTemplateInputEnvelope
+    connect?: CommunicationWhereUniqueInput | CommunicationWhereUniqueInput[]
+  }
+
+  export type AutomationRuleUncheckedCreateNestedManyWithoutTemplateInput = {
+    create?: XOR<AutomationRuleCreateWithoutTemplateInput, AutomationRuleUncheckedCreateWithoutTemplateInput> | AutomationRuleCreateWithoutTemplateInput[] | AutomationRuleUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: AutomationRuleCreateOrConnectWithoutTemplateInput | AutomationRuleCreateOrConnectWithoutTemplateInput[]
+    createMany?: AutomationRuleCreateManyTemplateInputEnvelope
+    connect?: AutomationRuleWhereUniqueInput | AutomationRuleWhereUniqueInput[]
+  }
+
+  export type CommunicationUncheckedCreateNestedManyWithoutTemplateInput = {
+    create?: XOR<CommunicationCreateWithoutTemplateInput, CommunicationUncheckedCreateWithoutTemplateInput> | CommunicationCreateWithoutTemplateInput[] | CommunicationUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: CommunicationCreateOrConnectWithoutTemplateInput | CommunicationCreateOrConnectWithoutTemplateInput[]
+    createMany?: CommunicationCreateManyTemplateInputEnvelope
+    connect?: CommunicationWhereUniqueInput | CommunicationWhereUniqueInput[]
+  }
+
+  export type MessageTemplateUpdatevariablesInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type CompanyUpdateOneRequiredWithoutMessageTemplatesNestedInput = {
+    create?: XOR<CompanyCreateWithoutMessageTemplatesInput, CompanyUncheckedCreateWithoutMessageTemplatesInput>
+    connectOrCreate?: CompanyCreateOrConnectWithoutMessageTemplatesInput
+    upsert?: CompanyUpsertWithoutMessageTemplatesInput
+    connect?: CompanyWhereUniqueInput
+    update?: XOR<XOR<CompanyUpdateToOneWithWhereWithoutMessageTemplatesInput, CompanyUpdateWithoutMessageTemplatesInput>, CompanyUncheckedUpdateWithoutMessageTemplatesInput>
+  }
+
+  export type AutomationRuleUpdateManyWithoutTemplateNestedInput = {
+    create?: XOR<AutomationRuleCreateWithoutTemplateInput, AutomationRuleUncheckedCreateWithoutTemplateInput> | AutomationRuleCreateWithoutTemplateInput[] | AutomationRuleUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: AutomationRuleCreateOrConnectWithoutTemplateInput | AutomationRuleCreateOrConnectWithoutTemplateInput[]
+    upsert?: AutomationRuleUpsertWithWhereUniqueWithoutTemplateInput | AutomationRuleUpsertWithWhereUniqueWithoutTemplateInput[]
+    createMany?: AutomationRuleCreateManyTemplateInputEnvelope
+    set?: AutomationRuleWhereUniqueInput | AutomationRuleWhereUniqueInput[]
+    disconnect?: AutomationRuleWhereUniqueInput | AutomationRuleWhereUniqueInput[]
+    delete?: AutomationRuleWhereUniqueInput | AutomationRuleWhereUniqueInput[]
+    connect?: AutomationRuleWhereUniqueInput | AutomationRuleWhereUniqueInput[]
+    update?: AutomationRuleUpdateWithWhereUniqueWithoutTemplateInput | AutomationRuleUpdateWithWhereUniqueWithoutTemplateInput[]
+    updateMany?: AutomationRuleUpdateManyWithWhereWithoutTemplateInput | AutomationRuleUpdateManyWithWhereWithoutTemplateInput[]
+    deleteMany?: AutomationRuleScalarWhereInput | AutomationRuleScalarWhereInput[]
+  }
+
+  export type CommunicationUpdateManyWithoutTemplateNestedInput = {
+    create?: XOR<CommunicationCreateWithoutTemplateInput, CommunicationUncheckedCreateWithoutTemplateInput> | CommunicationCreateWithoutTemplateInput[] | CommunicationUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: CommunicationCreateOrConnectWithoutTemplateInput | CommunicationCreateOrConnectWithoutTemplateInput[]
+    upsert?: CommunicationUpsertWithWhereUniqueWithoutTemplateInput | CommunicationUpsertWithWhereUniqueWithoutTemplateInput[]
+    createMany?: CommunicationCreateManyTemplateInputEnvelope
+    set?: CommunicationWhereUniqueInput | CommunicationWhereUniqueInput[]
+    disconnect?: CommunicationWhereUniqueInput | CommunicationWhereUniqueInput[]
+    delete?: CommunicationWhereUniqueInput | CommunicationWhereUniqueInput[]
+    connect?: CommunicationWhereUniqueInput | CommunicationWhereUniqueInput[]
+    update?: CommunicationUpdateWithWhereUniqueWithoutTemplateInput | CommunicationUpdateWithWhereUniqueWithoutTemplateInput[]
+    updateMany?: CommunicationUpdateManyWithWhereWithoutTemplateInput | CommunicationUpdateManyWithWhereWithoutTemplateInput[]
+    deleteMany?: CommunicationScalarWhereInput | CommunicationScalarWhereInput[]
+  }
+
+  export type AutomationRuleUncheckedUpdateManyWithoutTemplateNestedInput = {
+    create?: XOR<AutomationRuleCreateWithoutTemplateInput, AutomationRuleUncheckedCreateWithoutTemplateInput> | AutomationRuleCreateWithoutTemplateInput[] | AutomationRuleUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: AutomationRuleCreateOrConnectWithoutTemplateInput | AutomationRuleCreateOrConnectWithoutTemplateInput[]
+    upsert?: AutomationRuleUpsertWithWhereUniqueWithoutTemplateInput | AutomationRuleUpsertWithWhereUniqueWithoutTemplateInput[]
+    createMany?: AutomationRuleCreateManyTemplateInputEnvelope
+    set?: AutomationRuleWhereUniqueInput | AutomationRuleWhereUniqueInput[]
+    disconnect?: AutomationRuleWhereUniqueInput | AutomationRuleWhereUniqueInput[]
+    delete?: AutomationRuleWhereUniqueInput | AutomationRuleWhereUniqueInput[]
+    connect?: AutomationRuleWhereUniqueInput | AutomationRuleWhereUniqueInput[]
+    update?: AutomationRuleUpdateWithWhereUniqueWithoutTemplateInput | AutomationRuleUpdateWithWhereUniqueWithoutTemplateInput[]
+    updateMany?: AutomationRuleUpdateManyWithWhereWithoutTemplateInput | AutomationRuleUpdateManyWithWhereWithoutTemplateInput[]
+    deleteMany?: AutomationRuleScalarWhereInput | AutomationRuleScalarWhereInput[]
+  }
+
+  export type CommunicationUncheckedUpdateManyWithoutTemplateNestedInput = {
+    create?: XOR<CommunicationCreateWithoutTemplateInput, CommunicationUncheckedCreateWithoutTemplateInput> | CommunicationCreateWithoutTemplateInput[] | CommunicationUncheckedCreateWithoutTemplateInput[]
+    connectOrCreate?: CommunicationCreateOrConnectWithoutTemplateInput | CommunicationCreateOrConnectWithoutTemplateInput[]
+    upsert?: CommunicationUpsertWithWhereUniqueWithoutTemplateInput | CommunicationUpsertWithWhereUniqueWithoutTemplateInput[]
+    createMany?: CommunicationCreateManyTemplateInputEnvelope
+    set?: CommunicationWhereUniqueInput | CommunicationWhereUniqueInput[]
+    disconnect?: CommunicationWhereUniqueInput | CommunicationWhereUniqueInput[]
+    delete?: CommunicationWhereUniqueInput | CommunicationWhereUniqueInput[]
+    connect?: CommunicationWhereUniqueInput | CommunicationWhereUniqueInput[]
+    update?: CommunicationUpdateWithWhereUniqueWithoutTemplateInput | CommunicationUpdateWithWhereUniqueWithoutTemplateInput[]
+    updateMany?: CommunicationUpdateManyWithWhereWithoutTemplateInput | CommunicationUpdateManyWithWhereWithoutTemplateInput[]
+    deleteMany?: CommunicationScalarWhereInput | CommunicationScalarWhereInput[]
+  }
+
+  export type CompanyCreateNestedOneWithoutAutomationRulesInput = {
+    create?: XOR<CompanyCreateWithoutAutomationRulesInput, CompanyUncheckedCreateWithoutAutomationRulesInput>
+    connectOrCreate?: CompanyCreateOrConnectWithoutAutomationRulesInput
+    connect?: CompanyWhereUniqueInput
+  }
+
+  export type MessageTemplateCreateNestedOneWithoutAutomationRulesInput = {
+    create?: XOR<MessageTemplateCreateWithoutAutomationRulesInput, MessageTemplateUncheckedCreateWithoutAutomationRulesInput>
+    connectOrCreate?: MessageTemplateCreateOrConnectWithoutAutomationRulesInput
+    connect?: MessageTemplateWhereUniqueInput
+  }
+
+  export type AutomationJobCreateNestedManyWithoutRuleInput = {
+    create?: XOR<AutomationJobCreateWithoutRuleInput, AutomationJobUncheckedCreateWithoutRuleInput> | AutomationJobCreateWithoutRuleInput[] | AutomationJobUncheckedCreateWithoutRuleInput[]
+    connectOrCreate?: AutomationJobCreateOrConnectWithoutRuleInput | AutomationJobCreateOrConnectWithoutRuleInput[]
+    createMany?: AutomationJobCreateManyRuleInputEnvelope
+    connect?: AutomationJobWhereUniqueInput | AutomationJobWhereUniqueInput[]
+  }
+
+  export type AutomationJobUncheckedCreateNestedManyWithoutRuleInput = {
+    create?: XOR<AutomationJobCreateWithoutRuleInput, AutomationJobUncheckedCreateWithoutRuleInput> | AutomationJobCreateWithoutRuleInput[] | AutomationJobUncheckedCreateWithoutRuleInput[]
+    connectOrCreate?: AutomationJobCreateOrConnectWithoutRuleInput | AutomationJobCreateOrConnectWithoutRuleInput[]
+    createMany?: AutomationJobCreateManyRuleInputEnvelope
+    connect?: AutomationJobWhereUniqueInput | AutomationJobWhereUniqueInput[]
+  }
+
+  export type CompanyUpdateOneRequiredWithoutAutomationRulesNestedInput = {
+    create?: XOR<CompanyCreateWithoutAutomationRulesInput, CompanyUncheckedCreateWithoutAutomationRulesInput>
+    connectOrCreate?: CompanyCreateOrConnectWithoutAutomationRulesInput
+    upsert?: CompanyUpsertWithoutAutomationRulesInput
+    connect?: CompanyWhereUniqueInput
+    update?: XOR<XOR<CompanyUpdateToOneWithWhereWithoutAutomationRulesInput, CompanyUpdateWithoutAutomationRulesInput>, CompanyUncheckedUpdateWithoutAutomationRulesInput>
+  }
+
+  export type MessageTemplateUpdateOneRequiredWithoutAutomationRulesNestedInput = {
+    create?: XOR<MessageTemplateCreateWithoutAutomationRulesInput, MessageTemplateUncheckedCreateWithoutAutomationRulesInput>
+    connectOrCreate?: MessageTemplateCreateOrConnectWithoutAutomationRulesInput
+    upsert?: MessageTemplateUpsertWithoutAutomationRulesInput
+    connect?: MessageTemplateWhereUniqueInput
+    update?: XOR<XOR<MessageTemplateUpdateToOneWithWhereWithoutAutomationRulesInput, MessageTemplateUpdateWithoutAutomationRulesInput>, MessageTemplateUncheckedUpdateWithoutAutomationRulesInput>
+  }
+
+  export type AutomationJobUpdateManyWithoutRuleNestedInput = {
+    create?: XOR<AutomationJobCreateWithoutRuleInput, AutomationJobUncheckedCreateWithoutRuleInput> | AutomationJobCreateWithoutRuleInput[] | AutomationJobUncheckedCreateWithoutRuleInput[]
+    connectOrCreate?: AutomationJobCreateOrConnectWithoutRuleInput | AutomationJobCreateOrConnectWithoutRuleInput[]
+    upsert?: AutomationJobUpsertWithWhereUniqueWithoutRuleInput | AutomationJobUpsertWithWhereUniqueWithoutRuleInput[]
+    createMany?: AutomationJobCreateManyRuleInputEnvelope
+    set?: AutomationJobWhereUniqueInput | AutomationJobWhereUniqueInput[]
+    disconnect?: AutomationJobWhereUniqueInput | AutomationJobWhereUniqueInput[]
+    delete?: AutomationJobWhereUniqueInput | AutomationJobWhereUniqueInput[]
+    connect?: AutomationJobWhereUniqueInput | AutomationJobWhereUniqueInput[]
+    update?: AutomationJobUpdateWithWhereUniqueWithoutRuleInput | AutomationJobUpdateWithWhereUniqueWithoutRuleInput[]
+    updateMany?: AutomationJobUpdateManyWithWhereWithoutRuleInput | AutomationJobUpdateManyWithWhereWithoutRuleInput[]
+    deleteMany?: AutomationJobScalarWhereInput | AutomationJobScalarWhereInput[]
+  }
+
+  export type AutomationJobUncheckedUpdateManyWithoutRuleNestedInput = {
+    create?: XOR<AutomationJobCreateWithoutRuleInput, AutomationJobUncheckedCreateWithoutRuleInput> | AutomationJobCreateWithoutRuleInput[] | AutomationJobUncheckedCreateWithoutRuleInput[]
+    connectOrCreate?: AutomationJobCreateOrConnectWithoutRuleInput | AutomationJobCreateOrConnectWithoutRuleInput[]
+    upsert?: AutomationJobUpsertWithWhereUniqueWithoutRuleInput | AutomationJobUpsertWithWhereUniqueWithoutRuleInput[]
+    createMany?: AutomationJobCreateManyRuleInputEnvelope
+    set?: AutomationJobWhereUniqueInput | AutomationJobWhereUniqueInput[]
+    disconnect?: AutomationJobWhereUniqueInput | AutomationJobWhereUniqueInput[]
+    delete?: AutomationJobWhereUniqueInput | AutomationJobWhereUniqueInput[]
+    connect?: AutomationJobWhereUniqueInput | AutomationJobWhereUniqueInput[]
+    update?: AutomationJobUpdateWithWhereUniqueWithoutRuleInput | AutomationJobUpdateWithWhereUniqueWithoutRuleInput[]
+    updateMany?: AutomationJobUpdateManyWithWhereWithoutRuleInput | AutomationJobUpdateManyWithWhereWithoutRuleInput[]
+    deleteMany?: AutomationJobScalarWhereInput | AutomationJobScalarWhereInput[]
+  }
+
+  export type AutomationRuleCreateNestedOneWithoutJobsInput = {
+    create?: XOR<AutomationRuleCreateWithoutJobsInput, AutomationRuleUncheckedCreateWithoutJobsInput>
+    connectOrCreate?: AutomationRuleCreateOrConnectWithoutJobsInput
+    connect?: AutomationRuleWhereUniqueInput
+  }
+
+  export type AutomationRuleUpdateOneRequiredWithoutJobsNestedInput = {
+    create?: XOR<AutomationRuleCreateWithoutJobsInput, AutomationRuleUncheckedCreateWithoutJobsInput>
+    connectOrCreate?: AutomationRuleCreateOrConnectWithoutJobsInput
+    upsert?: AutomationRuleUpsertWithoutJobsInput
+    connect?: AutomationRuleWhereUniqueInput
+    update?: XOR<XOR<AutomationRuleUpdateToOneWithWhereWithoutJobsInput, AutomationRuleUpdateWithoutJobsInput>, AutomationRuleUncheckedUpdateWithoutJobsInput>
+  }
+
+  export type LeadCreateNestedOneWithoutCommunicationsInput = {
+    create?: XOR<LeadCreateWithoutCommunicationsInput, LeadUncheckedCreateWithoutCommunicationsInput>
+    connectOrCreate?: LeadCreateOrConnectWithoutCommunicationsInput
+    connect?: LeadWhereUniqueInput
+  }
+
+  export type MessageTemplateCreateNestedOneWithoutCommunicationsInput = {
+    create?: XOR<MessageTemplateCreateWithoutCommunicationsInput, MessageTemplateUncheckedCreateWithoutCommunicationsInput>
+    connectOrCreate?: MessageTemplateCreateOrConnectWithoutCommunicationsInput
+    connect?: MessageTemplateWhereUniqueInput
+  }
+
+  export type LeadUpdateOneWithoutCommunicationsNestedInput = {
+    create?: XOR<LeadCreateWithoutCommunicationsInput, LeadUncheckedCreateWithoutCommunicationsInput>
+    connectOrCreate?: LeadCreateOrConnectWithoutCommunicationsInput
+    upsert?: LeadUpsertWithoutCommunicationsInput
+    disconnect?: LeadWhereInput | boolean
+    delete?: LeadWhereInput | boolean
+    connect?: LeadWhereUniqueInput
+    update?: XOR<XOR<LeadUpdateToOneWithWhereWithoutCommunicationsInput, LeadUpdateWithoutCommunicationsInput>, LeadUncheckedUpdateWithoutCommunicationsInput>
+  }
+
+  export type MessageTemplateUpdateOneWithoutCommunicationsNestedInput = {
+    create?: XOR<MessageTemplateCreateWithoutCommunicationsInput, MessageTemplateUncheckedCreateWithoutCommunicationsInput>
+    connectOrCreate?: MessageTemplateCreateOrConnectWithoutCommunicationsInput
+    upsert?: MessageTemplateUpsertWithoutCommunicationsInput
+    disconnect?: MessageTemplateWhereInput | boolean
+    delete?: MessageTemplateWhereInput | boolean
+    connect?: MessageTemplateWhereUniqueInput
+    update?: XOR<XOR<MessageTemplateUpdateToOneWithWhereWithoutCommunicationsInput, MessageTemplateUpdateWithoutCommunicationsInput>, MessageTemplateUncheckedUpdateWithoutCommunicationsInput>
+  }
+
+  export type CompanyCreateNestedOneWithoutAutoReplyRulesInput = {
+    create?: XOR<CompanyCreateWithoutAutoReplyRulesInput, CompanyUncheckedCreateWithoutAutoReplyRulesInput>
+    connectOrCreate?: CompanyCreateOrConnectWithoutAutoReplyRulesInput
+    connect?: CompanyWhereUniqueInput
+  }
+
+  export type CompanyUpdateOneRequiredWithoutAutoReplyRulesNestedInput = {
+    create?: XOR<CompanyCreateWithoutAutoReplyRulesInput, CompanyUncheckedCreateWithoutAutoReplyRulesInput>
+    connectOrCreate?: CompanyCreateOrConnectWithoutAutoReplyRulesInput
+    upsert?: CompanyUpsertWithoutAutoReplyRulesInput
+    connect?: CompanyWhereUniqueInput
+    update?: XOR<XOR<CompanyUpdateToOneWithWhereWithoutAutoReplyRulesInput, CompanyUpdateWithoutAutoReplyRulesInput>, CompanyUncheckedUpdateWithoutAutoReplyRulesInput>
+  }
+
+  export type CompanyCreateNestedOneWithoutCampaignsInput = {
+    create?: XOR<CompanyCreateWithoutCampaignsInput, CompanyUncheckedCreateWithoutCampaignsInput>
+    connectOrCreate?: CompanyCreateOrConnectWithoutCampaignsInput
+    connect?: CompanyWhereUniqueInput
+  }
+
+  export type CampaignLeadCreateNestedManyWithoutCampaignInput = {
+    create?: XOR<CampaignLeadCreateWithoutCampaignInput, CampaignLeadUncheckedCreateWithoutCampaignInput> | CampaignLeadCreateWithoutCampaignInput[] | CampaignLeadUncheckedCreateWithoutCampaignInput[]
+    connectOrCreate?: CampaignLeadCreateOrConnectWithoutCampaignInput | CampaignLeadCreateOrConnectWithoutCampaignInput[]
+    createMany?: CampaignLeadCreateManyCampaignInputEnvelope
+    connect?: CampaignLeadWhereUniqueInput | CampaignLeadWhereUniqueInput[]
+  }
+
+  export type CampaignLeadUncheckedCreateNestedManyWithoutCampaignInput = {
+    create?: XOR<CampaignLeadCreateWithoutCampaignInput, CampaignLeadUncheckedCreateWithoutCampaignInput> | CampaignLeadCreateWithoutCampaignInput[] | CampaignLeadUncheckedCreateWithoutCampaignInput[]
+    connectOrCreate?: CampaignLeadCreateOrConnectWithoutCampaignInput | CampaignLeadCreateOrConnectWithoutCampaignInput[]
+    createMany?: CampaignLeadCreateManyCampaignInputEnvelope
+    connect?: CampaignLeadWhereUniqueInput | CampaignLeadWhereUniqueInput[]
+  }
+
+  export type CompanyUpdateOneRequiredWithoutCampaignsNestedInput = {
+    create?: XOR<CompanyCreateWithoutCampaignsInput, CompanyUncheckedCreateWithoutCampaignsInput>
+    connectOrCreate?: CompanyCreateOrConnectWithoutCampaignsInput
+    upsert?: CompanyUpsertWithoutCampaignsInput
+    connect?: CompanyWhereUniqueInput
+    update?: XOR<XOR<CompanyUpdateToOneWithWhereWithoutCampaignsInput, CompanyUpdateWithoutCampaignsInput>, CompanyUncheckedUpdateWithoutCampaignsInput>
+  }
+
+  export type CampaignLeadUpdateManyWithoutCampaignNestedInput = {
+    create?: XOR<CampaignLeadCreateWithoutCampaignInput, CampaignLeadUncheckedCreateWithoutCampaignInput> | CampaignLeadCreateWithoutCampaignInput[] | CampaignLeadUncheckedCreateWithoutCampaignInput[]
+    connectOrCreate?: CampaignLeadCreateOrConnectWithoutCampaignInput | CampaignLeadCreateOrConnectWithoutCampaignInput[]
+    upsert?: CampaignLeadUpsertWithWhereUniqueWithoutCampaignInput | CampaignLeadUpsertWithWhereUniqueWithoutCampaignInput[]
+    createMany?: CampaignLeadCreateManyCampaignInputEnvelope
+    set?: CampaignLeadWhereUniqueInput | CampaignLeadWhereUniqueInput[]
+    disconnect?: CampaignLeadWhereUniqueInput | CampaignLeadWhereUniqueInput[]
+    delete?: CampaignLeadWhereUniqueInput | CampaignLeadWhereUniqueInput[]
+    connect?: CampaignLeadWhereUniqueInput | CampaignLeadWhereUniqueInput[]
+    update?: CampaignLeadUpdateWithWhereUniqueWithoutCampaignInput | CampaignLeadUpdateWithWhereUniqueWithoutCampaignInput[]
+    updateMany?: CampaignLeadUpdateManyWithWhereWithoutCampaignInput | CampaignLeadUpdateManyWithWhereWithoutCampaignInput[]
+    deleteMany?: CampaignLeadScalarWhereInput | CampaignLeadScalarWhereInput[]
+  }
+
+  export type CampaignLeadUncheckedUpdateManyWithoutCampaignNestedInput = {
+    create?: XOR<CampaignLeadCreateWithoutCampaignInput, CampaignLeadUncheckedCreateWithoutCampaignInput> | CampaignLeadCreateWithoutCampaignInput[] | CampaignLeadUncheckedCreateWithoutCampaignInput[]
+    connectOrCreate?: CampaignLeadCreateOrConnectWithoutCampaignInput | CampaignLeadCreateOrConnectWithoutCampaignInput[]
+    upsert?: CampaignLeadUpsertWithWhereUniqueWithoutCampaignInput | CampaignLeadUpsertWithWhereUniqueWithoutCampaignInput[]
+    createMany?: CampaignLeadCreateManyCampaignInputEnvelope
+    set?: CampaignLeadWhereUniqueInput | CampaignLeadWhereUniqueInput[]
+    disconnect?: CampaignLeadWhereUniqueInput | CampaignLeadWhereUniqueInput[]
+    delete?: CampaignLeadWhereUniqueInput | CampaignLeadWhereUniqueInput[]
+    connect?: CampaignLeadWhereUniqueInput | CampaignLeadWhereUniqueInput[]
+    update?: CampaignLeadUpdateWithWhereUniqueWithoutCampaignInput | CampaignLeadUpdateWithWhereUniqueWithoutCampaignInput[]
+    updateMany?: CampaignLeadUpdateManyWithWhereWithoutCampaignInput | CampaignLeadUpdateManyWithWhereWithoutCampaignInput[]
+    deleteMany?: CampaignLeadScalarWhereInput | CampaignLeadScalarWhereInput[]
+  }
+
+  export type CampaignCreateNestedOneWithoutCampaignLeadsInput = {
+    create?: XOR<CampaignCreateWithoutCampaignLeadsInput, CampaignUncheckedCreateWithoutCampaignLeadsInput>
+    connectOrCreate?: CampaignCreateOrConnectWithoutCampaignLeadsInput
+    connect?: CampaignWhereUniqueInput
+  }
+
+  export type LeadCreateNestedOneWithoutCampaignLeadsInput = {
+    create?: XOR<LeadCreateWithoutCampaignLeadsInput, LeadUncheckedCreateWithoutCampaignLeadsInput>
+    connectOrCreate?: LeadCreateOrConnectWithoutCampaignLeadsInput
+    connect?: LeadWhereUniqueInput
+  }
+
+  export type CampaignUpdateOneRequiredWithoutCampaignLeadsNestedInput = {
+    create?: XOR<CampaignCreateWithoutCampaignLeadsInput, CampaignUncheckedCreateWithoutCampaignLeadsInput>
+    connectOrCreate?: CampaignCreateOrConnectWithoutCampaignLeadsInput
+    upsert?: CampaignUpsertWithoutCampaignLeadsInput
+    connect?: CampaignWhereUniqueInput
+    update?: XOR<XOR<CampaignUpdateToOneWithWhereWithoutCampaignLeadsInput, CampaignUpdateWithoutCampaignLeadsInput>, CampaignUncheckedUpdateWithoutCampaignLeadsInput>
+  }
+
+  export type LeadUpdateOneRequiredWithoutCampaignLeadsNestedInput = {
+    create?: XOR<LeadCreateWithoutCampaignLeadsInput, LeadUncheckedCreateWithoutCampaignLeadsInput>
+    connectOrCreate?: LeadCreateOrConnectWithoutCampaignLeadsInput
+    upsert?: LeadUpsertWithoutCampaignLeadsInput
+    connect?: LeadWhereUniqueInput
+    update?: XOR<XOR<LeadUpdateToOneWithWhereWithoutCampaignLeadsInput, LeadUpdateWithoutCampaignLeadsInput>, LeadUncheckedUpdateWithoutCampaignLeadsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -18624,11 +29644,15 @@ export namespace Prisma {
     isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    country?: string | null
+    service?: string | null
     assignedTo?: UserCreateNestedOneWithoutAssignedLeadsInput
     activities?: ActivityCreateNestedManyWithoutLeadInput
     deals?: DealCreateNestedManyWithoutLeadInput
     quotations?: QuotationCreateNestedManyWithoutLeadInput
     invoices?: InvoiceCreateNestedManyWithoutLeadInput
+    communications?: CommunicationCreateNestedManyWithoutLeadInput
+    campaignLeads?: CampaignLeadCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUncheckedCreateWithoutCompanyInput = {
@@ -18654,10 +29678,14 @@ export namespace Prisma {
     isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    country?: string | null
+    service?: string | null
     activities?: ActivityUncheckedCreateNestedManyWithoutLeadInput
     deals?: DealUncheckedCreateNestedManyWithoutLeadInput
     quotations?: QuotationUncheckedCreateNestedManyWithoutLeadInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutLeadInput
+    communications?: CommunicationUncheckedCreateNestedManyWithoutLeadInput
+    campaignLeads?: CampaignLeadUncheckedCreateNestedManyWithoutLeadInput
   }
 
   export type LeadCreateOrConnectWithoutCompanyInput = {
@@ -18926,6 +29954,176 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type MessageTemplateCreateWithoutCompanyInput = {
+    templateId?: string
+    name: string
+    category?: string
+    channel?: string
+    subject?: string | null
+    body: string
+    variables?: MessageTemplateCreatevariablesInput | string[]
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    automationRules?: AutomationRuleCreateNestedManyWithoutTemplateInput
+    communications?: CommunicationCreateNestedManyWithoutTemplateInput
+  }
+
+  export type MessageTemplateUncheckedCreateWithoutCompanyInput = {
+    templateId?: string
+    name: string
+    category?: string
+    channel?: string
+    subject?: string | null
+    body: string
+    variables?: MessageTemplateCreatevariablesInput | string[]
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    automationRules?: AutomationRuleUncheckedCreateNestedManyWithoutTemplateInput
+    communications?: CommunicationUncheckedCreateNestedManyWithoutTemplateInput
+  }
+
+  export type MessageTemplateCreateOrConnectWithoutCompanyInput = {
+    where: MessageTemplateWhereUniqueInput
+    create: XOR<MessageTemplateCreateWithoutCompanyInput, MessageTemplateUncheckedCreateWithoutCompanyInput>
+  }
+
+  export type MessageTemplateCreateManyCompanyInputEnvelope = {
+    data: MessageTemplateCreateManyCompanyInput | MessageTemplateCreateManyCompanyInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AutomationRuleCreateWithoutCompanyInput = {
+    ruleId?: string
+    name: string
+    isActive?: boolean
+    trigger: string
+    triggerValue?: string | null
+    channel?: string
+    delayMinutes?: number
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    executionCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    template: MessageTemplateCreateNestedOneWithoutAutomationRulesInput
+    jobs?: AutomationJobCreateNestedManyWithoutRuleInput
+  }
+
+  export type AutomationRuleUncheckedCreateWithoutCompanyInput = {
+    ruleId?: string
+    name: string
+    isActive?: boolean
+    trigger: string
+    triggerValue?: string | null
+    channel?: string
+    templateId: string
+    delayMinutes?: number
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    executionCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    jobs?: AutomationJobUncheckedCreateNestedManyWithoutRuleInput
+  }
+
+  export type AutomationRuleCreateOrConnectWithoutCompanyInput = {
+    where: AutomationRuleWhereUniqueInput
+    create: XOR<AutomationRuleCreateWithoutCompanyInput, AutomationRuleUncheckedCreateWithoutCompanyInput>
+  }
+
+  export type AutomationRuleCreateManyCompanyInputEnvelope = {
+    data: AutomationRuleCreateManyCompanyInput | AutomationRuleCreateManyCompanyInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CampaignCreateWithoutCompanyInput = {
+    campaignId?: string
+    name: string
+    description?: string | null
+    channel?: string
+    status?: string
+    templateId?: string | null
+    subject?: string | null
+    body?: string | null
+    filters?: NullableJsonNullValueInput | InputJsonValue
+    scheduledAt?: Date | string | null
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    totalLeads?: number
+    sentCount?: number
+    deliveredCount?: number
+    failedCount?: number
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    campaignLeads?: CampaignLeadCreateNestedManyWithoutCampaignInput
+  }
+
+  export type CampaignUncheckedCreateWithoutCompanyInput = {
+    campaignId?: string
+    name: string
+    description?: string | null
+    channel?: string
+    status?: string
+    templateId?: string | null
+    subject?: string | null
+    body?: string | null
+    filters?: NullableJsonNullValueInput | InputJsonValue
+    scheduledAt?: Date | string | null
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    totalLeads?: number
+    sentCount?: number
+    deliveredCount?: number
+    failedCount?: number
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    campaignLeads?: CampaignLeadUncheckedCreateNestedManyWithoutCampaignInput
+  }
+
+  export type CampaignCreateOrConnectWithoutCompanyInput = {
+    where: CampaignWhereUniqueInput
+    create: XOR<CampaignCreateWithoutCompanyInput, CampaignUncheckedCreateWithoutCompanyInput>
+  }
+
+  export type CampaignCreateManyCompanyInputEnvelope = {
+    data: CampaignCreateManyCompanyInput | CampaignCreateManyCompanyInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AutoReplyRuleCreateWithoutCompanyInput = {
+    replyRuleId?: string
+    keyword: string
+    matchType?: string
+    replyBody: string
+    isActive?: boolean
+    priority?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AutoReplyRuleUncheckedCreateWithoutCompanyInput = {
+    replyRuleId?: string
+    keyword: string
+    matchType?: string
+    replyBody: string
+    isActive?: boolean
+    priority?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AutoReplyRuleCreateOrConnectWithoutCompanyInput = {
+    where: AutoReplyRuleWhereUniqueInput
+    create: XOR<AutoReplyRuleCreateWithoutCompanyInput, AutoReplyRuleUncheckedCreateWithoutCompanyInput>
+  }
+
+  export type AutoReplyRuleCreateManyCompanyInputEnvelope = {
+    data: AutoReplyRuleCreateManyCompanyInput | AutoReplyRuleCreateManyCompanyInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithWhereUniqueWithoutCompanyInput = {
     where: UserWhereUniqueInput
     update: XOR<UserUpdateWithoutCompanyInput, UserUncheckedUpdateWithoutCompanyInput>
@@ -19007,6 +30205,8 @@ export namespace Prisma {
     isDeleted?: BoolFilter<"Lead"> | boolean
     createdAt?: DateTimeFilter<"Lead"> | Date | string
     updatedAt?: DateTimeFilter<"Lead"> | Date | string
+    country?: StringNullableFilter<"Lead"> | string | null
+    service?: StringNullableFilter<"Lead"> | string | null
   }
 
   export type DealUpsertWithWhereUniqueWithoutCompanyInput = {
@@ -19211,6 +30411,147 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Client"> | Date | string
   }
 
+  export type MessageTemplateUpsertWithWhereUniqueWithoutCompanyInput = {
+    where: MessageTemplateWhereUniqueInput
+    update: XOR<MessageTemplateUpdateWithoutCompanyInput, MessageTemplateUncheckedUpdateWithoutCompanyInput>
+    create: XOR<MessageTemplateCreateWithoutCompanyInput, MessageTemplateUncheckedCreateWithoutCompanyInput>
+  }
+
+  export type MessageTemplateUpdateWithWhereUniqueWithoutCompanyInput = {
+    where: MessageTemplateWhereUniqueInput
+    data: XOR<MessageTemplateUpdateWithoutCompanyInput, MessageTemplateUncheckedUpdateWithoutCompanyInput>
+  }
+
+  export type MessageTemplateUpdateManyWithWhereWithoutCompanyInput = {
+    where: MessageTemplateScalarWhereInput
+    data: XOR<MessageTemplateUpdateManyMutationInput, MessageTemplateUncheckedUpdateManyWithoutCompanyInput>
+  }
+
+  export type MessageTemplateScalarWhereInput = {
+    AND?: MessageTemplateScalarWhereInput | MessageTemplateScalarWhereInput[]
+    OR?: MessageTemplateScalarWhereInput[]
+    NOT?: MessageTemplateScalarWhereInput | MessageTemplateScalarWhereInput[]
+    templateId?: StringFilter<"MessageTemplate"> | string
+    companyId?: StringFilter<"MessageTemplate"> | string
+    name?: StringFilter<"MessageTemplate"> | string
+    category?: StringFilter<"MessageTemplate"> | string
+    channel?: StringFilter<"MessageTemplate"> | string
+    subject?: StringNullableFilter<"MessageTemplate"> | string | null
+    body?: StringFilter<"MessageTemplate"> | string
+    variables?: StringNullableListFilter<"MessageTemplate">
+    isActive?: BoolFilter<"MessageTemplate"> | boolean
+    createdAt?: DateTimeFilter<"MessageTemplate"> | Date | string
+    updatedAt?: DateTimeFilter<"MessageTemplate"> | Date | string
+  }
+
+  export type AutomationRuleUpsertWithWhereUniqueWithoutCompanyInput = {
+    where: AutomationRuleWhereUniqueInput
+    update: XOR<AutomationRuleUpdateWithoutCompanyInput, AutomationRuleUncheckedUpdateWithoutCompanyInput>
+    create: XOR<AutomationRuleCreateWithoutCompanyInput, AutomationRuleUncheckedCreateWithoutCompanyInput>
+  }
+
+  export type AutomationRuleUpdateWithWhereUniqueWithoutCompanyInput = {
+    where: AutomationRuleWhereUniqueInput
+    data: XOR<AutomationRuleUpdateWithoutCompanyInput, AutomationRuleUncheckedUpdateWithoutCompanyInput>
+  }
+
+  export type AutomationRuleUpdateManyWithWhereWithoutCompanyInput = {
+    where: AutomationRuleScalarWhereInput
+    data: XOR<AutomationRuleUpdateManyMutationInput, AutomationRuleUncheckedUpdateManyWithoutCompanyInput>
+  }
+
+  export type AutomationRuleScalarWhereInput = {
+    AND?: AutomationRuleScalarWhereInput | AutomationRuleScalarWhereInput[]
+    OR?: AutomationRuleScalarWhereInput[]
+    NOT?: AutomationRuleScalarWhereInput | AutomationRuleScalarWhereInput[]
+    ruleId?: StringFilter<"AutomationRule"> | string
+    companyId?: StringFilter<"AutomationRule"> | string
+    name?: StringFilter<"AutomationRule"> | string
+    isActive?: BoolFilter<"AutomationRule"> | boolean
+    trigger?: StringFilter<"AutomationRule"> | string
+    triggerValue?: StringNullableFilter<"AutomationRule"> | string | null
+    channel?: StringFilter<"AutomationRule"> | string
+    templateId?: StringFilter<"AutomationRule"> | string
+    delayMinutes?: IntFilter<"AutomationRule"> | number
+    conditions?: JsonNullableFilter<"AutomationRule">
+    executionCount?: IntFilter<"AutomationRule"> | number
+    createdAt?: DateTimeFilter<"AutomationRule"> | Date | string
+    updatedAt?: DateTimeFilter<"AutomationRule"> | Date | string
+  }
+
+  export type CampaignUpsertWithWhereUniqueWithoutCompanyInput = {
+    where: CampaignWhereUniqueInput
+    update: XOR<CampaignUpdateWithoutCompanyInput, CampaignUncheckedUpdateWithoutCompanyInput>
+    create: XOR<CampaignCreateWithoutCompanyInput, CampaignUncheckedCreateWithoutCompanyInput>
+  }
+
+  export type CampaignUpdateWithWhereUniqueWithoutCompanyInput = {
+    where: CampaignWhereUniqueInput
+    data: XOR<CampaignUpdateWithoutCompanyInput, CampaignUncheckedUpdateWithoutCompanyInput>
+  }
+
+  export type CampaignUpdateManyWithWhereWithoutCompanyInput = {
+    where: CampaignScalarWhereInput
+    data: XOR<CampaignUpdateManyMutationInput, CampaignUncheckedUpdateManyWithoutCompanyInput>
+  }
+
+  export type CampaignScalarWhereInput = {
+    AND?: CampaignScalarWhereInput | CampaignScalarWhereInput[]
+    OR?: CampaignScalarWhereInput[]
+    NOT?: CampaignScalarWhereInput | CampaignScalarWhereInput[]
+    campaignId?: StringFilter<"Campaign"> | string
+    companyId?: StringFilter<"Campaign"> | string
+    name?: StringFilter<"Campaign"> | string
+    description?: StringNullableFilter<"Campaign"> | string | null
+    channel?: StringFilter<"Campaign"> | string
+    status?: StringFilter<"Campaign"> | string
+    templateId?: StringNullableFilter<"Campaign"> | string | null
+    subject?: StringNullableFilter<"Campaign"> | string | null
+    body?: StringNullableFilter<"Campaign"> | string | null
+    filters?: JsonNullableFilter<"Campaign">
+    scheduledAt?: DateTimeNullableFilter<"Campaign"> | Date | string | null
+    startedAt?: DateTimeNullableFilter<"Campaign"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"Campaign"> | Date | string | null
+    totalLeads?: IntFilter<"Campaign"> | number
+    sentCount?: IntFilter<"Campaign"> | number
+    deliveredCount?: IntFilter<"Campaign"> | number
+    failedCount?: IntFilter<"Campaign"> | number
+    createdById?: StringNullableFilter<"Campaign"> | string | null
+    createdAt?: DateTimeFilter<"Campaign"> | Date | string
+    updatedAt?: DateTimeFilter<"Campaign"> | Date | string
+  }
+
+  export type AutoReplyRuleUpsertWithWhereUniqueWithoutCompanyInput = {
+    where: AutoReplyRuleWhereUniqueInput
+    update: XOR<AutoReplyRuleUpdateWithoutCompanyInput, AutoReplyRuleUncheckedUpdateWithoutCompanyInput>
+    create: XOR<AutoReplyRuleCreateWithoutCompanyInput, AutoReplyRuleUncheckedCreateWithoutCompanyInput>
+  }
+
+  export type AutoReplyRuleUpdateWithWhereUniqueWithoutCompanyInput = {
+    where: AutoReplyRuleWhereUniqueInput
+    data: XOR<AutoReplyRuleUpdateWithoutCompanyInput, AutoReplyRuleUncheckedUpdateWithoutCompanyInput>
+  }
+
+  export type AutoReplyRuleUpdateManyWithWhereWithoutCompanyInput = {
+    where: AutoReplyRuleScalarWhereInput
+    data: XOR<AutoReplyRuleUpdateManyMutationInput, AutoReplyRuleUncheckedUpdateManyWithoutCompanyInput>
+  }
+
+  export type AutoReplyRuleScalarWhereInput = {
+    AND?: AutoReplyRuleScalarWhereInput | AutoReplyRuleScalarWhereInput[]
+    OR?: AutoReplyRuleScalarWhereInput[]
+    NOT?: AutoReplyRuleScalarWhereInput | AutoReplyRuleScalarWhereInput[]
+    replyRuleId?: StringFilter<"AutoReplyRule"> | string
+    companyId?: StringFilter<"AutoReplyRule"> | string
+    keyword?: StringFilter<"AutoReplyRule"> | string
+    matchType?: StringFilter<"AutoReplyRule"> | string
+    replyBody?: StringFilter<"AutoReplyRule"> | string
+    isActive?: BoolFilter<"AutoReplyRule"> | boolean
+    priority?: IntFilter<"AutoReplyRule"> | number
+    createdAt?: DateTimeFilter<"AutoReplyRule"> | Date | string
+    updatedAt?: DateTimeFilter<"AutoReplyRule"> | Date | string
+  }
+
   export type CompanyCreateWithoutUsersInput = {
     companyId?: string
     name: string
@@ -19238,6 +30579,10 @@ export namespace Prisma {
     invoices?: InvoiceCreateNestedManyWithoutCompanyInput
     webhooks?: WebhookCreateNestedManyWithoutCompanyInput
     clients?: ClientCreateNestedManyWithoutCompanyInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutCompanyInput
+    automationRules?: AutomationRuleCreateNestedManyWithoutCompanyInput
+    campaigns?: CampaignCreateNestedManyWithoutCompanyInput
+    autoReplyRules?: AutoReplyRuleCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyUncheckedCreateWithoutUsersInput = {
@@ -19267,6 +30612,10 @@ export namespace Prisma {
     invoices?: InvoiceUncheckedCreateNestedManyWithoutCompanyInput
     webhooks?: WebhookUncheckedCreateNestedManyWithoutCompanyInput
     clients?: ClientUncheckedCreateNestedManyWithoutCompanyInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutCompanyInput
+    automationRules?: AutomationRuleUncheckedCreateNestedManyWithoutCompanyInput
+    campaigns?: CampaignUncheckedCreateNestedManyWithoutCompanyInput
+    autoReplyRules?: AutoReplyRuleUncheckedCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyCreateOrConnectWithoutUsersInput = {
@@ -19296,11 +30645,15 @@ export namespace Prisma {
     isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    country?: string | null
+    service?: string | null
     company: CompanyCreateNestedOneWithoutLeadsInput
     activities?: ActivityCreateNestedManyWithoutLeadInput
     deals?: DealCreateNestedManyWithoutLeadInput
     quotations?: QuotationCreateNestedManyWithoutLeadInput
     invoices?: InvoiceCreateNestedManyWithoutLeadInput
+    communications?: CommunicationCreateNestedManyWithoutLeadInput
+    campaignLeads?: CampaignLeadCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUncheckedCreateWithoutAssignedToInput = {
@@ -19326,10 +30679,14 @@ export namespace Prisma {
     isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    country?: string | null
+    service?: string | null
     activities?: ActivityUncheckedCreateNestedManyWithoutLeadInput
     deals?: DealUncheckedCreateNestedManyWithoutLeadInput
     quotations?: QuotationUncheckedCreateNestedManyWithoutLeadInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutLeadInput
+    communications?: CommunicationUncheckedCreateNestedManyWithoutLeadInput
+    campaignLeads?: CampaignLeadUncheckedCreateNestedManyWithoutLeadInput
   }
 
   export type LeadCreateOrConnectWithoutAssignedToInput = {
@@ -19434,6 +30791,10 @@ export namespace Prisma {
     invoices?: InvoiceUpdateManyWithoutCompanyNestedInput
     webhooks?: WebhookUpdateManyWithoutCompanyNestedInput
     clients?: ClientUpdateManyWithoutCompanyNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutCompanyNestedInput
+    automationRules?: AutomationRuleUpdateManyWithoutCompanyNestedInput
+    campaigns?: CampaignUpdateManyWithoutCompanyNestedInput
+    autoReplyRules?: AutoReplyRuleUpdateManyWithoutCompanyNestedInput
   }
 
   export type CompanyUncheckedUpdateWithoutUsersInput = {
@@ -19463,6 +30824,10 @@ export namespace Prisma {
     invoices?: InvoiceUncheckedUpdateManyWithoutCompanyNestedInput
     webhooks?: WebhookUncheckedUpdateManyWithoutCompanyNestedInput
     clients?: ClientUncheckedUpdateManyWithoutCompanyNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutCompanyNestedInput
+    automationRules?: AutomationRuleUncheckedUpdateManyWithoutCompanyNestedInput
+    campaigns?: CampaignUncheckedUpdateManyWithoutCompanyNestedInput
+    autoReplyRules?: AutoReplyRuleUncheckedUpdateManyWithoutCompanyNestedInput
   }
 
   export type LeadUpsertWithWhereUniqueWithoutAssignedToInput = {
@@ -19665,6 +31030,10 @@ export namespace Prisma {
     invoices?: InvoiceCreateNestedManyWithoutCompanyInput
     webhooks?: WebhookCreateNestedManyWithoutCompanyInput
     clients?: ClientCreateNestedManyWithoutCompanyInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutCompanyInput
+    automationRules?: AutomationRuleCreateNestedManyWithoutCompanyInput
+    campaigns?: CampaignCreateNestedManyWithoutCompanyInput
+    autoReplyRules?: AutoReplyRuleCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyUncheckedCreateWithoutLeadsInput = {
@@ -19694,6 +31063,10 @@ export namespace Prisma {
     invoices?: InvoiceUncheckedCreateNestedManyWithoutCompanyInput
     webhooks?: WebhookUncheckedCreateNestedManyWithoutCompanyInput
     clients?: ClientUncheckedCreateNestedManyWithoutCompanyInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutCompanyInput
+    automationRules?: AutomationRuleUncheckedCreateNestedManyWithoutCompanyInput
+    campaigns?: CampaignUncheckedCreateNestedManyWithoutCompanyInput
+    autoReplyRules?: AutoReplyRuleUncheckedCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyCreateOrConnectWithoutLeadsInput = {
@@ -19962,6 +31335,86 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type CommunicationCreateWithoutLeadInput = {
+    commId?: string
+    companyId: string
+    channel: string
+    direction?: string
+    status?: string
+    fromNumber?: string | null
+    toNumber?: string | null
+    subject?: string | null
+    body: string
+    watiMessageId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    readAt?: Date | string | null
+    userId?: string | null
+    createdAt?: Date | string
+    template?: MessageTemplateCreateNestedOneWithoutCommunicationsInput
+  }
+
+  export type CommunicationUncheckedCreateWithoutLeadInput = {
+    commId?: string
+    companyId: string
+    channel: string
+    direction?: string
+    status?: string
+    fromNumber?: string | null
+    toNumber?: string | null
+    templateId?: string | null
+    subject?: string | null
+    body: string
+    watiMessageId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    readAt?: Date | string | null
+    userId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type CommunicationCreateOrConnectWithoutLeadInput = {
+    where: CommunicationWhereUniqueInput
+    create: XOR<CommunicationCreateWithoutLeadInput, CommunicationUncheckedCreateWithoutLeadInput>
+  }
+
+  export type CommunicationCreateManyLeadInputEnvelope = {
+    data: CommunicationCreateManyLeadInput | CommunicationCreateManyLeadInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CampaignLeadCreateWithoutLeadInput = {
+    id?: string
+    status?: string
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    error?: string | null
+    createdAt?: Date | string
+    campaign: CampaignCreateNestedOneWithoutCampaignLeadsInput
+  }
+
+  export type CampaignLeadUncheckedCreateWithoutLeadInput = {
+    id?: string
+    campaignId: string
+    status?: string
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type CampaignLeadCreateOrConnectWithoutLeadInput = {
+    where: CampaignLeadWhereUniqueInput
+    create: XOR<CampaignLeadCreateWithoutLeadInput, CampaignLeadUncheckedCreateWithoutLeadInput>
+  }
+
+  export type CampaignLeadCreateManyLeadInputEnvelope = {
+    data: CampaignLeadCreateManyLeadInput | CampaignLeadCreateManyLeadInput[]
+    skipDuplicates?: boolean
+  }
+
   export type CompanyUpsertWithoutLeadsInput = {
     update: XOR<CompanyUpdateWithoutLeadsInput, CompanyUncheckedUpdateWithoutLeadsInput>
     create: XOR<CompanyCreateWithoutLeadsInput, CompanyUncheckedCreateWithoutLeadsInput>
@@ -20000,6 +31453,10 @@ export namespace Prisma {
     invoices?: InvoiceUpdateManyWithoutCompanyNestedInput
     webhooks?: WebhookUpdateManyWithoutCompanyNestedInput
     clients?: ClientUpdateManyWithoutCompanyNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutCompanyNestedInput
+    automationRules?: AutomationRuleUpdateManyWithoutCompanyNestedInput
+    campaigns?: CampaignUpdateManyWithoutCompanyNestedInput
+    autoReplyRules?: AutoReplyRuleUpdateManyWithoutCompanyNestedInput
   }
 
   export type CompanyUncheckedUpdateWithoutLeadsInput = {
@@ -20029,6 +31486,10 @@ export namespace Prisma {
     invoices?: InvoiceUncheckedUpdateManyWithoutCompanyNestedInput
     webhooks?: WebhookUncheckedUpdateManyWithoutCompanyNestedInput
     clients?: ClientUncheckedUpdateManyWithoutCompanyNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutCompanyNestedInput
+    automationRules?: AutomationRuleUncheckedUpdateManyWithoutCompanyNestedInput
+    campaigns?: CampaignUncheckedUpdateManyWithoutCompanyNestedInput
+    autoReplyRules?: AutoReplyRuleUncheckedUpdateManyWithoutCompanyNestedInput
   }
 
   export type UserUpsertWithoutAssignedLeadsInput = {
@@ -20148,6 +31609,76 @@ export namespace Prisma {
     data: XOR<InvoiceUpdateManyMutationInput, InvoiceUncheckedUpdateManyWithoutLeadInput>
   }
 
+  export type CommunicationUpsertWithWhereUniqueWithoutLeadInput = {
+    where: CommunicationWhereUniqueInput
+    update: XOR<CommunicationUpdateWithoutLeadInput, CommunicationUncheckedUpdateWithoutLeadInput>
+    create: XOR<CommunicationCreateWithoutLeadInput, CommunicationUncheckedCreateWithoutLeadInput>
+  }
+
+  export type CommunicationUpdateWithWhereUniqueWithoutLeadInput = {
+    where: CommunicationWhereUniqueInput
+    data: XOR<CommunicationUpdateWithoutLeadInput, CommunicationUncheckedUpdateWithoutLeadInput>
+  }
+
+  export type CommunicationUpdateManyWithWhereWithoutLeadInput = {
+    where: CommunicationScalarWhereInput
+    data: XOR<CommunicationUpdateManyMutationInput, CommunicationUncheckedUpdateManyWithoutLeadInput>
+  }
+
+  export type CommunicationScalarWhereInput = {
+    AND?: CommunicationScalarWhereInput | CommunicationScalarWhereInput[]
+    OR?: CommunicationScalarWhereInput[]
+    NOT?: CommunicationScalarWhereInput | CommunicationScalarWhereInput[]
+    commId?: StringFilter<"Communication"> | string
+    companyId?: StringFilter<"Communication"> | string
+    leadId?: StringNullableFilter<"Communication"> | string | null
+    channel?: StringFilter<"Communication"> | string
+    direction?: StringFilter<"Communication"> | string
+    status?: StringFilter<"Communication"> | string
+    fromNumber?: StringNullableFilter<"Communication"> | string | null
+    toNumber?: StringNullableFilter<"Communication"> | string | null
+    templateId?: StringNullableFilter<"Communication"> | string | null
+    subject?: StringNullableFilter<"Communication"> | string | null
+    body?: StringFilter<"Communication"> | string
+    watiMessageId?: StringNullableFilter<"Communication"> | string | null
+    metadata?: JsonNullableFilter<"Communication">
+    sentAt?: DateTimeNullableFilter<"Communication"> | Date | string | null
+    deliveredAt?: DateTimeNullableFilter<"Communication"> | Date | string | null
+    readAt?: DateTimeNullableFilter<"Communication"> | Date | string | null
+    userId?: StringNullableFilter<"Communication"> | string | null
+    createdAt?: DateTimeFilter<"Communication"> | Date | string
+  }
+
+  export type CampaignLeadUpsertWithWhereUniqueWithoutLeadInput = {
+    where: CampaignLeadWhereUniqueInput
+    update: XOR<CampaignLeadUpdateWithoutLeadInput, CampaignLeadUncheckedUpdateWithoutLeadInput>
+    create: XOR<CampaignLeadCreateWithoutLeadInput, CampaignLeadUncheckedCreateWithoutLeadInput>
+  }
+
+  export type CampaignLeadUpdateWithWhereUniqueWithoutLeadInput = {
+    where: CampaignLeadWhereUniqueInput
+    data: XOR<CampaignLeadUpdateWithoutLeadInput, CampaignLeadUncheckedUpdateWithoutLeadInput>
+  }
+
+  export type CampaignLeadUpdateManyWithWhereWithoutLeadInput = {
+    where: CampaignLeadScalarWhereInput
+    data: XOR<CampaignLeadUpdateManyMutationInput, CampaignLeadUncheckedUpdateManyWithoutLeadInput>
+  }
+
+  export type CampaignLeadScalarWhereInput = {
+    AND?: CampaignLeadScalarWhereInput | CampaignLeadScalarWhereInput[]
+    OR?: CampaignLeadScalarWhereInput[]
+    NOT?: CampaignLeadScalarWhereInput | CampaignLeadScalarWhereInput[]
+    id?: StringFilter<"CampaignLead"> | string
+    campaignId?: StringFilter<"CampaignLead"> | string
+    leadId?: StringFilter<"CampaignLead"> | string
+    status?: StringFilter<"CampaignLead"> | string
+    sentAt?: DateTimeNullableFilter<"CampaignLead"> | Date | string | null
+    deliveredAt?: DateTimeNullableFilter<"CampaignLead"> | Date | string | null
+    error?: StringNullableFilter<"CampaignLead"> | string | null
+    createdAt?: DateTimeFilter<"CampaignLead"> | Date | string
+  }
+
   export type LeadCreateWithoutActivitiesInput = {
     leadId?: string
     name: string
@@ -20170,11 +31701,15 @@ export namespace Prisma {
     isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    country?: string | null
+    service?: string | null
     company: CompanyCreateNestedOneWithoutLeadsInput
     assignedTo?: UserCreateNestedOneWithoutAssignedLeadsInput
     deals?: DealCreateNestedManyWithoutLeadInput
     quotations?: QuotationCreateNestedManyWithoutLeadInput
     invoices?: InvoiceCreateNestedManyWithoutLeadInput
+    communications?: CommunicationCreateNestedManyWithoutLeadInput
+    campaignLeads?: CampaignLeadCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUncheckedCreateWithoutActivitiesInput = {
@@ -20201,9 +31736,13 @@ export namespace Prisma {
     isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    country?: string | null
+    service?: string | null
     deals?: DealUncheckedCreateNestedManyWithoutLeadInput
     quotations?: QuotationUncheckedCreateNestedManyWithoutLeadInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutLeadInput
+    communications?: CommunicationUncheckedCreateNestedManyWithoutLeadInput
+    campaignLeads?: CampaignLeadUncheckedCreateNestedManyWithoutLeadInput
   }
 
   export type LeadCreateOrConnectWithoutActivitiesInput = {
@@ -20291,11 +31830,15 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    service?: NullableStringFieldUpdateOperationsInput | string | null
     company?: CompanyUpdateOneRequiredWithoutLeadsNestedInput
     assignedTo?: UserUpdateOneWithoutAssignedLeadsNestedInput
     deals?: DealUpdateManyWithoutLeadNestedInput
     quotations?: QuotationUpdateManyWithoutLeadNestedInput
     invoices?: InvoiceUpdateManyWithoutLeadNestedInput
+    communications?: CommunicationUpdateManyWithoutLeadNestedInput
+    campaignLeads?: CampaignLeadUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateWithoutActivitiesInput = {
@@ -20322,9 +31865,13 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    service?: NullableStringFieldUpdateOperationsInput | string | null
     deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
     quotations?: QuotationUncheckedUpdateManyWithoutLeadNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutLeadNestedInput
+    communications?: CommunicationUncheckedUpdateManyWithoutLeadNestedInput
+    campaignLeads?: CampaignLeadUncheckedUpdateManyWithoutLeadNestedInput
   }
 
   export type UserUpsertWithoutActivitiesInput = {
@@ -20407,6 +31954,10 @@ export namespace Prisma {
     invoices?: InvoiceCreateNestedManyWithoutCompanyInput
     webhooks?: WebhookCreateNestedManyWithoutCompanyInput
     clients?: ClientCreateNestedManyWithoutCompanyInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutCompanyInput
+    automationRules?: AutomationRuleCreateNestedManyWithoutCompanyInput
+    campaigns?: CampaignCreateNestedManyWithoutCompanyInput
+    autoReplyRules?: AutoReplyRuleCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyUncheckedCreateWithoutDealsInput = {
@@ -20436,6 +31987,10 @@ export namespace Prisma {
     invoices?: InvoiceUncheckedCreateNestedManyWithoutCompanyInput
     webhooks?: WebhookUncheckedCreateNestedManyWithoutCompanyInput
     clients?: ClientUncheckedCreateNestedManyWithoutCompanyInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutCompanyInput
+    automationRules?: AutomationRuleUncheckedCreateNestedManyWithoutCompanyInput
+    campaigns?: CampaignUncheckedCreateNestedManyWithoutCompanyInput
+    autoReplyRules?: AutoReplyRuleUncheckedCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyCreateOrConnectWithoutDealsInput = {
@@ -20465,11 +32020,15 @@ export namespace Prisma {
     isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    country?: string | null
+    service?: string | null
     company: CompanyCreateNestedOneWithoutLeadsInput
     assignedTo?: UserCreateNestedOneWithoutAssignedLeadsInput
     activities?: ActivityCreateNestedManyWithoutLeadInput
     quotations?: QuotationCreateNestedManyWithoutLeadInput
     invoices?: InvoiceCreateNestedManyWithoutLeadInput
+    communications?: CommunicationCreateNestedManyWithoutLeadInput
+    campaignLeads?: CampaignLeadCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUncheckedCreateWithoutDealsInput = {
@@ -20496,9 +32055,13 @@ export namespace Prisma {
     isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    country?: string | null
+    service?: string | null
     activities?: ActivityUncheckedCreateNestedManyWithoutLeadInput
     quotations?: QuotationUncheckedCreateNestedManyWithoutLeadInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutLeadInput
+    communications?: CommunicationUncheckedCreateNestedManyWithoutLeadInput
+    campaignLeads?: CampaignLeadUncheckedCreateNestedManyWithoutLeadInput
   }
 
   export type LeadCreateOrConnectWithoutDealsInput = {
@@ -20608,6 +32171,10 @@ export namespace Prisma {
     invoices?: InvoiceUpdateManyWithoutCompanyNestedInput
     webhooks?: WebhookUpdateManyWithoutCompanyNestedInput
     clients?: ClientUpdateManyWithoutCompanyNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutCompanyNestedInput
+    automationRules?: AutomationRuleUpdateManyWithoutCompanyNestedInput
+    campaigns?: CampaignUpdateManyWithoutCompanyNestedInput
+    autoReplyRules?: AutoReplyRuleUpdateManyWithoutCompanyNestedInput
   }
 
   export type CompanyUncheckedUpdateWithoutDealsInput = {
@@ -20637,6 +32204,10 @@ export namespace Prisma {
     invoices?: InvoiceUncheckedUpdateManyWithoutCompanyNestedInput
     webhooks?: WebhookUncheckedUpdateManyWithoutCompanyNestedInput
     clients?: ClientUncheckedUpdateManyWithoutCompanyNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutCompanyNestedInput
+    automationRules?: AutomationRuleUncheckedUpdateManyWithoutCompanyNestedInput
+    campaigns?: CampaignUncheckedUpdateManyWithoutCompanyNestedInput
+    autoReplyRules?: AutoReplyRuleUncheckedUpdateManyWithoutCompanyNestedInput
   }
 
   export type LeadUpsertWithoutDealsInput = {
@@ -20672,11 +32243,15 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    service?: NullableStringFieldUpdateOperationsInput | string | null
     company?: CompanyUpdateOneRequiredWithoutLeadsNestedInput
     assignedTo?: UserUpdateOneWithoutAssignedLeadsNestedInput
     activities?: ActivityUpdateManyWithoutLeadNestedInput
     quotations?: QuotationUpdateManyWithoutLeadNestedInput
     invoices?: InvoiceUpdateManyWithoutLeadNestedInput
+    communications?: CommunicationUpdateManyWithoutLeadNestedInput
+    campaignLeads?: CampaignLeadUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateWithoutDealsInput = {
@@ -20703,9 +32278,13 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    service?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityUncheckedUpdateManyWithoutLeadNestedInput
     quotations?: QuotationUncheckedUpdateManyWithoutLeadNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutLeadNestedInput
+    communications?: CommunicationUncheckedUpdateManyWithoutLeadNestedInput
+    campaignLeads?: CampaignLeadUncheckedUpdateManyWithoutLeadNestedInput
   }
 
   export type QuotationUpsertWithWhereUniqueWithoutDealInput = {
@@ -20751,6 +32330,10 @@ export namespace Prisma {
     invoices?: InvoiceCreateNestedManyWithoutCompanyInput
     webhooks?: WebhookCreateNestedManyWithoutCompanyInput
     clients?: ClientCreateNestedManyWithoutCompanyInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutCompanyInput
+    automationRules?: AutomationRuleCreateNestedManyWithoutCompanyInput
+    campaigns?: CampaignCreateNestedManyWithoutCompanyInput
+    autoReplyRules?: AutoReplyRuleCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyUncheckedCreateWithoutQuotationsInput = {
@@ -20780,6 +32363,10 @@ export namespace Prisma {
     invoices?: InvoiceUncheckedCreateNestedManyWithoutCompanyInput
     webhooks?: WebhookUncheckedCreateNestedManyWithoutCompanyInput
     clients?: ClientUncheckedCreateNestedManyWithoutCompanyInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutCompanyInput
+    automationRules?: AutomationRuleUncheckedCreateNestedManyWithoutCompanyInput
+    campaigns?: CampaignUncheckedCreateNestedManyWithoutCompanyInput
+    autoReplyRules?: AutoReplyRuleUncheckedCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyCreateOrConnectWithoutQuotationsInput = {
@@ -20809,11 +32396,15 @@ export namespace Prisma {
     isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    country?: string | null
+    service?: string | null
     company: CompanyCreateNestedOneWithoutLeadsInput
     assignedTo?: UserCreateNestedOneWithoutAssignedLeadsInput
     activities?: ActivityCreateNestedManyWithoutLeadInput
     deals?: DealCreateNestedManyWithoutLeadInput
     invoices?: InvoiceCreateNestedManyWithoutLeadInput
+    communications?: CommunicationCreateNestedManyWithoutLeadInput
+    campaignLeads?: CampaignLeadCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUncheckedCreateWithoutQuotationsInput = {
@@ -20840,9 +32431,13 @@ export namespace Prisma {
     isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    country?: string | null
+    service?: string | null
     activities?: ActivityUncheckedCreateNestedManyWithoutLeadInput
     deals?: DealUncheckedCreateNestedManyWithoutLeadInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutLeadInput
+    communications?: CommunicationUncheckedCreateNestedManyWithoutLeadInput
+    campaignLeads?: CampaignLeadUncheckedCreateNestedManyWithoutLeadInput
   }
 
   export type LeadCreateOrConnectWithoutQuotationsInput = {
@@ -20929,6 +32524,10 @@ export namespace Prisma {
     invoices?: InvoiceUpdateManyWithoutCompanyNestedInput
     webhooks?: WebhookUpdateManyWithoutCompanyNestedInput
     clients?: ClientUpdateManyWithoutCompanyNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutCompanyNestedInput
+    automationRules?: AutomationRuleUpdateManyWithoutCompanyNestedInput
+    campaigns?: CampaignUpdateManyWithoutCompanyNestedInput
+    autoReplyRules?: AutoReplyRuleUpdateManyWithoutCompanyNestedInput
   }
 
   export type CompanyUncheckedUpdateWithoutQuotationsInput = {
@@ -20958,6 +32557,10 @@ export namespace Prisma {
     invoices?: InvoiceUncheckedUpdateManyWithoutCompanyNestedInput
     webhooks?: WebhookUncheckedUpdateManyWithoutCompanyNestedInput
     clients?: ClientUncheckedUpdateManyWithoutCompanyNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutCompanyNestedInput
+    automationRules?: AutomationRuleUncheckedUpdateManyWithoutCompanyNestedInput
+    campaigns?: CampaignUncheckedUpdateManyWithoutCompanyNestedInput
+    autoReplyRules?: AutoReplyRuleUncheckedUpdateManyWithoutCompanyNestedInput
   }
 
   export type LeadUpsertWithoutQuotationsInput = {
@@ -20993,11 +32596,15 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    service?: NullableStringFieldUpdateOperationsInput | string | null
     company?: CompanyUpdateOneRequiredWithoutLeadsNestedInput
     assignedTo?: UserUpdateOneWithoutAssignedLeadsNestedInput
     activities?: ActivityUpdateManyWithoutLeadNestedInput
     deals?: DealUpdateManyWithoutLeadNestedInput
     invoices?: InvoiceUpdateManyWithoutLeadNestedInput
+    communications?: CommunicationUpdateManyWithoutLeadNestedInput
+    campaignLeads?: CampaignLeadUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateWithoutQuotationsInput = {
@@ -21024,9 +32631,13 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    service?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityUncheckedUpdateManyWithoutLeadNestedInput
     deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutLeadNestedInput
+    communications?: CommunicationUncheckedUpdateManyWithoutLeadNestedInput
+    campaignLeads?: CampaignLeadUncheckedUpdateManyWithoutLeadNestedInput
   }
 
   export type DealUpsertWithoutQuotationsInput = {
@@ -21103,6 +32714,10 @@ export namespace Prisma {
     quotations?: QuotationCreateNestedManyWithoutCompanyInput
     webhooks?: WebhookCreateNestedManyWithoutCompanyInput
     clients?: ClientCreateNestedManyWithoutCompanyInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutCompanyInput
+    automationRules?: AutomationRuleCreateNestedManyWithoutCompanyInput
+    campaigns?: CampaignCreateNestedManyWithoutCompanyInput
+    autoReplyRules?: AutoReplyRuleCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyUncheckedCreateWithoutInvoicesInput = {
@@ -21132,6 +32747,10 @@ export namespace Prisma {
     quotations?: QuotationUncheckedCreateNestedManyWithoutCompanyInput
     webhooks?: WebhookUncheckedCreateNestedManyWithoutCompanyInput
     clients?: ClientUncheckedCreateNestedManyWithoutCompanyInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutCompanyInput
+    automationRules?: AutomationRuleUncheckedCreateNestedManyWithoutCompanyInput
+    campaigns?: CampaignUncheckedCreateNestedManyWithoutCompanyInput
+    autoReplyRules?: AutoReplyRuleUncheckedCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyCreateOrConnectWithoutInvoicesInput = {
@@ -21161,11 +32780,15 @@ export namespace Prisma {
     isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    country?: string | null
+    service?: string | null
     company: CompanyCreateNestedOneWithoutLeadsInput
     assignedTo?: UserCreateNestedOneWithoutAssignedLeadsInput
     activities?: ActivityCreateNestedManyWithoutLeadInput
     deals?: DealCreateNestedManyWithoutLeadInput
     quotations?: QuotationCreateNestedManyWithoutLeadInput
+    communications?: CommunicationCreateNestedManyWithoutLeadInput
+    campaignLeads?: CampaignLeadCreateNestedManyWithoutLeadInput
   }
 
   export type LeadUncheckedCreateWithoutInvoicesInput = {
@@ -21192,9 +32815,13 @@ export namespace Prisma {
     isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    country?: string | null
+    service?: string | null
     activities?: ActivityUncheckedCreateNestedManyWithoutLeadInput
     deals?: DealUncheckedCreateNestedManyWithoutLeadInput
     quotations?: QuotationUncheckedCreateNestedManyWithoutLeadInput
+    communications?: CommunicationUncheckedCreateNestedManyWithoutLeadInput
+    campaignLeads?: CampaignLeadUncheckedCreateNestedManyWithoutLeadInput
   }
 
   export type LeadCreateOrConnectWithoutInvoicesInput = {
@@ -21240,6 +32867,10 @@ export namespace Prisma {
     quotations?: QuotationUpdateManyWithoutCompanyNestedInput
     webhooks?: WebhookUpdateManyWithoutCompanyNestedInput
     clients?: ClientUpdateManyWithoutCompanyNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutCompanyNestedInput
+    automationRules?: AutomationRuleUpdateManyWithoutCompanyNestedInput
+    campaigns?: CampaignUpdateManyWithoutCompanyNestedInput
+    autoReplyRules?: AutoReplyRuleUpdateManyWithoutCompanyNestedInput
   }
 
   export type CompanyUncheckedUpdateWithoutInvoicesInput = {
@@ -21269,6 +32900,10 @@ export namespace Prisma {
     quotations?: QuotationUncheckedUpdateManyWithoutCompanyNestedInput
     webhooks?: WebhookUncheckedUpdateManyWithoutCompanyNestedInput
     clients?: ClientUncheckedUpdateManyWithoutCompanyNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutCompanyNestedInput
+    automationRules?: AutomationRuleUncheckedUpdateManyWithoutCompanyNestedInput
+    campaigns?: CampaignUncheckedUpdateManyWithoutCompanyNestedInput
+    autoReplyRules?: AutoReplyRuleUncheckedUpdateManyWithoutCompanyNestedInput
   }
 
   export type LeadUpsertWithoutInvoicesInput = {
@@ -21304,11 +32939,15 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    service?: NullableStringFieldUpdateOperationsInput | string | null
     company?: CompanyUpdateOneRequiredWithoutLeadsNestedInput
     assignedTo?: UserUpdateOneWithoutAssignedLeadsNestedInput
     activities?: ActivityUpdateManyWithoutLeadNestedInput
     deals?: DealUpdateManyWithoutLeadNestedInput
     quotations?: QuotationUpdateManyWithoutLeadNestedInput
+    communications?: CommunicationUpdateManyWithoutLeadNestedInput
+    campaignLeads?: CampaignLeadUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateWithoutInvoicesInput = {
@@ -21335,9 +32974,13 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    service?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityUncheckedUpdateManyWithoutLeadNestedInput
     deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
     quotations?: QuotationUncheckedUpdateManyWithoutLeadNestedInput
+    communications?: CommunicationUncheckedUpdateManyWithoutLeadNestedInput
+    campaignLeads?: CampaignLeadUncheckedUpdateManyWithoutLeadNestedInput
   }
 
   export type CompanyCreateWithoutClientsInput = {
@@ -21367,6 +33010,10 @@ export namespace Prisma {
     quotations?: QuotationCreateNestedManyWithoutCompanyInput
     invoices?: InvoiceCreateNestedManyWithoutCompanyInput
     webhooks?: WebhookCreateNestedManyWithoutCompanyInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutCompanyInput
+    automationRules?: AutomationRuleCreateNestedManyWithoutCompanyInput
+    campaigns?: CampaignCreateNestedManyWithoutCompanyInput
+    autoReplyRules?: AutoReplyRuleCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyUncheckedCreateWithoutClientsInput = {
@@ -21396,6 +33043,10 @@ export namespace Prisma {
     quotations?: QuotationUncheckedCreateNestedManyWithoutCompanyInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutCompanyInput
     webhooks?: WebhookUncheckedCreateNestedManyWithoutCompanyInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutCompanyInput
+    automationRules?: AutomationRuleUncheckedCreateNestedManyWithoutCompanyInput
+    campaigns?: CampaignUncheckedCreateNestedManyWithoutCompanyInput
+    autoReplyRules?: AutoReplyRuleUncheckedCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyCreateOrConnectWithoutClientsInput = {
@@ -21441,6 +33092,10 @@ export namespace Prisma {
     quotations?: QuotationUpdateManyWithoutCompanyNestedInput
     invoices?: InvoiceUpdateManyWithoutCompanyNestedInput
     webhooks?: WebhookUpdateManyWithoutCompanyNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutCompanyNestedInput
+    automationRules?: AutomationRuleUpdateManyWithoutCompanyNestedInput
+    campaigns?: CampaignUpdateManyWithoutCompanyNestedInput
+    autoReplyRules?: AutoReplyRuleUpdateManyWithoutCompanyNestedInput
   }
 
   export type CompanyUncheckedUpdateWithoutClientsInput = {
@@ -21470,6 +33125,10 @@ export namespace Prisma {
     quotations?: QuotationUncheckedUpdateManyWithoutCompanyNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutCompanyNestedInput
     webhooks?: WebhookUncheckedUpdateManyWithoutCompanyNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutCompanyNestedInput
+    automationRules?: AutomationRuleUncheckedUpdateManyWithoutCompanyNestedInput
+    campaigns?: CampaignUncheckedUpdateManyWithoutCompanyNestedInput
+    autoReplyRules?: AutoReplyRuleUncheckedUpdateManyWithoutCompanyNestedInput
   }
 
   export type CompanyCreateWithoutWebhooksInput = {
@@ -21499,6 +33158,10 @@ export namespace Prisma {
     quotations?: QuotationCreateNestedManyWithoutCompanyInput
     invoices?: InvoiceCreateNestedManyWithoutCompanyInput
     clients?: ClientCreateNestedManyWithoutCompanyInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutCompanyInput
+    automationRules?: AutomationRuleCreateNestedManyWithoutCompanyInput
+    campaigns?: CampaignCreateNestedManyWithoutCompanyInput
+    autoReplyRules?: AutoReplyRuleCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyUncheckedCreateWithoutWebhooksInput = {
@@ -21528,6 +33191,10 @@ export namespace Prisma {
     quotations?: QuotationUncheckedCreateNestedManyWithoutCompanyInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutCompanyInput
     clients?: ClientUncheckedCreateNestedManyWithoutCompanyInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutCompanyInput
+    automationRules?: AutomationRuleUncheckedCreateNestedManyWithoutCompanyInput
+    campaigns?: CampaignUncheckedCreateNestedManyWithoutCompanyInput
+    autoReplyRules?: AutoReplyRuleUncheckedCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyCreateOrConnectWithoutWebhooksInput = {
@@ -21573,6 +33240,10 @@ export namespace Prisma {
     quotations?: QuotationUpdateManyWithoutCompanyNestedInput
     invoices?: InvoiceUpdateManyWithoutCompanyNestedInput
     clients?: ClientUpdateManyWithoutCompanyNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutCompanyNestedInput
+    automationRules?: AutomationRuleUpdateManyWithoutCompanyNestedInput
+    campaigns?: CampaignUpdateManyWithoutCompanyNestedInput
+    autoReplyRules?: AutoReplyRuleUpdateManyWithoutCompanyNestedInput
   }
 
   export type CompanyUncheckedUpdateWithoutWebhooksInput = {
@@ -21602,6 +33273,1471 @@ export namespace Prisma {
     quotations?: QuotationUncheckedUpdateManyWithoutCompanyNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutCompanyNestedInput
     clients?: ClientUncheckedUpdateManyWithoutCompanyNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutCompanyNestedInput
+    automationRules?: AutomationRuleUncheckedUpdateManyWithoutCompanyNestedInput
+    campaigns?: CampaignUncheckedUpdateManyWithoutCompanyNestedInput
+    autoReplyRules?: AutoReplyRuleUncheckedUpdateManyWithoutCompanyNestedInput
+  }
+
+  export type CompanyCreateWithoutMessageTemplatesInput = {
+    companyId?: string
+    name: string
+    slug: string
+    domain?: string | null
+    logo?: string | null
+    gst?: string | null
+    industry?: string | null
+    phone?: string | null
+    email?: string | null
+    website?: string | null
+    plan?: $Enums.Plan
+    status?: string
+    apiKey: string
+    apiSecret: string
+    address?: JsonNullValueInput | InputJsonValue
+    bankDetails?: NullableJsonNullValueInput | InputJsonValue
+    settings?: JsonNullValueInput | InputJsonValue
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserCreateNestedManyWithoutCompanyInput
+    leads?: LeadCreateNestedManyWithoutCompanyInput
+    deals?: DealCreateNestedManyWithoutCompanyInput
+    quotations?: QuotationCreateNestedManyWithoutCompanyInput
+    invoices?: InvoiceCreateNestedManyWithoutCompanyInput
+    webhooks?: WebhookCreateNestedManyWithoutCompanyInput
+    clients?: ClientCreateNestedManyWithoutCompanyInput
+    automationRules?: AutomationRuleCreateNestedManyWithoutCompanyInput
+    campaigns?: CampaignCreateNestedManyWithoutCompanyInput
+    autoReplyRules?: AutoReplyRuleCreateNestedManyWithoutCompanyInput
+  }
+
+  export type CompanyUncheckedCreateWithoutMessageTemplatesInput = {
+    companyId?: string
+    name: string
+    slug: string
+    domain?: string | null
+    logo?: string | null
+    gst?: string | null
+    industry?: string | null
+    phone?: string | null
+    email?: string | null
+    website?: string | null
+    plan?: $Enums.Plan
+    status?: string
+    apiKey: string
+    apiSecret: string
+    address?: JsonNullValueInput | InputJsonValue
+    bankDetails?: NullableJsonNullValueInput | InputJsonValue
+    settings?: JsonNullValueInput | InputJsonValue
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutCompanyInput
+    leads?: LeadUncheckedCreateNestedManyWithoutCompanyInput
+    deals?: DealUncheckedCreateNestedManyWithoutCompanyInput
+    quotations?: QuotationUncheckedCreateNestedManyWithoutCompanyInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutCompanyInput
+    webhooks?: WebhookUncheckedCreateNestedManyWithoutCompanyInput
+    clients?: ClientUncheckedCreateNestedManyWithoutCompanyInput
+    automationRules?: AutomationRuleUncheckedCreateNestedManyWithoutCompanyInput
+    campaigns?: CampaignUncheckedCreateNestedManyWithoutCompanyInput
+    autoReplyRules?: AutoReplyRuleUncheckedCreateNestedManyWithoutCompanyInput
+  }
+
+  export type CompanyCreateOrConnectWithoutMessageTemplatesInput = {
+    where: CompanyWhereUniqueInput
+    create: XOR<CompanyCreateWithoutMessageTemplatesInput, CompanyUncheckedCreateWithoutMessageTemplatesInput>
+  }
+
+  export type AutomationRuleCreateWithoutTemplateInput = {
+    ruleId?: string
+    name: string
+    isActive?: boolean
+    trigger: string
+    triggerValue?: string | null
+    channel?: string
+    delayMinutes?: number
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    executionCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    company: CompanyCreateNestedOneWithoutAutomationRulesInput
+    jobs?: AutomationJobCreateNestedManyWithoutRuleInput
+  }
+
+  export type AutomationRuleUncheckedCreateWithoutTemplateInput = {
+    ruleId?: string
+    companyId: string
+    name: string
+    isActive?: boolean
+    trigger: string
+    triggerValue?: string | null
+    channel?: string
+    delayMinutes?: number
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    executionCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    jobs?: AutomationJobUncheckedCreateNestedManyWithoutRuleInput
+  }
+
+  export type AutomationRuleCreateOrConnectWithoutTemplateInput = {
+    where: AutomationRuleWhereUniqueInput
+    create: XOR<AutomationRuleCreateWithoutTemplateInput, AutomationRuleUncheckedCreateWithoutTemplateInput>
+  }
+
+  export type AutomationRuleCreateManyTemplateInputEnvelope = {
+    data: AutomationRuleCreateManyTemplateInput | AutomationRuleCreateManyTemplateInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CommunicationCreateWithoutTemplateInput = {
+    commId?: string
+    companyId: string
+    channel: string
+    direction?: string
+    status?: string
+    fromNumber?: string | null
+    toNumber?: string | null
+    subject?: string | null
+    body: string
+    watiMessageId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    readAt?: Date | string | null
+    userId?: string | null
+    createdAt?: Date | string
+    lead?: LeadCreateNestedOneWithoutCommunicationsInput
+  }
+
+  export type CommunicationUncheckedCreateWithoutTemplateInput = {
+    commId?: string
+    companyId: string
+    leadId?: string | null
+    channel: string
+    direction?: string
+    status?: string
+    fromNumber?: string | null
+    toNumber?: string | null
+    subject?: string | null
+    body: string
+    watiMessageId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    readAt?: Date | string | null
+    userId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type CommunicationCreateOrConnectWithoutTemplateInput = {
+    where: CommunicationWhereUniqueInput
+    create: XOR<CommunicationCreateWithoutTemplateInput, CommunicationUncheckedCreateWithoutTemplateInput>
+  }
+
+  export type CommunicationCreateManyTemplateInputEnvelope = {
+    data: CommunicationCreateManyTemplateInput | CommunicationCreateManyTemplateInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CompanyUpsertWithoutMessageTemplatesInput = {
+    update: XOR<CompanyUpdateWithoutMessageTemplatesInput, CompanyUncheckedUpdateWithoutMessageTemplatesInput>
+    create: XOR<CompanyCreateWithoutMessageTemplatesInput, CompanyUncheckedCreateWithoutMessageTemplatesInput>
+    where?: CompanyWhereInput
+  }
+
+  export type CompanyUpdateToOneWithWhereWithoutMessageTemplatesInput = {
+    where?: CompanyWhereInput
+    data: XOR<CompanyUpdateWithoutMessageTemplatesInput, CompanyUncheckedUpdateWithoutMessageTemplatesInput>
+  }
+
+  export type CompanyUpdateWithoutMessageTemplatesInput = {
+    companyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    domain?: NullableStringFieldUpdateOperationsInput | string | null
+    logo?: NullableStringFieldUpdateOperationsInput | string | null
+    gst?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    status?: StringFieldUpdateOperationsInput | string
+    apiKey?: StringFieldUpdateOperationsInput | string
+    apiSecret?: StringFieldUpdateOperationsInput | string
+    address?: JsonNullValueInput | InputJsonValue
+    bankDetails?: NullableJsonNullValueInput | InputJsonValue
+    settings?: JsonNullValueInput | InputJsonValue
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutCompanyNestedInput
+    leads?: LeadUpdateManyWithoutCompanyNestedInput
+    deals?: DealUpdateManyWithoutCompanyNestedInput
+    quotations?: QuotationUpdateManyWithoutCompanyNestedInput
+    invoices?: InvoiceUpdateManyWithoutCompanyNestedInput
+    webhooks?: WebhookUpdateManyWithoutCompanyNestedInput
+    clients?: ClientUpdateManyWithoutCompanyNestedInput
+    automationRules?: AutomationRuleUpdateManyWithoutCompanyNestedInput
+    campaigns?: CampaignUpdateManyWithoutCompanyNestedInput
+    autoReplyRules?: AutoReplyRuleUpdateManyWithoutCompanyNestedInput
+  }
+
+  export type CompanyUncheckedUpdateWithoutMessageTemplatesInput = {
+    companyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    domain?: NullableStringFieldUpdateOperationsInput | string | null
+    logo?: NullableStringFieldUpdateOperationsInput | string | null
+    gst?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    status?: StringFieldUpdateOperationsInput | string
+    apiKey?: StringFieldUpdateOperationsInput | string
+    apiSecret?: StringFieldUpdateOperationsInput | string
+    address?: JsonNullValueInput | InputJsonValue
+    bankDetails?: NullableJsonNullValueInput | InputJsonValue
+    settings?: JsonNullValueInput | InputJsonValue
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutCompanyNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutCompanyNestedInput
+    deals?: DealUncheckedUpdateManyWithoutCompanyNestedInput
+    quotations?: QuotationUncheckedUpdateManyWithoutCompanyNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutCompanyNestedInput
+    webhooks?: WebhookUncheckedUpdateManyWithoutCompanyNestedInput
+    clients?: ClientUncheckedUpdateManyWithoutCompanyNestedInput
+    automationRules?: AutomationRuleUncheckedUpdateManyWithoutCompanyNestedInput
+    campaigns?: CampaignUncheckedUpdateManyWithoutCompanyNestedInput
+    autoReplyRules?: AutoReplyRuleUncheckedUpdateManyWithoutCompanyNestedInput
+  }
+
+  export type AutomationRuleUpsertWithWhereUniqueWithoutTemplateInput = {
+    where: AutomationRuleWhereUniqueInput
+    update: XOR<AutomationRuleUpdateWithoutTemplateInput, AutomationRuleUncheckedUpdateWithoutTemplateInput>
+    create: XOR<AutomationRuleCreateWithoutTemplateInput, AutomationRuleUncheckedCreateWithoutTemplateInput>
+  }
+
+  export type AutomationRuleUpdateWithWhereUniqueWithoutTemplateInput = {
+    where: AutomationRuleWhereUniqueInput
+    data: XOR<AutomationRuleUpdateWithoutTemplateInput, AutomationRuleUncheckedUpdateWithoutTemplateInput>
+  }
+
+  export type AutomationRuleUpdateManyWithWhereWithoutTemplateInput = {
+    where: AutomationRuleScalarWhereInput
+    data: XOR<AutomationRuleUpdateManyMutationInput, AutomationRuleUncheckedUpdateManyWithoutTemplateInput>
+  }
+
+  export type CommunicationUpsertWithWhereUniqueWithoutTemplateInput = {
+    where: CommunicationWhereUniqueInput
+    update: XOR<CommunicationUpdateWithoutTemplateInput, CommunicationUncheckedUpdateWithoutTemplateInput>
+    create: XOR<CommunicationCreateWithoutTemplateInput, CommunicationUncheckedCreateWithoutTemplateInput>
+  }
+
+  export type CommunicationUpdateWithWhereUniqueWithoutTemplateInput = {
+    where: CommunicationWhereUniqueInput
+    data: XOR<CommunicationUpdateWithoutTemplateInput, CommunicationUncheckedUpdateWithoutTemplateInput>
+  }
+
+  export type CommunicationUpdateManyWithWhereWithoutTemplateInput = {
+    where: CommunicationScalarWhereInput
+    data: XOR<CommunicationUpdateManyMutationInput, CommunicationUncheckedUpdateManyWithoutTemplateInput>
+  }
+
+  export type CompanyCreateWithoutAutomationRulesInput = {
+    companyId?: string
+    name: string
+    slug: string
+    domain?: string | null
+    logo?: string | null
+    gst?: string | null
+    industry?: string | null
+    phone?: string | null
+    email?: string | null
+    website?: string | null
+    plan?: $Enums.Plan
+    status?: string
+    apiKey: string
+    apiSecret: string
+    address?: JsonNullValueInput | InputJsonValue
+    bankDetails?: NullableJsonNullValueInput | InputJsonValue
+    settings?: JsonNullValueInput | InputJsonValue
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserCreateNestedManyWithoutCompanyInput
+    leads?: LeadCreateNestedManyWithoutCompanyInput
+    deals?: DealCreateNestedManyWithoutCompanyInput
+    quotations?: QuotationCreateNestedManyWithoutCompanyInput
+    invoices?: InvoiceCreateNestedManyWithoutCompanyInput
+    webhooks?: WebhookCreateNestedManyWithoutCompanyInput
+    clients?: ClientCreateNestedManyWithoutCompanyInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutCompanyInput
+    campaigns?: CampaignCreateNestedManyWithoutCompanyInput
+    autoReplyRules?: AutoReplyRuleCreateNestedManyWithoutCompanyInput
+  }
+
+  export type CompanyUncheckedCreateWithoutAutomationRulesInput = {
+    companyId?: string
+    name: string
+    slug: string
+    domain?: string | null
+    logo?: string | null
+    gst?: string | null
+    industry?: string | null
+    phone?: string | null
+    email?: string | null
+    website?: string | null
+    plan?: $Enums.Plan
+    status?: string
+    apiKey: string
+    apiSecret: string
+    address?: JsonNullValueInput | InputJsonValue
+    bankDetails?: NullableJsonNullValueInput | InputJsonValue
+    settings?: JsonNullValueInput | InputJsonValue
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutCompanyInput
+    leads?: LeadUncheckedCreateNestedManyWithoutCompanyInput
+    deals?: DealUncheckedCreateNestedManyWithoutCompanyInput
+    quotations?: QuotationUncheckedCreateNestedManyWithoutCompanyInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutCompanyInput
+    webhooks?: WebhookUncheckedCreateNestedManyWithoutCompanyInput
+    clients?: ClientUncheckedCreateNestedManyWithoutCompanyInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutCompanyInput
+    campaigns?: CampaignUncheckedCreateNestedManyWithoutCompanyInput
+    autoReplyRules?: AutoReplyRuleUncheckedCreateNestedManyWithoutCompanyInput
+  }
+
+  export type CompanyCreateOrConnectWithoutAutomationRulesInput = {
+    where: CompanyWhereUniqueInput
+    create: XOR<CompanyCreateWithoutAutomationRulesInput, CompanyUncheckedCreateWithoutAutomationRulesInput>
+  }
+
+  export type MessageTemplateCreateWithoutAutomationRulesInput = {
+    templateId?: string
+    name: string
+    category?: string
+    channel?: string
+    subject?: string | null
+    body: string
+    variables?: MessageTemplateCreatevariablesInput | string[]
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    company: CompanyCreateNestedOneWithoutMessageTemplatesInput
+    communications?: CommunicationCreateNestedManyWithoutTemplateInput
+  }
+
+  export type MessageTemplateUncheckedCreateWithoutAutomationRulesInput = {
+    templateId?: string
+    companyId: string
+    name: string
+    category?: string
+    channel?: string
+    subject?: string | null
+    body: string
+    variables?: MessageTemplateCreatevariablesInput | string[]
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    communications?: CommunicationUncheckedCreateNestedManyWithoutTemplateInput
+  }
+
+  export type MessageTemplateCreateOrConnectWithoutAutomationRulesInput = {
+    where: MessageTemplateWhereUniqueInput
+    create: XOR<MessageTemplateCreateWithoutAutomationRulesInput, MessageTemplateUncheckedCreateWithoutAutomationRulesInput>
+  }
+
+  export type AutomationJobCreateWithoutRuleInput = {
+    jobId?: string
+    leadId: string
+    companyId: string
+    status?: string
+    scheduledAt: Date | string
+    executedAt?: Date | string | null
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AutomationJobUncheckedCreateWithoutRuleInput = {
+    jobId?: string
+    leadId: string
+    companyId: string
+    status?: string
+    scheduledAt: Date | string
+    executedAt?: Date | string | null
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AutomationJobCreateOrConnectWithoutRuleInput = {
+    where: AutomationJobWhereUniqueInput
+    create: XOR<AutomationJobCreateWithoutRuleInput, AutomationJobUncheckedCreateWithoutRuleInput>
+  }
+
+  export type AutomationJobCreateManyRuleInputEnvelope = {
+    data: AutomationJobCreateManyRuleInput | AutomationJobCreateManyRuleInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CompanyUpsertWithoutAutomationRulesInput = {
+    update: XOR<CompanyUpdateWithoutAutomationRulesInput, CompanyUncheckedUpdateWithoutAutomationRulesInput>
+    create: XOR<CompanyCreateWithoutAutomationRulesInput, CompanyUncheckedCreateWithoutAutomationRulesInput>
+    where?: CompanyWhereInput
+  }
+
+  export type CompanyUpdateToOneWithWhereWithoutAutomationRulesInput = {
+    where?: CompanyWhereInput
+    data: XOR<CompanyUpdateWithoutAutomationRulesInput, CompanyUncheckedUpdateWithoutAutomationRulesInput>
+  }
+
+  export type CompanyUpdateWithoutAutomationRulesInput = {
+    companyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    domain?: NullableStringFieldUpdateOperationsInput | string | null
+    logo?: NullableStringFieldUpdateOperationsInput | string | null
+    gst?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    status?: StringFieldUpdateOperationsInput | string
+    apiKey?: StringFieldUpdateOperationsInput | string
+    apiSecret?: StringFieldUpdateOperationsInput | string
+    address?: JsonNullValueInput | InputJsonValue
+    bankDetails?: NullableJsonNullValueInput | InputJsonValue
+    settings?: JsonNullValueInput | InputJsonValue
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutCompanyNestedInput
+    leads?: LeadUpdateManyWithoutCompanyNestedInput
+    deals?: DealUpdateManyWithoutCompanyNestedInput
+    quotations?: QuotationUpdateManyWithoutCompanyNestedInput
+    invoices?: InvoiceUpdateManyWithoutCompanyNestedInput
+    webhooks?: WebhookUpdateManyWithoutCompanyNestedInput
+    clients?: ClientUpdateManyWithoutCompanyNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutCompanyNestedInput
+    campaigns?: CampaignUpdateManyWithoutCompanyNestedInput
+    autoReplyRules?: AutoReplyRuleUpdateManyWithoutCompanyNestedInput
+  }
+
+  export type CompanyUncheckedUpdateWithoutAutomationRulesInput = {
+    companyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    domain?: NullableStringFieldUpdateOperationsInput | string | null
+    logo?: NullableStringFieldUpdateOperationsInput | string | null
+    gst?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    status?: StringFieldUpdateOperationsInput | string
+    apiKey?: StringFieldUpdateOperationsInput | string
+    apiSecret?: StringFieldUpdateOperationsInput | string
+    address?: JsonNullValueInput | InputJsonValue
+    bankDetails?: NullableJsonNullValueInput | InputJsonValue
+    settings?: JsonNullValueInput | InputJsonValue
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutCompanyNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutCompanyNestedInput
+    deals?: DealUncheckedUpdateManyWithoutCompanyNestedInput
+    quotations?: QuotationUncheckedUpdateManyWithoutCompanyNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutCompanyNestedInput
+    webhooks?: WebhookUncheckedUpdateManyWithoutCompanyNestedInput
+    clients?: ClientUncheckedUpdateManyWithoutCompanyNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutCompanyNestedInput
+    campaigns?: CampaignUncheckedUpdateManyWithoutCompanyNestedInput
+    autoReplyRules?: AutoReplyRuleUncheckedUpdateManyWithoutCompanyNestedInput
+  }
+
+  export type MessageTemplateUpsertWithoutAutomationRulesInput = {
+    update: XOR<MessageTemplateUpdateWithoutAutomationRulesInput, MessageTemplateUncheckedUpdateWithoutAutomationRulesInput>
+    create: XOR<MessageTemplateCreateWithoutAutomationRulesInput, MessageTemplateUncheckedCreateWithoutAutomationRulesInput>
+    where?: MessageTemplateWhereInput
+  }
+
+  export type MessageTemplateUpdateToOneWithWhereWithoutAutomationRulesInput = {
+    where?: MessageTemplateWhereInput
+    data: XOR<MessageTemplateUpdateWithoutAutomationRulesInput, MessageTemplateUncheckedUpdateWithoutAutomationRulesInput>
+  }
+
+  export type MessageTemplateUpdateWithoutAutomationRulesInput = {
+    templateId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    channel?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    variables?: MessageTemplateUpdatevariablesInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    company?: CompanyUpdateOneRequiredWithoutMessageTemplatesNestedInput
+    communications?: CommunicationUpdateManyWithoutTemplateNestedInput
+  }
+
+  export type MessageTemplateUncheckedUpdateWithoutAutomationRulesInput = {
+    templateId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    channel?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    variables?: MessageTemplateUpdatevariablesInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    communications?: CommunicationUncheckedUpdateManyWithoutTemplateNestedInput
+  }
+
+  export type AutomationJobUpsertWithWhereUniqueWithoutRuleInput = {
+    where: AutomationJobWhereUniqueInput
+    update: XOR<AutomationJobUpdateWithoutRuleInput, AutomationJobUncheckedUpdateWithoutRuleInput>
+    create: XOR<AutomationJobCreateWithoutRuleInput, AutomationJobUncheckedCreateWithoutRuleInput>
+  }
+
+  export type AutomationJobUpdateWithWhereUniqueWithoutRuleInput = {
+    where: AutomationJobWhereUniqueInput
+    data: XOR<AutomationJobUpdateWithoutRuleInput, AutomationJobUncheckedUpdateWithoutRuleInput>
+  }
+
+  export type AutomationJobUpdateManyWithWhereWithoutRuleInput = {
+    where: AutomationJobScalarWhereInput
+    data: XOR<AutomationJobUpdateManyMutationInput, AutomationJobUncheckedUpdateManyWithoutRuleInput>
+  }
+
+  export type AutomationJobScalarWhereInput = {
+    AND?: AutomationJobScalarWhereInput | AutomationJobScalarWhereInput[]
+    OR?: AutomationJobScalarWhereInput[]
+    NOT?: AutomationJobScalarWhereInput | AutomationJobScalarWhereInput[]
+    jobId?: StringFilter<"AutomationJob"> | string
+    ruleId?: StringFilter<"AutomationJob"> | string
+    leadId?: StringFilter<"AutomationJob"> | string
+    companyId?: StringFilter<"AutomationJob"> | string
+    status?: StringFilter<"AutomationJob"> | string
+    scheduledAt?: DateTimeFilter<"AutomationJob"> | Date | string
+    executedAt?: DateTimeNullableFilter<"AutomationJob"> | Date | string | null
+    error?: StringNullableFilter<"AutomationJob"> | string | null
+    createdAt?: DateTimeFilter<"AutomationJob"> | Date | string
+  }
+
+  export type AutomationRuleCreateWithoutJobsInput = {
+    ruleId?: string
+    name: string
+    isActive?: boolean
+    trigger: string
+    triggerValue?: string | null
+    channel?: string
+    delayMinutes?: number
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    executionCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    company: CompanyCreateNestedOneWithoutAutomationRulesInput
+    template: MessageTemplateCreateNestedOneWithoutAutomationRulesInput
+  }
+
+  export type AutomationRuleUncheckedCreateWithoutJobsInput = {
+    ruleId?: string
+    companyId: string
+    name: string
+    isActive?: boolean
+    trigger: string
+    triggerValue?: string | null
+    channel?: string
+    templateId: string
+    delayMinutes?: number
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    executionCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AutomationRuleCreateOrConnectWithoutJobsInput = {
+    where: AutomationRuleWhereUniqueInput
+    create: XOR<AutomationRuleCreateWithoutJobsInput, AutomationRuleUncheckedCreateWithoutJobsInput>
+  }
+
+  export type AutomationRuleUpsertWithoutJobsInput = {
+    update: XOR<AutomationRuleUpdateWithoutJobsInput, AutomationRuleUncheckedUpdateWithoutJobsInput>
+    create: XOR<AutomationRuleCreateWithoutJobsInput, AutomationRuleUncheckedCreateWithoutJobsInput>
+    where?: AutomationRuleWhereInput
+  }
+
+  export type AutomationRuleUpdateToOneWithWhereWithoutJobsInput = {
+    where?: AutomationRuleWhereInput
+    data: XOR<AutomationRuleUpdateWithoutJobsInput, AutomationRuleUncheckedUpdateWithoutJobsInput>
+  }
+
+  export type AutomationRuleUpdateWithoutJobsInput = {
+    ruleId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    trigger?: StringFieldUpdateOperationsInput | string
+    triggerValue?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    delayMinutes?: IntFieldUpdateOperationsInput | number
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    executionCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    company?: CompanyUpdateOneRequiredWithoutAutomationRulesNestedInput
+    template?: MessageTemplateUpdateOneRequiredWithoutAutomationRulesNestedInput
+  }
+
+  export type AutomationRuleUncheckedUpdateWithoutJobsInput = {
+    ruleId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    trigger?: StringFieldUpdateOperationsInput | string
+    triggerValue?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    delayMinutes?: IntFieldUpdateOperationsInput | number
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    executionCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LeadCreateWithoutCommunicationsInput = {
+    leadId?: string
+    name: string
+    email?: string | null
+    phone: string
+    city?: string | null
+    state?: string | null
+    source?: string
+    status?: string
+    priority?: string
+    dealValue?: number | null
+    currency?: string
+    aiScore?: number | null
+    aiScoreFactors?: NullableJsonNullValueInput | InputJsonValue
+    tags?: LeadCreatetagsInput | string[]
+    notes?: string | null
+    customFields?: NullableJsonNullValueInput | InputJsonValue
+    lastActivityAt?: Date | string | null
+    nextFollowUpAt?: Date | string | null
+    isDeleted?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    country?: string | null
+    service?: string | null
+    company: CompanyCreateNestedOneWithoutLeadsInput
+    assignedTo?: UserCreateNestedOneWithoutAssignedLeadsInput
+    activities?: ActivityCreateNestedManyWithoutLeadInput
+    deals?: DealCreateNestedManyWithoutLeadInput
+    quotations?: QuotationCreateNestedManyWithoutLeadInput
+    invoices?: InvoiceCreateNestedManyWithoutLeadInput
+    campaignLeads?: CampaignLeadCreateNestedManyWithoutLeadInput
+  }
+
+  export type LeadUncheckedCreateWithoutCommunicationsInput = {
+    leadId?: string
+    companyId: string
+    name: string
+    email?: string | null
+    phone: string
+    city?: string | null
+    state?: string | null
+    source?: string
+    status?: string
+    priority?: string
+    dealValue?: number | null
+    currency?: string
+    aiScore?: number | null
+    aiScoreFactors?: NullableJsonNullValueInput | InputJsonValue
+    assignedToId?: string | null
+    tags?: LeadCreatetagsInput | string[]
+    notes?: string | null
+    customFields?: NullableJsonNullValueInput | InputJsonValue
+    lastActivityAt?: Date | string | null
+    nextFollowUpAt?: Date | string | null
+    isDeleted?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    country?: string | null
+    service?: string | null
+    activities?: ActivityUncheckedCreateNestedManyWithoutLeadInput
+    deals?: DealUncheckedCreateNestedManyWithoutLeadInput
+    quotations?: QuotationUncheckedCreateNestedManyWithoutLeadInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutLeadInput
+    campaignLeads?: CampaignLeadUncheckedCreateNestedManyWithoutLeadInput
+  }
+
+  export type LeadCreateOrConnectWithoutCommunicationsInput = {
+    where: LeadWhereUniqueInput
+    create: XOR<LeadCreateWithoutCommunicationsInput, LeadUncheckedCreateWithoutCommunicationsInput>
+  }
+
+  export type MessageTemplateCreateWithoutCommunicationsInput = {
+    templateId?: string
+    name: string
+    category?: string
+    channel?: string
+    subject?: string | null
+    body: string
+    variables?: MessageTemplateCreatevariablesInput | string[]
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    company: CompanyCreateNestedOneWithoutMessageTemplatesInput
+    automationRules?: AutomationRuleCreateNestedManyWithoutTemplateInput
+  }
+
+  export type MessageTemplateUncheckedCreateWithoutCommunicationsInput = {
+    templateId?: string
+    companyId: string
+    name: string
+    category?: string
+    channel?: string
+    subject?: string | null
+    body: string
+    variables?: MessageTemplateCreatevariablesInput | string[]
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    automationRules?: AutomationRuleUncheckedCreateNestedManyWithoutTemplateInput
+  }
+
+  export type MessageTemplateCreateOrConnectWithoutCommunicationsInput = {
+    where: MessageTemplateWhereUniqueInput
+    create: XOR<MessageTemplateCreateWithoutCommunicationsInput, MessageTemplateUncheckedCreateWithoutCommunicationsInput>
+  }
+
+  export type LeadUpsertWithoutCommunicationsInput = {
+    update: XOR<LeadUpdateWithoutCommunicationsInput, LeadUncheckedUpdateWithoutCommunicationsInput>
+    create: XOR<LeadCreateWithoutCommunicationsInput, LeadUncheckedCreateWithoutCommunicationsInput>
+    where?: LeadWhereInput
+  }
+
+  export type LeadUpdateToOneWithWhereWithoutCommunicationsInput = {
+    where?: LeadWhereInput
+    data: XOR<LeadUpdateWithoutCommunicationsInput, LeadUncheckedUpdateWithoutCommunicationsInput>
+  }
+
+  export type LeadUpdateWithoutCommunicationsInput = {
+    leadId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: StringFieldUpdateOperationsInput | string
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    dealValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: StringFieldUpdateOperationsInput | string
+    aiScore?: NullableIntFieldUpdateOperationsInput | number | null
+    aiScoreFactors?: NullableJsonNullValueInput | InputJsonValue
+    tags?: LeadUpdatetagsInput | string[]
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    customFields?: NullableJsonNullValueInput | InputJsonValue
+    lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    service?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: CompanyUpdateOneRequiredWithoutLeadsNestedInput
+    assignedTo?: UserUpdateOneWithoutAssignedLeadsNestedInput
+    activities?: ActivityUpdateManyWithoutLeadNestedInput
+    deals?: DealUpdateManyWithoutLeadNestedInput
+    quotations?: QuotationUpdateManyWithoutLeadNestedInput
+    invoices?: InvoiceUpdateManyWithoutLeadNestedInput
+    campaignLeads?: CampaignLeadUpdateManyWithoutLeadNestedInput
+  }
+
+  export type LeadUncheckedUpdateWithoutCommunicationsInput = {
+    leadId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: StringFieldUpdateOperationsInput | string
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    dealValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: StringFieldUpdateOperationsInput | string
+    aiScore?: NullableIntFieldUpdateOperationsInput | number | null
+    aiScoreFactors?: NullableJsonNullValueInput | InputJsonValue
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: LeadUpdatetagsInput | string[]
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    customFields?: NullableJsonNullValueInput | InputJsonValue
+    lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    service?: NullableStringFieldUpdateOperationsInput | string | null
+    activities?: ActivityUncheckedUpdateManyWithoutLeadNestedInput
+    deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
+    quotations?: QuotationUncheckedUpdateManyWithoutLeadNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutLeadNestedInput
+    campaignLeads?: CampaignLeadUncheckedUpdateManyWithoutLeadNestedInput
+  }
+
+  export type MessageTemplateUpsertWithoutCommunicationsInput = {
+    update: XOR<MessageTemplateUpdateWithoutCommunicationsInput, MessageTemplateUncheckedUpdateWithoutCommunicationsInput>
+    create: XOR<MessageTemplateCreateWithoutCommunicationsInput, MessageTemplateUncheckedCreateWithoutCommunicationsInput>
+    where?: MessageTemplateWhereInput
+  }
+
+  export type MessageTemplateUpdateToOneWithWhereWithoutCommunicationsInput = {
+    where?: MessageTemplateWhereInput
+    data: XOR<MessageTemplateUpdateWithoutCommunicationsInput, MessageTemplateUncheckedUpdateWithoutCommunicationsInput>
+  }
+
+  export type MessageTemplateUpdateWithoutCommunicationsInput = {
+    templateId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    channel?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    variables?: MessageTemplateUpdatevariablesInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    company?: CompanyUpdateOneRequiredWithoutMessageTemplatesNestedInput
+    automationRules?: AutomationRuleUpdateManyWithoutTemplateNestedInput
+  }
+
+  export type MessageTemplateUncheckedUpdateWithoutCommunicationsInput = {
+    templateId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    channel?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    variables?: MessageTemplateUpdatevariablesInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    automationRules?: AutomationRuleUncheckedUpdateManyWithoutTemplateNestedInput
+  }
+
+  export type CompanyCreateWithoutAutoReplyRulesInput = {
+    companyId?: string
+    name: string
+    slug: string
+    domain?: string | null
+    logo?: string | null
+    gst?: string | null
+    industry?: string | null
+    phone?: string | null
+    email?: string | null
+    website?: string | null
+    plan?: $Enums.Plan
+    status?: string
+    apiKey: string
+    apiSecret: string
+    address?: JsonNullValueInput | InputJsonValue
+    bankDetails?: NullableJsonNullValueInput | InputJsonValue
+    settings?: JsonNullValueInput | InputJsonValue
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserCreateNestedManyWithoutCompanyInput
+    leads?: LeadCreateNestedManyWithoutCompanyInput
+    deals?: DealCreateNestedManyWithoutCompanyInput
+    quotations?: QuotationCreateNestedManyWithoutCompanyInput
+    invoices?: InvoiceCreateNestedManyWithoutCompanyInput
+    webhooks?: WebhookCreateNestedManyWithoutCompanyInput
+    clients?: ClientCreateNestedManyWithoutCompanyInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutCompanyInput
+    automationRules?: AutomationRuleCreateNestedManyWithoutCompanyInput
+    campaigns?: CampaignCreateNestedManyWithoutCompanyInput
+  }
+
+  export type CompanyUncheckedCreateWithoutAutoReplyRulesInput = {
+    companyId?: string
+    name: string
+    slug: string
+    domain?: string | null
+    logo?: string | null
+    gst?: string | null
+    industry?: string | null
+    phone?: string | null
+    email?: string | null
+    website?: string | null
+    plan?: $Enums.Plan
+    status?: string
+    apiKey: string
+    apiSecret: string
+    address?: JsonNullValueInput | InputJsonValue
+    bankDetails?: NullableJsonNullValueInput | InputJsonValue
+    settings?: JsonNullValueInput | InputJsonValue
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutCompanyInput
+    leads?: LeadUncheckedCreateNestedManyWithoutCompanyInput
+    deals?: DealUncheckedCreateNestedManyWithoutCompanyInput
+    quotations?: QuotationUncheckedCreateNestedManyWithoutCompanyInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutCompanyInput
+    webhooks?: WebhookUncheckedCreateNestedManyWithoutCompanyInput
+    clients?: ClientUncheckedCreateNestedManyWithoutCompanyInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutCompanyInput
+    automationRules?: AutomationRuleUncheckedCreateNestedManyWithoutCompanyInput
+    campaigns?: CampaignUncheckedCreateNestedManyWithoutCompanyInput
+  }
+
+  export type CompanyCreateOrConnectWithoutAutoReplyRulesInput = {
+    where: CompanyWhereUniqueInput
+    create: XOR<CompanyCreateWithoutAutoReplyRulesInput, CompanyUncheckedCreateWithoutAutoReplyRulesInput>
+  }
+
+  export type CompanyUpsertWithoutAutoReplyRulesInput = {
+    update: XOR<CompanyUpdateWithoutAutoReplyRulesInput, CompanyUncheckedUpdateWithoutAutoReplyRulesInput>
+    create: XOR<CompanyCreateWithoutAutoReplyRulesInput, CompanyUncheckedCreateWithoutAutoReplyRulesInput>
+    where?: CompanyWhereInput
+  }
+
+  export type CompanyUpdateToOneWithWhereWithoutAutoReplyRulesInput = {
+    where?: CompanyWhereInput
+    data: XOR<CompanyUpdateWithoutAutoReplyRulesInput, CompanyUncheckedUpdateWithoutAutoReplyRulesInput>
+  }
+
+  export type CompanyUpdateWithoutAutoReplyRulesInput = {
+    companyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    domain?: NullableStringFieldUpdateOperationsInput | string | null
+    logo?: NullableStringFieldUpdateOperationsInput | string | null
+    gst?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    status?: StringFieldUpdateOperationsInput | string
+    apiKey?: StringFieldUpdateOperationsInput | string
+    apiSecret?: StringFieldUpdateOperationsInput | string
+    address?: JsonNullValueInput | InputJsonValue
+    bankDetails?: NullableJsonNullValueInput | InputJsonValue
+    settings?: JsonNullValueInput | InputJsonValue
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutCompanyNestedInput
+    leads?: LeadUpdateManyWithoutCompanyNestedInput
+    deals?: DealUpdateManyWithoutCompanyNestedInput
+    quotations?: QuotationUpdateManyWithoutCompanyNestedInput
+    invoices?: InvoiceUpdateManyWithoutCompanyNestedInput
+    webhooks?: WebhookUpdateManyWithoutCompanyNestedInput
+    clients?: ClientUpdateManyWithoutCompanyNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutCompanyNestedInput
+    automationRules?: AutomationRuleUpdateManyWithoutCompanyNestedInput
+    campaigns?: CampaignUpdateManyWithoutCompanyNestedInput
+  }
+
+  export type CompanyUncheckedUpdateWithoutAutoReplyRulesInput = {
+    companyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    domain?: NullableStringFieldUpdateOperationsInput | string | null
+    logo?: NullableStringFieldUpdateOperationsInput | string | null
+    gst?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    status?: StringFieldUpdateOperationsInput | string
+    apiKey?: StringFieldUpdateOperationsInput | string
+    apiSecret?: StringFieldUpdateOperationsInput | string
+    address?: JsonNullValueInput | InputJsonValue
+    bankDetails?: NullableJsonNullValueInput | InputJsonValue
+    settings?: JsonNullValueInput | InputJsonValue
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutCompanyNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutCompanyNestedInput
+    deals?: DealUncheckedUpdateManyWithoutCompanyNestedInput
+    quotations?: QuotationUncheckedUpdateManyWithoutCompanyNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutCompanyNestedInput
+    webhooks?: WebhookUncheckedUpdateManyWithoutCompanyNestedInput
+    clients?: ClientUncheckedUpdateManyWithoutCompanyNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutCompanyNestedInput
+    automationRules?: AutomationRuleUncheckedUpdateManyWithoutCompanyNestedInput
+    campaigns?: CampaignUncheckedUpdateManyWithoutCompanyNestedInput
+  }
+
+  export type CompanyCreateWithoutCampaignsInput = {
+    companyId?: string
+    name: string
+    slug: string
+    domain?: string | null
+    logo?: string | null
+    gst?: string | null
+    industry?: string | null
+    phone?: string | null
+    email?: string | null
+    website?: string | null
+    plan?: $Enums.Plan
+    status?: string
+    apiKey: string
+    apiSecret: string
+    address?: JsonNullValueInput | InputJsonValue
+    bankDetails?: NullableJsonNullValueInput | InputJsonValue
+    settings?: JsonNullValueInput | InputJsonValue
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserCreateNestedManyWithoutCompanyInput
+    leads?: LeadCreateNestedManyWithoutCompanyInput
+    deals?: DealCreateNestedManyWithoutCompanyInput
+    quotations?: QuotationCreateNestedManyWithoutCompanyInput
+    invoices?: InvoiceCreateNestedManyWithoutCompanyInput
+    webhooks?: WebhookCreateNestedManyWithoutCompanyInput
+    clients?: ClientCreateNestedManyWithoutCompanyInput
+    messageTemplates?: MessageTemplateCreateNestedManyWithoutCompanyInput
+    automationRules?: AutomationRuleCreateNestedManyWithoutCompanyInput
+    autoReplyRules?: AutoReplyRuleCreateNestedManyWithoutCompanyInput
+  }
+
+  export type CompanyUncheckedCreateWithoutCampaignsInput = {
+    companyId?: string
+    name: string
+    slug: string
+    domain?: string | null
+    logo?: string | null
+    gst?: string | null
+    industry?: string | null
+    phone?: string | null
+    email?: string | null
+    website?: string | null
+    plan?: $Enums.Plan
+    status?: string
+    apiKey: string
+    apiSecret: string
+    address?: JsonNullValueInput | InputJsonValue
+    bankDetails?: NullableJsonNullValueInput | InputJsonValue
+    settings?: JsonNullValueInput | InputJsonValue
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutCompanyInput
+    leads?: LeadUncheckedCreateNestedManyWithoutCompanyInput
+    deals?: DealUncheckedCreateNestedManyWithoutCompanyInput
+    quotations?: QuotationUncheckedCreateNestedManyWithoutCompanyInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutCompanyInput
+    webhooks?: WebhookUncheckedCreateNestedManyWithoutCompanyInput
+    clients?: ClientUncheckedCreateNestedManyWithoutCompanyInput
+    messageTemplates?: MessageTemplateUncheckedCreateNestedManyWithoutCompanyInput
+    automationRules?: AutomationRuleUncheckedCreateNestedManyWithoutCompanyInput
+    autoReplyRules?: AutoReplyRuleUncheckedCreateNestedManyWithoutCompanyInput
+  }
+
+  export type CompanyCreateOrConnectWithoutCampaignsInput = {
+    where: CompanyWhereUniqueInput
+    create: XOR<CompanyCreateWithoutCampaignsInput, CompanyUncheckedCreateWithoutCampaignsInput>
+  }
+
+  export type CampaignLeadCreateWithoutCampaignInput = {
+    id?: string
+    status?: string
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    error?: string | null
+    createdAt?: Date | string
+    lead: LeadCreateNestedOneWithoutCampaignLeadsInput
+  }
+
+  export type CampaignLeadUncheckedCreateWithoutCampaignInput = {
+    id?: string
+    leadId: string
+    status?: string
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type CampaignLeadCreateOrConnectWithoutCampaignInput = {
+    where: CampaignLeadWhereUniqueInput
+    create: XOR<CampaignLeadCreateWithoutCampaignInput, CampaignLeadUncheckedCreateWithoutCampaignInput>
+  }
+
+  export type CampaignLeadCreateManyCampaignInputEnvelope = {
+    data: CampaignLeadCreateManyCampaignInput | CampaignLeadCreateManyCampaignInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CompanyUpsertWithoutCampaignsInput = {
+    update: XOR<CompanyUpdateWithoutCampaignsInput, CompanyUncheckedUpdateWithoutCampaignsInput>
+    create: XOR<CompanyCreateWithoutCampaignsInput, CompanyUncheckedCreateWithoutCampaignsInput>
+    where?: CompanyWhereInput
+  }
+
+  export type CompanyUpdateToOneWithWhereWithoutCampaignsInput = {
+    where?: CompanyWhereInput
+    data: XOR<CompanyUpdateWithoutCampaignsInput, CompanyUncheckedUpdateWithoutCampaignsInput>
+  }
+
+  export type CompanyUpdateWithoutCampaignsInput = {
+    companyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    domain?: NullableStringFieldUpdateOperationsInput | string | null
+    logo?: NullableStringFieldUpdateOperationsInput | string | null
+    gst?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    status?: StringFieldUpdateOperationsInput | string
+    apiKey?: StringFieldUpdateOperationsInput | string
+    apiSecret?: StringFieldUpdateOperationsInput | string
+    address?: JsonNullValueInput | InputJsonValue
+    bankDetails?: NullableJsonNullValueInput | InputJsonValue
+    settings?: JsonNullValueInput | InputJsonValue
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutCompanyNestedInput
+    leads?: LeadUpdateManyWithoutCompanyNestedInput
+    deals?: DealUpdateManyWithoutCompanyNestedInput
+    quotations?: QuotationUpdateManyWithoutCompanyNestedInput
+    invoices?: InvoiceUpdateManyWithoutCompanyNestedInput
+    webhooks?: WebhookUpdateManyWithoutCompanyNestedInput
+    clients?: ClientUpdateManyWithoutCompanyNestedInput
+    messageTemplates?: MessageTemplateUpdateManyWithoutCompanyNestedInput
+    automationRules?: AutomationRuleUpdateManyWithoutCompanyNestedInput
+    autoReplyRules?: AutoReplyRuleUpdateManyWithoutCompanyNestedInput
+  }
+
+  export type CompanyUncheckedUpdateWithoutCampaignsInput = {
+    companyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    domain?: NullableStringFieldUpdateOperationsInput | string | null
+    logo?: NullableStringFieldUpdateOperationsInput | string | null
+    gst?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    status?: StringFieldUpdateOperationsInput | string
+    apiKey?: StringFieldUpdateOperationsInput | string
+    apiSecret?: StringFieldUpdateOperationsInput | string
+    address?: JsonNullValueInput | InputJsonValue
+    bankDetails?: NullableJsonNullValueInput | InputJsonValue
+    settings?: JsonNullValueInput | InputJsonValue
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutCompanyNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutCompanyNestedInput
+    deals?: DealUncheckedUpdateManyWithoutCompanyNestedInput
+    quotations?: QuotationUncheckedUpdateManyWithoutCompanyNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutCompanyNestedInput
+    webhooks?: WebhookUncheckedUpdateManyWithoutCompanyNestedInput
+    clients?: ClientUncheckedUpdateManyWithoutCompanyNestedInput
+    messageTemplates?: MessageTemplateUncheckedUpdateManyWithoutCompanyNestedInput
+    automationRules?: AutomationRuleUncheckedUpdateManyWithoutCompanyNestedInput
+    autoReplyRules?: AutoReplyRuleUncheckedUpdateManyWithoutCompanyNestedInput
+  }
+
+  export type CampaignLeadUpsertWithWhereUniqueWithoutCampaignInput = {
+    where: CampaignLeadWhereUniqueInput
+    update: XOR<CampaignLeadUpdateWithoutCampaignInput, CampaignLeadUncheckedUpdateWithoutCampaignInput>
+    create: XOR<CampaignLeadCreateWithoutCampaignInput, CampaignLeadUncheckedCreateWithoutCampaignInput>
+  }
+
+  export type CampaignLeadUpdateWithWhereUniqueWithoutCampaignInput = {
+    where: CampaignLeadWhereUniqueInput
+    data: XOR<CampaignLeadUpdateWithoutCampaignInput, CampaignLeadUncheckedUpdateWithoutCampaignInput>
+  }
+
+  export type CampaignLeadUpdateManyWithWhereWithoutCampaignInput = {
+    where: CampaignLeadScalarWhereInput
+    data: XOR<CampaignLeadUpdateManyMutationInput, CampaignLeadUncheckedUpdateManyWithoutCampaignInput>
+  }
+
+  export type CampaignCreateWithoutCampaignLeadsInput = {
+    campaignId?: string
+    name: string
+    description?: string | null
+    channel?: string
+    status?: string
+    templateId?: string | null
+    subject?: string | null
+    body?: string | null
+    filters?: NullableJsonNullValueInput | InputJsonValue
+    scheduledAt?: Date | string | null
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    totalLeads?: number
+    sentCount?: number
+    deliveredCount?: number
+    failedCount?: number
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    company: CompanyCreateNestedOneWithoutCampaignsInput
+  }
+
+  export type CampaignUncheckedCreateWithoutCampaignLeadsInput = {
+    campaignId?: string
+    companyId: string
+    name: string
+    description?: string | null
+    channel?: string
+    status?: string
+    templateId?: string | null
+    subject?: string | null
+    body?: string | null
+    filters?: NullableJsonNullValueInput | InputJsonValue
+    scheduledAt?: Date | string | null
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    totalLeads?: number
+    sentCount?: number
+    deliveredCount?: number
+    failedCount?: number
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CampaignCreateOrConnectWithoutCampaignLeadsInput = {
+    where: CampaignWhereUniqueInput
+    create: XOR<CampaignCreateWithoutCampaignLeadsInput, CampaignUncheckedCreateWithoutCampaignLeadsInput>
+  }
+
+  export type LeadCreateWithoutCampaignLeadsInput = {
+    leadId?: string
+    name: string
+    email?: string | null
+    phone: string
+    city?: string | null
+    state?: string | null
+    source?: string
+    status?: string
+    priority?: string
+    dealValue?: number | null
+    currency?: string
+    aiScore?: number | null
+    aiScoreFactors?: NullableJsonNullValueInput | InputJsonValue
+    tags?: LeadCreatetagsInput | string[]
+    notes?: string | null
+    customFields?: NullableJsonNullValueInput | InputJsonValue
+    lastActivityAt?: Date | string | null
+    nextFollowUpAt?: Date | string | null
+    isDeleted?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    country?: string | null
+    service?: string | null
+    company: CompanyCreateNestedOneWithoutLeadsInput
+    assignedTo?: UserCreateNestedOneWithoutAssignedLeadsInput
+    activities?: ActivityCreateNestedManyWithoutLeadInput
+    deals?: DealCreateNestedManyWithoutLeadInput
+    quotations?: QuotationCreateNestedManyWithoutLeadInput
+    invoices?: InvoiceCreateNestedManyWithoutLeadInput
+    communications?: CommunicationCreateNestedManyWithoutLeadInput
+  }
+
+  export type LeadUncheckedCreateWithoutCampaignLeadsInput = {
+    leadId?: string
+    companyId: string
+    name: string
+    email?: string | null
+    phone: string
+    city?: string | null
+    state?: string | null
+    source?: string
+    status?: string
+    priority?: string
+    dealValue?: number | null
+    currency?: string
+    aiScore?: number | null
+    aiScoreFactors?: NullableJsonNullValueInput | InputJsonValue
+    assignedToId?: string | null
+    tags?: LeadCreatetagsInput | string[]
+    notes?: string | null
+    customFields?: NullableJsonNullValueInput | InputJsonValue
+    lastActivityAt?: Date | string | null
+    nextFollowUpAt?: Date | string | null
+    isDeleted?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    country?: string | null
+    service?: string | null
+    activities?: ActivityUncheckedCreateNestedManyWithoutLeadInput
+    deals?: DealUncheckedCreateNestedManyWithoutLeadInput
+    quotations?: QuotationUncheckedCreateNestedManyWithoutLeadInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutLeadInput
+    communications?: CommunicationUncheckedCreateNestedManyWithoutLeadInput
+  }
+
+  export type LeadCreateOrConnectWithoutCampaignLeadsInput = {
+    where: LeadWhereUniqueInput
+    create: XOR<LeadCreateWithoutCampaignLeadsInput, LeadUncheckedCreateWithoutCampaignLeadsInput>
+  }
+
+  export type CampaignUpsertWithoutCampaignLeadsInput = {
+    update: XOR<CampaignUpdateWithoutCampaignLeadsInput, CampaignUncheckedUpdateWithoutCampaignLeadsInput>
+    create: XOR<CampaignCreateWithoutCampaignLeadsInput, CampaignUncheckedCreateWithoutCampaignLeadsInput>
+    where?: CampaignWhereInput
+  }
+
+  export type CampaignUpdateToOneWithWhereWithoutCampaignLeadsInput = {
+    where?: CampaignWhereInput
+    data: XOR<CampaignUpdateWithoutCampaignLeadsInput, CampaignUncheckedUpdateWithoutCampaignLeadsInput>
+  }
+
+  export type CampaignUpdateWithoutCampaignLeadsInput = {
+    campaignId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    filters?: NullableJsonNullValueInput | InputJsonValue
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    totalLeads?: IntFieldUpdateOperationsInput | number
+    sentCount?: IntFieldUpdateOperationsInput | number
+    deliveredCount?: IntFieldUpdateOperationsInput | number
+    failedCount?: IntFieldUpdateOperationsInput | number
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    company?: CompanyUpdateOneRequiredWithoutCampaignsNestedInput
+  }
+
+  export type CampaignUncheckedUpdateWithoutCampaignLeadsInput = {
+    campaignId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    filters?: NullableJsonNullValueInput | InputJsonValue
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    totalLeads?: IntFieldUpdateOperationsInput | number
+    sentCount?: IntFieldUpdateOperationsInput | number
+    deliveredCount?: IntFieldUpdateOperationsInput | number
+    failedCount?: IntFieldUpdateOperationsInput | number
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LeadUpsertWithoutCampaignLeadsInput = {
+    update: XOR<LeadUpdateWithoutCampaignLeadsInput, LeadUncheckedUpdateWithoutCampaignLeadsInput>
+    create: XOR<LeadCreateWithoutCampaignLeadsInput, LeadUncheckedCreateWithoutCampaignLeadsInput>
+    where?: LeadWhereInput
+  }
+
+  export type LeadUpdateToOneWithWhereWithoutCampaignLeadsInput = {
+    where?: LeadWhereInput
+    data: XOR<LeadUpdateWithoutCampaignLeadsInput, LeadUncheckedUpdateWithoutCampaignLeadsInput>
+  }
+
+  export type LeadUpdateWithoutCampaignLeadsInput = {
+    leadId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: StringFieldUpdateOperationsInput | string
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    dealValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: StringFieldUpdateOperationsInput | string
+    aiScore?: NullableIntFieldUpdateOperationsInput | number | null
+    aiScoreFactors?: NullableJsonNullValueInput | InputJsonValue
+    tags?: LeadUpdatetagsInput | string[]
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    customFields?: NullableJsonNullValueInput | InputJsonValue
+    lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    service?: NullableStringFieldUpdateOperationsInput | string | null
+    company?: CompanyUpdateOneRequiredWithoutLeadsNestedInput
+    assignedTo?: UserUpdateOneWithoutAssignedLeadsNestedInput
+    activities?: ActivityUpdateManyWithoutLeadNestedInput
+    deals?: DealUpdateManyWithoutLeadNestedInput
+    quotations?: QuotationUpdateManyWithoutLeadNestedInput
+    invoices?: InvoiceUpdateManyWithoutLeadNestedInput
+    communications?: CommunicationUpdateManyWithoutLeadNestedInput
+  }
+
+  export type LeadUncheckedUpdateWithoutCampaignLeadsInput = {
+    leadId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: StringFieldUpdateOperationsInput | string
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    dealValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: StringFieldUpdateOperationsInput | string
+    aiScore?: NullableIntFieldUpdateOperationsInput | number | null
+    aiScoreFactors?: NullableJsonNullValueInput | InputJsonValue
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    tags?: LeadUpdatetagsInput | string[]
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    customFields?: NullableJsonNullValueInput | InputJsonValue
+    lastActivityAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextFollowUpAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    service?: NullableStringFieldUpdateOperationsInput | string | null
+    activities?: ActivityUncheckedUpdateManyWithoutLeadNestedInput
+    deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
+    quotations?: QuotationUncheckedUpdateManyWithoutLeadNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutLeadNestedInput
+    communications?: CommunicationUncheckedUpdateManyWithoutLeadNestedInput
   }
 
   export type UserCreateManyCompanyInput = {
@@ -21645,6 +34781,8 @@ export namespace Prisma {
     isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    country?: string | null
+    service?: string | null
   }
 
   export type DealCreateManyCompanyInput = {
@@ -21749,6 +34887,67 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type MessageTemplateCreateManyCompanyInput = {
+    templateId?: string
+    name: string
+    category?: string
+    channel?: string
+    subject?: string | null
+    body: string
+    variables?: MessageTemplateCreatevariablesInput | string[]
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AutomationRuleCreateManyCompanyInput = {
+    ruleId?: string
+    name: string
+    isActive?: boolean
+    trigger: string
+    triggerValue?: string | null
+    channel?: string
+    templateId: string
+    delayMinutes?: number
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    executionCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CampaignCreateManyCompanyInput = {
+    campaignId?: string
+    name: string
+    description?: string | null
+    channel?: string
+    status?: string
+    templateId?: string | null
+    subject?: string | null
+    body?: string | null
+    filters?: NullableJsonNullValueInput | InputJsonValue
+    scheduledAt?: Date | string | null
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    totalLeads?: number
+    sentCount?: number
+    deliveredCount?: number
+    failedCount?: number
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AutoReplyRuleCreateManyCompanyInput = {
+    replyRuleId?: string
+    keyword: string
+    matchType?: string
+    replyBody: string
+    isActive?: boolean
+    priority?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type UserUpdateWithoutCompanyInput = {
     userId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -21831,11 +35030,15 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    service?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: UserUpdateOneWithoutAssignedLeadsNestedInput
     activities?: ActivityUpdateManyWithoutLeadNestedInput
     deals?: DealUpdateManyWithoutLeadNestedInput
     quotations?: QuotationUpdateManyWithoutLeadNestedInput
     invoices?: InvoiceUpdateManyWithoutLeadNestedInput
+    communications?: CommunicationUpdateManyWithoutLeadNestedInput
+    campaignLeads?: CampaignLeadUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateWithoutCompanyInput = {
@@ -21861,10 +35064,14 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    service?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityUncheckedUpdateManyWithoutLeadNestedInput
     deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
     quotations?: QuotationUncheckedUpdateManyWithoutLeadNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutLeadNestedInput
+    communications?: CommunicationUncheckedUpdateManyWithoutLeadNestedInput
+    campaignLeads?: CampaignLeadUncheckedUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateManyWithoutCompanyInput = {
@@ -21890,6 +35097,8 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    service?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type DealUpdateWithoutCompanyInput = {
@@ -22200,6 +35409,197 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type MessageTemplateUpdateWithoutCompanyInput = {
+    templateId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    channel?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    variables?: MessageTemplateUpdatevariablesInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    automationRules?: AutomationRuleUpdateManyWithoutTemplateNestedInput
+    communications?: CommunicationUpdateManyWithoutTemplateNestedInput
+  }
+
+  export type MessageTemplateUncheckedUpdateWithoutCompanyInput = {
+    templateId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    channel?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    variables?: MessageTemplateUpdatevariablesInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    automationRules?: AutomationRuleUncheckedUpdateManyWithoutTemplateNestedInput
+    communications?: CommunicationUncheckedUpdateManyWithoutTemplateNestedInput
+  }
+
+  export type MessageTemplateUncheckedUpdateManyWithoutCompanyInput = {
+    templateId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    channel?: StringFieldUpdateOperationsInput | string
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    variables?: MessageTemplateUpdatevariablesInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AutomationRuleUpdateWithoutCompanyInput = {
+    ruleId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    trigger?: StringFieldUpdateOperationsInput | string
+    triggerValue?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    delayMinutes?: IntFieldUpdateOperationsInput | number
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    executionCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    template?: MessageTemplateUpdateOneRequiredWithoutAutomationRulesNestedInput
+    jobs?: AutomationJobUpdateManyWithoutRuleNestedInput
+  }
+
+  export type AutomationRuleUncheckedUpdateWithoutCompanyInput = {
+    ruleId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    trigger?: StringFieldUpdateOperationsInput | string
+    triggerValue?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    delayMinutes?: IntFieldUpdateOperationsInput | number
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    executionCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    jobs?: AutomationJobUncheckedUpdateManyWithoutRuleNestedInput
+  }
+
+  export type AutomationRuleUncheckedUpdateManyWithoutCompanyInput = {
+    ruleId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    trigger?: StringFieldUpdateOperationsInput | string
+    triggerValue?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    templateId?: StringFieldUpdateOperationsInput | string
+    delayMinutes?: IntFieldUpdateOperationsInput | number
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    executionCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CampaignUpdateWithoutCompanyInput = {
+    campaignId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    filters?: NullableJsonNullValueInput | InputJsonValue
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    totalLeads?: IntFieldUpdateOperationsInput | number
+    sentCount?: IntFieldUpdateOperationsInput | number
+    deliveredCount?: IntFieldUpdateOperationsInput | number
+    failedCount?: IntFieldUpdateOperationsInput | number
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    campaignLeads?: CampaignLeadUpdateManyWithoutCampaignNestedInput
+  }
+
+  export type CampaignUncheckedUpdateWithoutCompanyInput = {
+    campaignId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    filters?: NullableJsonNullValueInput | InputJsonValue
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    totalLeads?: IntFieldUpdateOperationsInput | number
+    sentCount?: IntFieldUpdateOperationsInput | number
+    deliveredCount?: IntFieldUpdateOperationsInput | number
+    failedCount?: IntFieldUpdateOperationsInput | number
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    campaignLeads?: CampaignLeadUncheckedUpdateManyWithoutCampaignNestedInput
+  }
+
+  export type CampaignUncheckedUpdateManyWithoutCompanyInput = {
+    campaignId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    filters?: NullableJsonNullValueInput | InputJsonValue
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    totalLeads?: IntFieldUpdateOperationsInput | number
+    sentCount?: IntFieldUpdateOperationsInput | number
+    deliveredCount?: IntFieldUpdateOperationsInput | number
+    failedCount?: IntFieldUpdateOperationsInput | number
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AutoReplyRuleUpdateWithoutCompanyInput = {
+    replyRuleId?: StringFieldUpdateOperationsInput | string
+    keyword?: StringFieldUpdateOperationsInput | string
+    matchType?: StringFieldUpdateOperationsInput | string
+    replyBody?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    priority?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AutoReplyRuleUncheckedUpdateWithoutCompanyInput = {
+    replyRuleId?: StringFieldUpdateOperationsInput | string
+    keyword?: StringFieldUpdateOperationsInput | string
+    matchType?: StringFieldUpdateOperationsInput | string
+    replyBody?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    priority?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AutoReplyRuleUncheckedUpdateManyWithoutCompanyInput = {
+    replyRuleId?: StringFieldUpdateOperationsInput | string
+    keyword?: StringFieldUpdateOperationsInput | string
+    matchType?: StringFieldUpdateOperationsInput | string
+    replyBody?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    priority?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type LeadCreateManyAssignedToInput = {
     leadId?: string
     companyId: string
@@ -22223,6 +35623,8 @@ export namespace Prisma {
     isDeleted?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    country?: string | null
+    service?: string | null
   }
 
   export type ActivityCreateManyUserInput = {
@@ -22264,11 +35666,15 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    service?: NullableStringFieldUpdateOperationsInput | string | null
     company?: CompanyUpdateOneRequiredWithoutLeadsNestedInput
     activities?: ActivityUpdateManyWithoutLeadNestedInput
     deals?: DealUpdateManyWithoutLeadNestedInput
     quotations?: QuotationUpdateManyWithoutLeadNestedInput
     invoices?: InvoiceUpdateManyWithoutLeadNestedInput
+    communications?: CommunicationUpdateManyWithoutLeadNestedInput
+    campaignLeads?: CampaignLeadUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateWithoutAssignedToInput = {
@@ -22294,10 +35700,14 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    service?: NullableStringFieldUpdateOperationsInput | string | null
     activities?: ActivityUncheckedUpdateManyWithoutLeadNestedInput
     deals?: DealUncheckedUpdateManyWithoutLeadNestedInput
     quotations?: QuotationUncheckedUpdateManyWithoutLeadNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutLeadNestedInput
+    communications?: CommunicationUncheckedUpdateManyWithoutLeadNestedInput
+    campaignLeads?: CampaignLeadUncheckedUpdateManyWithoutLeadNestedInput
   }
 
   export type LeadUncheckedUpdateManyWithoutAssignedToInput = {
@@ -22323,6 +35733,8 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    service?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ActivityUpdateWithoutUserInput = {
@@ -22460,6 +35872,36 @@ export namespace Prisma {
     sentAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type CommunicationCreateManyLeadInput = {
+    commId?: string
+    companyId: string
+    channel: string
+    direction?: string
+    status?: string
+    fromNumber?: string | null
+    toNumber?: string | null
+    templateId?: string | null
+    subject?: string | null
+    body: string
+    watiMessageId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    readAt?: Date | string | null
+    userId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type CampaignLeadCreateManyLeadInput = {
+    id?: string
+    campaignId: string
+    status?: string
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    error?: string | null
+    createdAt?: Date | string
   }
 
   export type ActivityUpdateWithoutLeadInput = {
@@ -22722,6 +36164,96 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type CommunicationUpdateWithoutLeadInput = {
+    commId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    channel?: StringFieldUpdateOperationsInput | string
+    direction?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    fromNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    toNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    watiMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    template?: MessageTemplateUpdateOneWithoutCommunicationsNestedInput
+  }
+
+  export type CommunicationUncheckedUpdateWithoutLeadInput = {
+    commId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    channel?: StringFieldUpdateOperationsInput | string
+    direction?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    fromNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    toNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    watiMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CommunicationUncheckedUpdateManyWithoutLeadInput = {
+    commId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    channel?: StringFieldUpdateOperationsInput | string
+    direction?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    fromNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    toNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    watiMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CampaignLeadUpdateWithoutLeadInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    campaign?: CampaignUpdateOneRequiredWithoutCampaignLeadsNestedInput
+  }
+
+  export type CampaignLeadUncheckedUpdateWithoutLeadInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    campaignId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CampaignLeadUncheckedUpdateManyWithoutLeadInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    campaignId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type QuotationCreateManyDealInput = {
     quotationId?: string
     quotationNumber: string
@@ -22830,6 +36362,232 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AutomationRuleCreateManyTemplateInput = {
+    ruleId?: string
+    companyId: string
+    name: string
+    isActive?: boolean
+    trigger: string
+    triggerValue?: string | null
+    channel?: string
+    delayMinutes?: number
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    executionCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CommunicationCreateManyTemplateInput = {
+    commId?: string
+    companyId: string
+    leadId?: string | null
+    channel: string
+    direction?: string
+    status?: string
+    fromNumber?: string | null
+    toNumber?: string | null
+    subject?: string | null
+    body: string
+    watiMessageId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    readAt?: Date | string | null
+    userId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AutomationRuleUpdateWithoutTemplateInput = {
+    ruleId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    trigger?: StringFieldUpdateOperationsInput | string
+    triggerValue?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    delayMinutes?: IntFieldUpdateOperationsInput | number
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    executionCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    company?: CompanyUpdateOneRequiredWithoutAutomationRulesNestedInput
+    jobs?: AutomationJobUpdateManyWithoutRuleNestedInput
+  }
+
+  export type AutomationRuleUncheckedUpdateWithoutTemplateInput = {
+    ruleId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    trigger?: StringFieldUpdateOperationsInput | string
+    triggerValue?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    delayMinutes?: IntFieldUpdateOperationsInput | number
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    executionCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    jobs?: AutomationJobUncheckedUpdateManyWithoutRuleNestedInput
+  }
+
+  export type AutomationRuleUncheckedUpdateManyWithoutTemplateInput = {
+    ruleId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    trigger?: StringFieldUpdateOperationsInput | string
+    triggerValue?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    delayMinutes?: IntFieldUpdateOperationsInput | number
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    executionCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CommunicationUpdateWithoutTemplateInput = {
+    commId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    channel?: StringFieldUpdateOperationsInput | string
+    direction?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    fromNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    toNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    watiMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lead?: LeadUpdateOneWithoutCommunicationsNestedInput
+  }
+
+  export type CommunicationUncheckedUpdateWithoutTemplateInput = {
+    commId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    leadId?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    direction?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    fromNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    toNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    watiMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CommunicationUncheckedUpdateManyWithoutTemplateInput = {
+    commId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    leadId?: NullableStringFieldUpdateOperationsInput | string | null
+    channel?: StringFieldUpdateOperationsInput | string
+    direction?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    fromNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    toNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    watiMessageId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AutomationJobCreateManyRuleInput = {
+    jobId?: string
+    leadId: string
+    companyId: string
+    status?: string
+    scheduledAt: Date | string
+    executedAt?: Date | string | null
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type AutomationJobUpdateWithoutRuleInput = {
+    jobId?: StringFieldUpdateOperationsInput | string
+    leadId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    scheduledAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    executedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AutomationJobUncheckedUpdateWithoutRuleInput = {
+    jobId?: StringFieldUpdateOperationsInput | string
+    leadId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    scheduledAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    executedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AutomationJobUncheckedUpdateManyWithoutRuleInput = {
+    jobId?: StringFieldUpdateOperationsInput | string
+    leadId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    scheduledAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    executedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CampaignLeadCreateManyCampaignInput = {
+    id?: string
+    leadId: string
+    status?: string
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type CampaignLeadUpdateWithoutCampaignInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lead?: LeadUpdateOneRequiredWithoutCampaignLeadsNestedInput
+  }
+
+  export type CampaignLeadUncheckedUpdateWithoutCampaignInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    leadId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CampaignLeadUncheckedUpdateManyWithoutCampaignInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    leadId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
 
 
   /**
@@ -22851,6 +36609,18 @@ export namespace Prisma {
      * @deprecated Use DealCountOutputTypeDefaultArgs instead
      */
     export type DealCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DealCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use MessageTemplateCountOutputTypeDefaultArgs instead
+     */
+    export type MessageTemplateCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = MessageTemplateCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use AutomationRuleCountOutputTypeDefaultArgs instead
+     */
+    export type AutomationRuleCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AutomationRuleCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use CampaignCountOutputTypeDefaultArgs instead
+     */
+    export type CampaignCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CampaignCountOutputTypeDefaultArgs<ExtArgs>
     /**
      * @deprecated Use CompanyDefaultArgs instead
      */
@@ -22891,6 +36661,34 @@ export namespace Prisma {
      * @deprecated Use WebhookDefaultArgs instead
      */
     export type WebhookArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = WebhookDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use MessageTemplateDefaultArgs instead
+     */
+    export type MessageTemplateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = MessageTemplateDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use AutomationRuleDefaultArgs instead
+     */
+    export type AutomationRuleArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AutomationRuleDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use AutomationJobDefaultArgs instead
+     */
+    export type AutomationJobArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AutomationJobDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use CommunicationDefaultArgs instead
+     */
+    export type CommunicationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CommunicationDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use AutoReplyRuleDefaultArgs instead
+     */
+    export type AutoReplyRuleArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AutoReplyRuleDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use CampaignDefaultArgs instead
+     */
+    export type CampaignArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CampaignDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use CampaignLeadDefaultArgs instead
+     */
+    export type CampaignLeadArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CampaignLeadDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

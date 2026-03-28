@@ -1,64 +1,116 @@
 require('dotenv').config();
 
-const express = require('express');
-const cors    = require('cors');
-const helmet  = require('helmet');
-const morgan  = require('morgan');
+const express   = require('express');
+const cors      = require('cors');
+const helmet    = require('helmet');
+const morgan    = require('morgan');
+const rateLimit = require('express-rate-limit');
 const { PrismaClient } = require('@prisma/client');
 
 const app    = express();
 const prisma = new PrismaClient();
 const PORT   = process.env.PORT || 4000;
 
-// Validate env
-const missing = ['DATABASE_URL','JWT_SECRET'].filter(v => !process.env[v]);
+// ── Validate env ──────────────────────────────────────────────────────────────
+const missing = ['DATABASE_URL', 'JWT_SECRET'].filter(v => !process.env[v]);
 if (missing.length) {
   console.error('\n❌  Missing env vars:', missing.join(', '));
   console.error('👉  Copy .env.example → .env and fill in values\n');
   process.exit(1);
 }
+if (!process.env.JWT_REFRESH_SECRET) {
+  console.warn('[Security] JWT_REFRESH_SECRET not set — falling back to JWT_SECRET. Set a separate secret in production.');
+}
 
-// Middleware
-app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
-app.use(cors({
-  origin: (process.env.ALLOWED_ORIGINS || 'http://localhost:3000').split(','),
-  credentials: true,
-  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
-  allowedHeaders: ['Content-Type','Authorization','X-API-Key','X-Company-ID']
+// ── Security Middleware ───────────────────────────────────────────────────────
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  contentSecurityPolicy: false, // API server — CSP handled by frontend
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
 }));
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
-app.use(morgan('dev'));
 
-// Health check
+app.use(cors({
+  origin: (process.env.ALLOWED_ORIGINS || 'http://localhost:3000').split(',').map(o => o.trim()),
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key', 'X-Company-ID'],
+}));
+
+// ── Rate Limiters ─────────────────────────────────────────────────────────────
+// Strict: auth endpoints (login, register, forgot/reset password)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: { code: 'RATE_LIMIT', message: 'Too many requests. Please try again in 15 minutes.' } },
+});
+
+// General: all other API routes
+const generalLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: { code: 'RATE_LIMIT', message: 'Too many requests. Please slow down.' } },
+});
+
+// Public API: webhook and public lead submission
+const publicLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: { code: 'RATE_LIMIT', message: 'Too many requests.' } },
+});
+
+// ── Body Parsing ──────────────────────────────────────────────────────────────
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
+
+// ── Health check (minimal info) ───────────────────────────────────────────────
 app.get('/health', async (req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
-    res.json({ status: 'ok', env: process.env.NODE_ENV, db: 'connected', version: '1.0.0' });
-  } catch (e) {
-    res.status(503).json({ status: 'error', db: 'disconnected', error: e.message });
+    res.json({ status: 'ok' });
+  } catch {
+    res.status(503).json({ status: 'error' });
   }
 });
 
-// API Routes
-app.use('/api/v1', require('./backend/routes'));
+// ── API Routes ────────────────────────────────────────────────────────────────
+// Apply rate limiters at route level (see routes/index.js for per-route application)
+app.use('/api/v1/auth',         authLimiter);
+app.use('/api/v1/public',       publicLimiter);
+app.use('/api/v1/webhooks',     publicLimiter);
+app.use('/api/v1',              generalLimiter);
+app.use('/api/v1',              require('./backend/routes'));
 
-// 404
+// ── Automation job runner ─────────────────────────────────────────────────────
+require('./backend/services/jobRunner').start();
+
+// ── Daily backup scheduler (05:00 AM IST) ────────────────────────────────────
+require('./backend/services/backupScheduler').start();
+
+// ── 404 ───────────────────────────────────────────────────────────────────────
 app.use((req, res) => res.status(404).json({
   success: false,
   error: { code: 'NOT_FOUND', message: `${req.method} ${req.path} not found` }
 }));
 
-// Error handler
+// ── Error handler ─────────────────────────────────────────────────────────────
 app.use((err, req, res, next) => {
+  // Never leak stack traces in production
+  const msg = process.env.NODE_ENV === 'production' ? 'Internal server error.' : err.message;
   console.error('[Error]', err.message);
   res.status(err.status || 500).json({
     success: false,
-    error: { code: 'SERVER_ERROR', message: err.message }
+    error: { code: 'SERVER_ERROR', message: msg }
   });
 });
 
-// Start
+// ── Start ─────────────────────────────────────────────────────────────────────
 async function start() {
   try {
     await prisma.$connect();

@@ -30,13 +30,17 @@ model Company {
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
-  users      User[]
-  leads      Lead[]
-  deals      Deal[]
-  quotations Quotation[]
-  invoices   Invoice[]
-  webhooks   Webhook[]
-  clients    Client[]
+  users            User[]
+  leads            Lead[]
+  deals            Deal[]
+  quotations       Quotation[]
+  invoices         Invoice[]
+  webhooks         Webhook[]
+  clients          Client[]
+  messageTemplates MessageTemplate[]
+  automationRules  AutomationRule[]
+  campaigns        Campaign[]
+  autoReplyRules   AutoReplyRule[]
 
   @@map("companies")
 }
@@ -118,12 +122,17 @@ model Lead {
   createdAt      DateTime  @default(now()) @map("created_at")
   updatedAt      DateTime  @updatedAt @map("updated_at")
 
-  company    Company     @relation(fields: [companyId], references: [companyId])
-  assignedTo User?       @relation("AssignedLeads", fields: [assignedToId], references: [userId])
-  activities Activity[]
-  deals      Deal[]
-  quotations Quotation[]
-  invoices   Invoice[]
+  country String?
+  service String?
+
+  company        Company         @relation(fields: [companyId], references: [companyId])
+  assignedTo     User?           @relation("AssignedLeads", fields: [assignedToId], references: [userId])
+  activities     Activity[]
+  deals          Deal[]
+  quotations     Quotation[]
+  invoices       Invoice[]
+  communications Communication[]
+  campaignLeads  CampaignLead[]
 
   @@unique([companyId, email])
   @@index([companyId, status])
@@ -278,4 +287,162 @@ model Webhook {
   company Company @relation(fields: [companyId], references: [companyId])
 
   @@map("webhooks")
+}
+
+// ─── WhatsApp / Messaging ──────────────────────────────────────────────────
+
+model MessageTemplate {
+  templateId String   @id @default(cuid()) @map("template_id")
+  companyId  String   @map("company_id")
+  name       String
+  category   String   @default("CUSTOM") // WELCOME, FOLLOWUP, PROPOSAL, CLOSING, CUSTOM
+  channel    String   @default("WHATSAPP") // WHATSAPP | EMAIL | SMS
+  subject    String? // email subject
+  body       String
+  variables  String[] @default([])
+  isActive   Boolean  @default(true) @map("is_active")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  company         Company          @relation(fields: [companyId], references: [companyId])
+  automationRules AutomationRule[]
+  communications  Communication[]
+
+  @@index([companyId])
+  @@map("message_templates")
+}
+
+model AutomationRule {
+  ruleId         String   @id @default(cuid()) @map("rule_id")
+  companyId      String   @map("company_id")
+  name           String
+  isActive       Boolean  @default(true) @map("is_active")
+  trigger        String // LEAD_CREATED | STATUS_CHANGED | FOLLOW_UP_DUE | VALIDATION_FAILED
+  triggerValue   String?  @map("trigger_value")
+  channel        String   @default("WHATSAPP")
+  templateId     String   @map("template_id")
+  delayMinutes   Int      @default(0) @map("delay_minutes")
+  conditions     Json?
+  executionCount Int      @default(0) @map("execution_count")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  company  Company         @relation(fields: [companyId], references: [companyId])
+  template MessageTemplate @relation(fields: [templateId], references: [templateId])
+  jobs     AutomationJob[]
+
+  @@index([companyId, trigger])
+  @@map("automation_rules")
+}
+
+model AutomationJob {
+  jobId       String    @id @default(cuid()) @map("job_id")
+  ruleId      String    @map("rule_id")
+  leadId      String    @map("lead_id")
+  companyId   String    @map("company_id")
+  status      String    @default("PENDING") // PENDING | SENT | FAILED | CANCELLED
+  scheduledAt DateTime  @map("scheduled_at")
+  executedAt  DateTime? @map("executed_at")
+  error       String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  rule AutomationRule @relation(fields: [ruleId], references: [ruleId])
+
+  @@index([status, scheduledAt])
+  @@index([companyId, leadId])
+  @@map("automation_jobs")
+}
+
+model Communication {
+  commId        String    @id @default(cuid()) @map("comm_id")
+  companyId     String    @map("company_id")
+  leadId        String?   @map("lead_id")
+  channel       String // WHATSAPP | EMAIL | CALL | NOTE | SMS
+  direction     String    @default("OUTBOUND") // OUTBOUND | INBOUND
+  status        String    @default("SENT") // SENT | DELIVERED | READ | FAILED | PENDING
+  fromNumber    String?   @map("from_number")
+  toNumber      String?   @map("to_number")
+  templateId    String?   @map("template_id")
+  subject       String?
+  body          String
+  watiMessageId String?   @map("wati_message_id")
+  metadata      Json?
+  sentAt        DateTime? @map("sent_at")
+  deliveredAt   DateTime? @map("delivered_at")
+  readAt        DateTime? @map("read_at")
+  userId        String?   @map("user_id")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  lead     Lead?            @relation(fields: [leadId], references: [leadId])
+  template MessageTemplate? @relation(fields: [templateId], references: [templateId])
+
+  @@index([leadId, createdAt])
+  @@index([companyId, channel])
+  @@map("communications")
+}
+
+model AutoReplyRule {
+  replyRuleId String   @id @default(cuid()) @map("reply_rule_id")
+  companyId   String   @map("company_id")
+  keyword     String
+  matchType   String   @default("CONTAINS") // CONTAINS | EXACT | STARTS_WITH
+  replyBody   String   @map("reply_body")
+  isActive    Boolean  @default(true) @map("is_active")
+  priority    Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  company Company @relation(fields: [companyId], references: [companyId])
+
+  @@index([companyId, isActive])
+  @@map("auto_reply_rules")
+}
+
+// ─── Campaigns ─────────────────────────────────────────────────────────────
+
+model Campaign {
+  campaignId     String    @id @default(cuid()) @map("campaign_id")
+  companyId      String    @map("company_id")
+  name           String
+  description    String?
+  channel        String    @default("WHATSAPP") // WHATSAPP | EMAIL | BOTH
+  status         String    @default("DRAFT") // DRAFT | RUNNING | COMPLETED | CANCELLED
+  templateId     String?   @map("template_id")
+  subject        String?
+  body           String?
+  filters        Json?
+  scheduledAt    DateTime? @map("scheduled_at")
+  startedAt      DateTime? @map("started_at")
+  completedAt    DateTime? @map("completed_at")
+  totalLeads     Int       @default(0) @map("total_leads")
+  sentCount      Int       @default(0) @map("sent_count")
+  deliveredCount Int       @default(0) @map("delivered_count")
+  failedCount    Int       @default(0) @map("failed_count")
+  createdById    String?   @map("created_by_id")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  company       Company        @relation(fields: [companyId], references: [companyId])
+  campaignLeads CampaignLead[]
+
+  @@index([companyId, status])
+  @@map("campaigns")
+}
+
+model CampaignLead {
+  id          String    @id @default(cuid())
+  campaignId  String    @map("campaign_id")
+  leadId      String    @map("lead_id")
+  status      String    @default("PENDING") // PENDING | SENT | DELIVERED | FAILED
+  sentAt      DateTime? @map("sent_at")
+  deliveredAt DateTime? @map("delivered_at")
+  error       String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  campaign Campaign @relation(fields: [campaignId], references: [campaignId])
+  lead     Lead     @relation(fields: [leadId], references: [leadId])
+
+  @@unique([campaignId, leadId])
+  @@index([campaignId, status])
+  @@map("campaign_leads")
 }
