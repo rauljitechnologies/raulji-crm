@@ -18,6 +18,7 @@ const campaign  = require('../controllers/campaignController');
 const comm      = require('../controllers/communicationController');
 const geo       = require('../controllers/geoController');
 const backup    = require('../controllers/backupController');
+const seo       = require('../controllers/seoController');
 
 // Shorthand: authenticate + verify company ownership
 const authCo = [authenticate, requireCompanyAccess];
@@ -179,5 +180,15 @@ router.put(   '/companies/:companyId/projects/:projectId/credentials/:credId',  
 router.delete('/companies/:companyId/projects/:projectId/credentials/:credId',         ...authCo, project.removeCredential);
 router.get(   '/companies/:companyId/projects/:projectId/credentials/:credId/reveal',  ...authCo, project.getCredentialPlain);
 router.post(  '/companies/:companyId/projects/:projectId/history',                     ...authCo, project.addHistory);
+
+// ── SEO Audits ────────────────────────────────────────────────────────────────
+router.post(  '/companies/:companyId/seo/audits',                  ...authCo, seo.triggerAudit);
+router.get(   '/companies/:companyId/seo/audits',                  ...authCo, seo.getAudits);
+router.get(   '/companies/:companyId/seo/audits/latest',           ...authCo, seo.getLatestAudit);
+router.get(   '/companies/:companyId/seo/audits/:auditId',         ...authCo, seo.getAudit);
+router.get(   '/companies/:companyId/seo/keywords',                ...authCo, seo.getKeywords);
+router.post(  '/companies/:companyId/seo/keywords',                ...authCo, seo.addKeyword);
+router.delete('/companies/:companyId/seo/keywords/:keywordId',     ...authCo, seo.removeKeyword);
+router.post(  '/companies/:companyId/seo/url-check',               ...authCo, seo.checkUrlEndpoint);
 
 module.exports = router;

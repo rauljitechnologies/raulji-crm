@@ -92,6 +92,7 @@ require('./backend/services/jobRunner').start();
 
 // ── Daily backup scheduler (05:00 AM IST) ────────────────────────────────────
 require('./backend/services/backupScheduler').start();
+require('./backend/services/seoScheduler').start();
 
 // ── 404 ───────────────────────────────────────────────────────────────────────
 app.use((req, res) => res.status(404).json({

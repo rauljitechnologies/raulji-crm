@@ -42,6 +42,8 @@ model Company {
   autoReplyRules   AutoReplyRule[]
   projects           Project[]
   projectAssignments ProjectAssignment[]
+  seoAudits   SeoAudit[]
+  seoKeywords SeoKeyword[]
 
   @@map("companies")
 }
@@ -563,4 +565,39 @@ model ProjectHistory {
 
   @@index([projectId, createdAt])
   @@map("project_history")
+}
+
+// ─── SEO Audits ─────────────────────────────────────────────────────────────
+
+model SeoAudit {
+  auditId     String   @id @default(cuid()) @map("audit_id")
+  companyId   String   @map("company_id")
+  domain      String
+  score       Int      @default(0)
+  status      String   @default("PENDING")  // PENDING | RUNNING | DONE | FAILED
+  summary     Json     @default("{}")
+  issues      Json     @default("[]")
+  pageData    Json     @default("{}")
+  triggeredBy String   @default("SCHEDULED") @map("triggered_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  company Company @relation(fields: [companyId], references: [companyId], onDelete: Cascade)
+
+  @@index([companyId, createdAt])
+  @@map("seo_audits")
+}
+
+model SeoKeyword {
+  keywordId     String   @id @default(cuid()) @map("keyword_id")
+  companyId     String   @map("company_id")
+  keyword       String
+  targetUrl     String?  @map("target_url")
+  targetCountry String   @default("IN") @map("target_country")
+  notes         String?
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  company Company @relation(fields: [companyId], references: [companyId], onDelete: Cascade)
+
+  @@index([companyId])
+  @@map("seo_keywords")
 }

@@ -199,3 +199,15 @@ export const backupApi = {
   delete:  (id: string)   => request<any>(`/admin/backups/${id}`, { method: 'DELETE' }),
   downloadUrl: (id: string, type: 'db' | 'code') => `${BASE}/admin/backups/${id}/download/${type}`,
 };
+
+// SEO
+export const seoApi = {
+  triggerAudit:  (cid: string)                        => request<any>(`/companies/${cid}/seo/audits`, { method: 'POST' }),
+  getAudits:     (cid: string, params?: any)          => request<any>(`/companies/${cid}/seo/audits?${new URLSearchParams(params||{})}`),
+  getLatest:     (cid: string)                        => request<any>(`/companies/${cid}/seo/audits/latest`),
+  getAudit:      (cid: string, id: string)            => request<any>(`/companies/${cid}/seo/audits/${id}`),
+  getKeywords:   (cid: string)                        => request<any>(`/companies/${cid}/seo/keywords`),
+  addKeyword:    (cid: string, body: any)             => request<any>(`/companies/${cid}/seo/keywords`, { method: 'POST', body: JSON.stringify(body) }),
+  removeKeyword: (cid: string, kid: string)           => request<any>(`/companies/${cid}/seo/keywords/${kid}`, { method: 'DELETE' }),
+  checkUrls:     (cid: string, urls: string[])        => request<any>(`/companies/${cid}/seo/url-check`, { method: 'POST', body: JSON.stringify({ urls }) }),
+};

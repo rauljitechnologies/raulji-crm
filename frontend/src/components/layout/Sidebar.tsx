@@ -4,14 +4,14 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-type PermKey = 'dashboard'|'companies'|'leads'|'pipeline'|'deals'|'clients'|'quotations'|'invoices'|'analytics'|'ai'|'users'|'settings'|'api'|'whatsapp'|'campaigns'|'automation'|'templates'|'backup'|'project';
+type PermKey = 'dashboard'|'companies'|'leads'|'pipeline'|'deals'|'clients'|'quotations'|'invoices'|'analytics'|'ai'|'users'|'settings'|'api'|'whatsapp'|'campaigns'|'automation'|'templates'|'backup'|'project'|'seo';
 
 const ROLE_DEFAULTS: Record<string, Record<PermKey, boolean>> = {
-  SUPER_ADMIN:   { dashboard:true,companies:true,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,analytics:true,ai:true,users:true,settings:true,api:true,whatsapp:true,campaigns:true,automation:true,templates:true,backup:true,project:true },
-  ADMIN:         { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,analytics:true,ai:true,users:true,settings:true,api:true,whatsapp:true,campaigns:true,automation:true,templates:true,backup:false,project:true },
-  SALES_MANAGER: { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,analytics:true,ai:true,users:false,settings:false,api:false,whatsapp:true,campaigns:true,automation:false,templates:true,backup:false,project:true },
-  SALES_REP:     { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:false,analytics:false,ai:false,users:false,settings:false,api:false,whatsapp:true,campaigns:false,automation:false,templates:false,backup:false,project:false },
-  VIEWER:        { dashboard:true,companies:false,leads:true,pipeline:false,deals:false,clients:false,quotations:false,invoices:false,analytics:true,ai:false,users:false,settings:false,api:false,whatsapp:false,campaigns:false,automation:false,templates:false,backup:false,project:false },
+  SUPER_ADMIN:   { dashboard:true,companies:true,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,analytics:true,ai:true,users:true,settings:true,api:true,whatsapp:true,campaigns:true,automation:true,templates:true,backup:true,project:true,seo:true },
+  ADMIN:         { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,analytics:true,ai:true,users:true,settings:true,api:true,whatsapp:true,campaigns:true,automation:true,templates:true,backup:false,project:true,seo:true },
+  SALES_MANAGER: { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,analytics:true,ai:true,users:false,settings:false,api:false,whatsapp:true,campaigns:true,automation:false,templates:true,backup:false,project:true,seo:true },
+  SALES_REP:     { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:false,analytics:false,ai:false,users:false,settings:false,api:false,whatsapp:true,campaigns:false,automation:false,templates:false,backup:false,project:false,seo:false },
+  VIEWER:        { dashboard:true,companies:false,leads:true,pipeline:false,deals:false,clients:false,quotations:false,invoices:false,analytics:true,ai:false,users:false,settings:false,api:false,whatsapp:false,campaigns:false,automation:false,templates:false,backup:false,project:false,seo:false },
 };
 
 function getEffectivePerms(user: any): Record<string, boolean> {
@@ -41,6 +41,7 @@ const Icons: Record<string, React.ReactNode> = {
   api:         <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4"><path fillRule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd"/></svg>,
   backup:      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4"><path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z"/></svg>,
   project:     <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4"><path fillRule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clipRule="evenodd"/><path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"/></svg>,
+  seo: <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4"><path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd"/></svg>,
 };
 
 const NAV = [
@@ -66,6 +67,7 @@ const NAV = [
   { section: 'Insights', items: [
     { href: '/dashboard/analytics',   label: 'Analytics',      key: 'analytics',  perm: 'analytics'  },
     { href: '/dashboard/ai',          label: 'AI Insights',    key: 'ai',         perm: 'ai'         },
+    { href: '/dashboard/seo',         label: 'SEO Audit',      key: 'seo',        perm: 'seo'        },
   ]},
   { section: 'System', items: [
     { href: '/dashboard/users',       label: 'Users',          key: 'users',      perm: 'users'      },
