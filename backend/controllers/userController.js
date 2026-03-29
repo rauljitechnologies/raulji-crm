@@ -19,10 +19,13 @@ exports.getUsers = async (req, res) => {
 exports.invite = async (req, res) => {
   try {
     const { companyId } = req.params;
-    const { name, email, role = 'SALES_REP' } = req.body;
+    const { name, email, role = 'SALES_REP', password } = req.body;
     if (!name || !email) return res.status(400).json({ success: false, error: { message: 'Name and email required.' } });
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       return res.status(400).json({ success: false, error: { message: 'Invalid email address.' } });
+
+    if (password !== undefined && password !== '' && password.length < 8)
+      return res.status(400).json({ success: false, error: { message: 'Password must be at least 8 characters.' } });
 
     const normalizedRole = role.toUpperCase();
     if (!VALID_ROLES.includes(normalizedRole))
@@ -35,21 +38,27 @@ exports.invite = async (req, res) => {
     if (await prisma.user.findUnique({ where: { email: email.toLowerCase() } }))
       return res.status(422).json({ success: false, error: { message: 'Email already registered.' } });
 
+    const useDirectPassword = password && password.length >= 8;
     const user = await prisma.user.create({
       data: {
         name: name.trim(),
         email: email.toLowerCase(),
-        password: await bcrypt.hash(crypto.randomBytes(16).toString('hex'), 10),
+        password: useDirectPassword
+          ? await bcrypt.hash(password, 12)
+          : await bcrypt.hash(crypto.randomBytes(16).toString('hex'), 10),
         role: normalizedRole,
         companyId,
         isActive: true,
-        isVerified: false,
-        inviteToken: crypto.randomBytes(32).toString('hex'),
-        inviteExpiry: new Date(Date.now() + 7 * 86400000),
+        isVerified: useDirectPassword ? true : false,
+        inviteToken: useDirectPassword ? null : crypto.randomBytes(32).toString('hex'),
+        inviteExpiry: useDirectPassword ? null : new Date(Date.now() + 7 * 86400000),
         permissions: {}
       }
     });
-    return res.status(201).json({ success: true, data: { userId: user.userId, name, email, role: user.role, status: 'pending' } });
+    return res.status(201).json({
+      success: true,
+      data: { userId: user.userId, name, email, role: user.role, status: useDirectPassword ? 'active' : 'pending' }
+    });
   } catch { return res.status(500).json({ success: false, error: { message: 'Invite failed.' } }); }
 };
 

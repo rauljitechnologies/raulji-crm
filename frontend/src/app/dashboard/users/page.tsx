@@ -74,7 +74,7 @@ export default function UsersPage() {
   const [loading,   setLoading]   = useState(false);
   const [showInvite, setShowInvite] = useState(false);
   const [saving,     setSaving]    = useState(false);
-  const [form, setForm] = useState({ name:'', email:'', role:'SALES_REP' });
+  const [form, setForm] = useState({ name:'', email:'', role:'SALES_REP', password:'' });
 
   // Permission editor
   const [permUser,  setPermUser]  = useState<any>(null);
@@ -99,8 +99,15 @@ export default function UsersPage() {
 
   const invite = async () => {
     if (!form.name||!form.email) return toast('Name and email required','err');
+    if (form.password && form.password.length < 8) return toast('Password must be at least 8 characters','err');
     setSaving(true);
-    try { await userApi.invite(companyId, form); toast('Invite sent!'); setShowInvite(false); setForm({name:'',email:'',role:'SALES_REP'}); load(); }
+    try {
+      await userApi.invite(companyId, form);
+      toast(form.password ? 'User added!' : 'Invite sent!');
+      setShowInvite(false);
+      setForm({name:'',email:'',role:'SALES_REP',password:''});
+      load();
+    }
     catch(e:any){ toast(e.message,'err'); } finally { setSaving(false); }
   };
 
@@ -147,7 +154,7 @@ export default function UsersPage() {
             className="border border-slate-200 rounded-lg px-3 py-1.5 text-xs outline-none focus:border-indigo-500">
             {companies.map((c:any)=><option key={c.companyId} value={c.companyId}>{c.name}</option>)}
           </select>
-          <Btn variant="primary" size="sm" onClick={() => setShowInvite(true)}>+ Invite User</Btn>
+          <Btn variant="primary" size="sm" onClick={() => setShowInvite(true)}>+ Add User</Btn>
         </>}
       />
 
@@ -266,13 +273,18 @@ export default function UsersPage() {
       </div>
 
       {/* Invite Modal */}
-      <Modal open={showInvite} onClose={() => setShowInvite(false)} title="Invite User"
-        footer={<><Btn variant="secondary" onClick={() => setShowInvite(false)}>Cancel</Btn><Btn variant="primary" loading={saving} onClick={invite}>Send Invite</Btn></>}>
+      <Modal open={showInvite} onClose={() => { setShowInvite(false); setForm({name:'',email:'',role:'SALES_REP',password:''}); }} title="Add New User"
+        footer={<><Btn variant="secondary" onClick={() => { setShowInvite(false); setForm({name:'',email:'',role:'SALES_REP',password:''}); }}>Cancel</Btn><Btn variant="primary" loading={saving} onClick={invite}>{form.password ? 'Add User' : 'Send Invite'}</Btn></>}>
         <div className="flex flex-col gap-3">
           <Input label="Full name *" value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))} placeholder="Priya Mehta" />
           <Input label="Email *" type="email" value={form.email} onChange={e=>setForm(f=>({...f,email:e.target.value}))} placeholder="priya@company.com" />
           <Sel label="Role" value={form.role} onChange={e=>setForm(f=>({...f,role:e.target.value}))} options={ROLES} />
-          <div className="bg-slate-50 rounded-lg p-3 text-xs text-slate-500">An invite email will be sent. They set their own password when they accept.</div>
+          <Input label="Password (optional)" type="password" value={form.password} onChange={e=>setForm(f=>({...f,password:e.target.value}))} placeholder="Set password directly (min 8 chars)" />
+          <div className="bg-slate-50 rounded-lg p-3 text-xs text-slate-500">
+            {form.password
+              ? 'User will be created with this password and can log in immediately.'
+              : 'Leave password blank to send an invite email — user sets their own password on accept.'}
+          </div>
         </div>
       </Modal>
 
