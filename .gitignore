@@ -81,3 +81,11 @@ public/uploads/
 *.tgz
 *.zip
 backups/*
+# Prisma generated client
+prisma/generated/
+node_modules/
+.env
+.env.production
+frontend/.env.production
+frontend/.env.local
+.next/
