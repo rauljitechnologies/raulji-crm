@@ -241,35 +241,12 @@ function buildHtml(data, type) {
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; color: #1e293b; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  @media print { @page { size: A4; margin: 0 0 18mm 0; } }
+  @media print { @page { size: A4; margin: 0; } }
   .no-break { page-break-inside: avoid; }
-  /* ── Fixed footer — rendered on every page by Puppeteer ── */
-  .pdf-footer {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    height: 16mm;
-    background: #ffffff;
-    border-top: 2px solid #3199d4;
-    display: flex;
-    align-items: center;
-    padding: 0 40px;
-    font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
-    font-size: 10px;
-    color: #94a3b8;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  /* Push body content up so it never hides behind footer */
-  .page-wrap { padding-bottom: 20mm; }
+  .page-wrap { padding-bottom: 10mm; }
 </style>
 </head>
 <body>
-<!-- Fixed footer rendered on every page -->
-<div class="pdf-footer">
-  <span style="flex:1">Thank you for your business!</span>
-  <span style="flex:1;text-align:center;font-weight:600;color:#64748b">${docLbl} #${docNum}&nbsp;&nbsp;·&nbsp;&nbsp;${co.name || ''}</span>
-  <span style="flex:1;text-align:right">${co.website || ''}</span>
-</div>
 
 <div class="page-wrap">
 <div style="max-width:794px;margin:0 auto;background:#fff">
@@ -429,7 +406,7 @@ async function generatePdf(html, filename) {
     const htmlPdf = require('html-pdf-node');
     const buffer  = await htmlPdf.generatePdf({ content: html }, {
       format: 'A4', printBackground: true,
-      margin: { top: '0', bottom: '18mm', left: '0', right: '0' }
+      margin: { top: '0', bottom: '0', left: '0', right: '0' }
     });
     return { buffer, html };
   } catch {
