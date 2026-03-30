@@ -93,6 +93,7 @@ exports.createInvoice = async (req, res) => {
         clientGst:      clientGst     || null,
         clientAddress:  clientAddress || null,
         invoiceDate:    invoiceDate   ? new Date(invoiceDate) : new Date(),
+        invoiceDate:    invoiceDate   ? new Date(invoiceDate) : new Date(),
         dueDate:        dueDate       ? new Date(dueDate) : new Date(Date.now() + 30 * 86400000),
         currency,
         items:          totals.items,

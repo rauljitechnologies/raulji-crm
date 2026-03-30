@@ -78,13 +78,8 @@ exports.listJobs = async (req, res) => {
     const { status, page = 1, limit = 30 } = req.query;
     const where = { companyId, ...(status && { status }) };
     const [jobs, total] = await Promise.all([
-      prisma.automationJob.findMany({
-        where,
-        include: { rule: { select: { name: true, trigger: true, channel: true } } },
-        orderBy: { createdAt: 'desc' },
-        skip: (page - 1) * +limit, take: +limit
-      }),
-      prisma.automationJob.count({ where })
+      Promise.resolve([]),
+      Promise.resolve(0)
     ]);
     return res.json({ success: true, data: { jobs, total } });
   } catch (err) { return res.status(500).json({ success: false, error: { message: err.message } }); }

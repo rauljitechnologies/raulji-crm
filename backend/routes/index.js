@@ -13,7 +13,7 @@ const gst       = require('../controllers/gstController');
 const user      = require('../controllers/userController');
 const analytics = require('../controllers/analyticsController');
 const template  = require('../controllers/templateController');
-const automation= require('../controllers/automationController');
+//const automation= require('../controllers/automationController');
 const campaign  = require('../controllers/campaignController');
 const comm      = require('../controllers/communicationController');
 const geo       = require('../controllers/geoController');
@@ -120,14 +120,14 @@ router.delete('/companies/:companyId/templates/:id',         ...authCo, template
 router.post(  '/companies/:companyId/templates/:id/preview', ...authCo, template.preview);
 
 // ── Automation Rules ──────────────────────────────────────────────────────────
-router.get(   '/companies/:companyId/automation/rules',            ...authCo, automation.listRules);
-router.post(  '/companies/:companyId/automation/rules',            ...authCo, automation.createRule);
-router.get(   '/companies/:companyId/automation/rules/:id',        ...authCo, automation.getRule);
-router.put(   '/companies/:companyId/automation/rules/:id',        ...authCo, automation.updateRule);
-router.put(   '/companies/:companyId/automation/rules/:id/toggle', ...authCo, automation.toggleRule);
-router.delete('/companies/:companyId/automation/rules/:id',        ...authCo, automation.deleteRule);
-router.get(   '/companies/:companyId/automation/jobs',             ...authCo, automation.listJobs);
-router.post(  '/companies/:companyId/automation/jobs/:id/retry',   ...authCo, automation.retryJob);
+//router.get(   '/companies/:companyId/automation/rules',            ...authCo, automation.listRules);
+//router.post(  '/companies/:companyId/automation/rules',            ...authCo, automation.createRule);
+//router.get(   '/companies/:companyId/automation/rules/:id',        ...authCo, automation.getRule);
+//router.put(   '/companies/:companyId/automation/rules/:id',        ...authCo, automation.updateRule);
+//router.put(   '/companies/:companyId/automation/rules/:id/toggle', ...authCo, automation.toggleRule);
+//router.delete('/companies/:companyId/automation/rules/:id',        ...authCo, automation.deleteRule);
+//router.get(   '/companies/:companyId/automation/jobs',             ...authCo, automation.listJobs);
+//router.post(  '/companies/:companyId/automation/jobs/:id/retry',   ...authCo, automation.retryJob);
 
 // ── Campaigns ─────────────────────────────────────────────────────────────────
 router.get(   '/companies/:companyId/campaigns',                     ...authCo, campaign.listCampaigns);

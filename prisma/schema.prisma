@@ -36,6 +36,7 @@ model Company {
   quotations Quotation[]
   invoices   Invoice[]
   webhooks   Webhook[]
+  clients    Client[]
 
   @@map("companies")
 }
@@ -174,6 +175,7 @@ model Quotation {
   companyId            String    @map("company_id")
   leadId               String?   @map("lead_id")
   dealId               String?   @map("deal_id")
+  clientId             String?   @map("client_id")
   clientName           String    @map("client_name")
   clientEmail          String?   @map("client_email")
   clientPhone          String?   @map("client_phone")
@@ -205,9 +207,11 @@ model Quotation {
 model Invoice {
   invoiceId      String    @id @default(cuid()) @map("invoice_id")
   invoiceNumber  String    @map("invoice_number")
+  invoiceDate    DateTime? @default(now()) @map("invoice_date")
   companyId      String    @map("company_id")
   leadId         String?   @map("lead_id")
   quotationId    String?   @map("quotation_id")
+  clientId       String?   @map("client_id")
   clientName     String    @map("client_name")
   clientEmail    String?   @map("client_email")
   clientPhone    String?   @map("client_phone")
@@ -252,4 +256,28 @@ model Webhook {
   company Company @relation(fields: [companyId], references: [companyId])
 
   @@map("webhooks")
+}
+
+
+model Client {
+  clientId  String   @id @default(cuid()) @map("client_id")
+  companyId String   @map("company_id")
+  name      String
+  email     String?
+  phone     String?
+  address   String?
+  city      String?
+  state     String?
+  pincode   String?
+  gst       String?
+  pan       String?
+  notes     String?
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  company Company @relation(fields: [companyId], references: [companyId])
+
+  @@index([companyId])
+  @@map("clients")
 }
