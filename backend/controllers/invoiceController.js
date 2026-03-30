@@ -153,17 +153,20 @@ exports.removeInvoice = async (req, res) => {
 exports.markPaid = async (req, res) => {
   try {
     const { companyId, id } = req.params;
-    const { paidAmount, paymentMethod, transactionId, paymentDate } = req.body;
+    const { paidAmount, paymentMethod, transactionId, paymentDate, tdsAmount, tdsRate } = req.body;
     const inv    = await prisma.invoice.findFirst({ where: { invoiceId: id, companyId } });
     if (!inv) return res.status(404).json({ success: false, error: { message: 'Not found.' } });
-    const paid   = +(paidAmount || inv.grandTotal);
-    const status = paid >= inv.grandTotal ? 'PAID' : 'PARTIAL';
+    const tds     = +(tdsAmount || 0);
+    const paid    = +(paidAmount || (inv.grandTotal - tds));
+    const cleared = paid + tds;                                        // cash received + TDS credit
+    const status  = cleared >= inv.grandTotal ? 'PAID' : 'PARTIAL';
     const resolvedPaidAt = paymentDate ? new Date(paymentDate) : new Date();
     const upd    = { paidAmount: paid, status, paidAt: resolvedPaidAt };
     if (paymentMethod !== undefined) upd.paymentMethod = paymentMethod;
     if (transactionId !== undefined) upd.transactionId = transactionId;
+    if (tds > 0)                     { upd.tdsAmount = tds; upd.tdsRate = +(tdsRate || 0); }
     await prisma.invoice.update({ where: { invoiceId: id }, data: upd });
-    return res.json({ success: true, data: { status, paidAmount: paid } });
+    return res.json({ success: true, data: { status, paidAmount: paid, tdsAmount: tds } });
   } catch (err) { return res.status(500).json({ success: false, error: { message: err.message } }); }
 };
 

@@ -129,27 +129,72 @@ function PdfModal({ inv, cid, onClose }: { inv: any; cid: string; onClose: () =>
   );
 }
 
+// ─── TDS rates ───────────────────────────────────────────────
+const TDS_RATES = [
+  { label: '1% — Sec 194C (Small Contractor)',       value: 1   },
+  { label: '2% — Sec 194C (Contractor/Sub-Contract)',value: 2   },
+  { label: '5% — Sec 194J (Professional Services)',  value: 5   },
+  { label: '10% — Sec 194J (Technical/Royalty)',     value: 10  },
+  { label: '7.5% — Sec 194A (Interest)',             value: 7.5 },
+  { label: '20% — Sec 194J (No PAN)',                value: 20  },
+];
+
 // ─── Mark Paid modal ─────────────────────────────────────────
 function PaidModal({ inv, cid, onClose, onDone }: any) {
   const today = new Date().toISOString().split('T')[0];
-  const [f, setF] = useState({ paidAmount: String(inv.grandTotal || ''), paymentMethod: 'bank_transfer', transactionId: '', paymentDate: today, notes: '' });
+  const [tdsEnabled, setTdsEnabled] = useState(false);
+  const [tdsRate,    setTdsRate]    = useState(10);
+  const [f, setF] = useState({
+    paidAmount:    String(inv.grandTotal || ''),
+    paymentMethod: 'bank_transfer',
+    transactionId: '',
+    paymentDate:   today,
+    notes: '',
+  });
   const [saving, setSaving] = useState(false);
   const { toast, ToastContainer } = useToast();
 
+  // Auto-calc paidAmount when TDS toggled or rate changes
+  const tdsAmt   = tdsEnabled ? Math.round(inv.grandTotal * tdsRate / 100) : 0;
+  const autoAmt  = inv.grandTotal - tdsAmt;
+
+  // When TDS is toggled on, auto-fill paidAmount
+  const handleTdsToggle = (on: boolean) => {
+    setTdsEnabled(on);
+    if (on) {
+      const amt = inv.grandTotal - Math.round(inv.grandTotal * tdsRate / 100);
+      setF(p => ({ ...p, paidAmount: String(amt) }));
+    } else {
+      setF(p => ({ ...p, paidAmount: String(inv.grandTotal) }));
+    }
+  };
+
+  const handleTdsRateChange = (rate: number) => {
+    setTdsRate(rate);
+    if (tdsEnabled) {
+      const amt = inv.grandTotal - Math.round(inv.grandTotal * rate / 100);
+      setF(p => ({ ...p, paidAmount: String(amt) }));
+    }
+  };
+
+  const cleared = +f.paidAmount + tdsAmt;
+  const bal     = Math.max(0, inv.grandTotal - cleared);
+  const isFull  = cleared >= inv.grandTotal;
+
   const save = async () => {
-    if (!f.paidAmount || +f.paidAmount <= 0) return toast('Enter valid amount', 'err');
+    if (!f.paidAmount || +f.paidAmount < 0) return toast('Enter valid amount', 'err');
     if (!f.paymentDate) return toast('Payment received date is required', 'err');
     setSaving(true);
     try {
-      await invoiceApi.markPaid(cid, inv.invoiceId, { ...f, paidAmount: +f.paidAmount });
-      toast(+f.paidAmount >= inv.grandTotal ? 'Invoice marked as Paid!' : 'Invoice marked as Partial!');
+      const payload: any = { ...f, paidAmount: +f.paidAmount };
+      if (tdsEnabled && tdsAmt > 0) { payload.tdsAmount = tdsAmt; payload.tdsRate = tdsRate; }
+      await invoiceApi.markPaid(cid, inv.invoiceId, payload);
+      const msg = isFull ? 'Invoice marked as Paid!' : 'Invoice marked as Partial!';
+      toast(tdsEnabled ? `${msg} TDS ₹${tdsAmt.toLocaleString('en-IN')} recorded.` : msg);
       setTimeout(() => { onDone(); onClose(); }, 700);
     } catch (e: any) { toast(e.message, 'err'); }
     finally { setSaving(false); }
   };
-
-  const bal    = Math.max(0, inv.grandTotal - +f.paidAmount);
-  const isFull = +f.paidAmount >= inv.grandTotal;
 
   return (
     <>
@@ -159,22 +204,93 @@ function PaidModal({ inv, cid, onClose, onDone }: any) {
             <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0 text-lg">✓</div>
             <div>
               <div className="font-bold text-slate-900">Mark as Paid</div>
-              <div className="text-xs text-slate-400">{inv.invoiceNumber} · Total {inr(inv.grandTotal)}</div>
+              <div className="text-xs text-slate-400">{inv.invoiceNumber} · Invoice Total {inr(inv.grandTotal)}</div>
             </div>
           </div>
           <div className="px-6 py-4 flex flex-col gap-3">
+
+            {/* TDS toggle */}
+            <button
+              type="button"
+              onClick={() => handleTdsToggle(!tdsEnabled)}
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-all ${
+                tdsEnabled ? 'border-indigo-400 bg-indigo-50' : 'border-slate-200 bg-slate-50 hover:border-slate-300'
+              }`}>
+              <div className="flex items-center gap-2.5">
+                <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
+                  tdsEnabled ? 'border-indigo-500 bg-indigo-500' : 'border-slate-300'
+                }`}>
+                  {tdsEnabled && <svg viewBox="0 0 12 12" className="w-3 h-3" fill="white"><path d="M1.5 6l3 3 6-6" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                </div>
+                <div className="text-left">
+                  <div className={`text-sm font-semibold ${tdsEnabled ? 'text-indigo-800' : 'text-slate-600'}`}>TDS Deducted by Client</div>
+                  <div className="text-xs text-slate-400">Client deducted TDS before payment</div>
+                </div>
+              </div>
+              {tdsEnabled && (
+                <span className="text-xs font-bold text-indigo-600 bg-indigo-100 px-2 py-0.5 rounded-full flex-shrink-0">
+                  -{inr(tdsAmt)}
+                </span>
+              )}
+            </button>
+
+            {/* TDS rate selector */}
+            {tdsEnabled && (
+              <div className="bg-indigo-50 border border-indigo-100 rounded-xl px-4 py-3 flex flex-col gap-2.5">
+                <div className="text-xs font-semibold text-indigo-700 mb-0.5">Select TDS Rate</div>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {TDS_RATES.map(r => (
+                    <button key={r.value} type="button"
+                      onClick={() => handleTdsRateChange(r.value)}
+                      className={`px-2 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                        tdsRate === r.value
+                          ? 'bg-indigo-600 text-white border-indigo-600'
+                          : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-300'
+                      }`}>
+                      {r.value}%
+                    </button>
+                  ))}
+                </div>
+                <div className="text-xs text-indigo-500 mt-0.5">
+                  {TDS_RATES.find(r => r.value === tdsRate)?.label}
+                </div>
+                {/* TDS breakdown */}
+                <div className="bg-white rounded-lg px-3 py-2 border border-indigo-100 text-xs">
+                  <div className="flex justify-between py-0.5 text-slate-600">
+                    <span>Invoice Total</span><span className="font-semibold">{inr(inv.grandTotal)}</span>
+                  </div>
+                  <div className="flex justify-between py-0.5 text-red-500">
+                    <span>TDS @ {tdsRate}%</span><span className="font-semibold">- {inr(tdsAmt)}</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-t border-slate-100 mt-0.5 text-emerald-700 font-bold">
+                    <span>Amount to Receive</span><span>{inr(autoAmt)}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Amount received */}
             <div>
-              <label className="text-xs font-semibold text-slate-600 mb-1 block">Amount Received *</label>
+              <label className="text-xs font-semibold text-slate-600 mb-1 block">
+                Amount Received *
+                {tdsEnabled && <span className="text-indigo-500 font-normal ml-1">(after TDS deduction)</span>}
+              </label>
               <input type="number" value={f.paidAmount} onChange={e => setF(p => ({ ...p, paidAmount: e.target.value }))}
                 className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm font-bold focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all"
                 placeholder="0.00" />
               {f.paidAmount && (
                 <div className={`text-xs mt-1.5 flex items-center gap-1 ${isFull ? 'text-emerald-600' : 'text-amber-600'}`}>
                   <span>{isFull ? '✓' : '⚠'}</span>
-                  {isFull ? 'Full payment — will be marked PAID' : `Balance ₹${bal.toLocaleString('en-IN')} remaining — will be marked PARTIAL`}
+                  {isFull
+                    ? tdsEnabled
+                      ? `Full payment cleared — ₹${(+f.paidAmount).toLocaleString('en-IN')} received + ₹${tdsAmt.toLocaleString('en-IN')} TDS`
+                      : 'Full payment — will be marked PAID'
+                    : `Balance ₹${bal.toLocaleString('en-IN')} remaining — will be marked PARTIAL`
+                  }
                 </div>
               )}
             </div>
+
             <div>
               <label className="text-xs font-semibold text-slate-600 mb-1 block">Payment Method</label>
               <select value={f.paymentMethod} onChange={e => setF(p => ({ ...p, paymentMethod: e.target.value }))}
@@ -278,7 +394,7 @@ function EditModal({ inv, cid, onClose, onDone }: any) {
               </div>
             </div>
             {/* Dates */}
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <Input label="Invoice Date" type="date" value={f.invoiceDate} onChange={e => setF(p => ({ ...p, invoiceDate: e.target.value }))} />
               <Input label="Due Date" type="date" value={f.dueDate} onChange={e => setF(p => ({ ...p, dueDate: e.target.value }))} />
               <Sel label="Payment Terms" value={f.paymentTerms} onChange={e => setF(p => ({ ...p, paymentTerms: e.target.value }))}
@@ -524,10 +640,12 @@ function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
   const paidInvs   = allInvoices.filter(i => i.status === 'PAID');
 
   const totalRevenue  = activeInvs.reduce((a, i) => a + (i.grandTotal || 0), 0);
-  const collected     = paidInvs.reduce((a, i) => a + (i.grandTotal || 0), 0);
+  const collected     = activeInvs.reduce((a, i) => a + (i.paidAmount || 0), 0);
+  const totalTds      = activeInvs.reduce((a, i) => a + (i.tdsAmount || 0), 0);
   const totalTax      = activeInvs.reduce((a, i) => a + (i.totalGst || 0), 0);
   const totalSubtotal = activeInvs.reduce((a, i) => a + (i.subtotal || 0), 0);
-  const pending       = allInvoices.filter(i => ['SENT','PARTIAL'].includes(i.status)).reduce((a, i) => a + (i.grandTotal || 0), 0);
+  const pending       = activeInvs.filter(i => ['SENT','PARTIAL'].includes(i.status))
+    .reduce((a, i) => a + Math.max(0, (i.grandTotal || 0) - (i.paidAmount || 0) - (i.tdsAmount || 0)), 0);
 
   // FY map (all active)
   const fyMapAll: Record<string, { subtotal: number; tax: number; grand: number; paid: number; count: number }> = {};
@@ -599,19 +717,25 @@ function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
 
   // Download CSV
   const downloadCSV = () => {
-    const hdr = ['Invoice #','Date','Due Date','Client','Client GST','Status','Subtotal (₹)','GST (₹)','Grand Total (₹)','Paid Amount (₹)','Balance (₹)','Payment Received Date','Payment Method','Transaction ID'];
-    const rows = allInvoices.map(i => [
-      i.invoiceNumber,
-      new Date(i.invoiceDate || i.createdAt).toLocaleDateString('en-IN'),
-      i.dueDate ? new Date(i.dueDate).toLocaleDateString('en-IN') : '',
-      i.clientName || '', i.clientGst || '', i.status,
-      i.subtotal || 0, i.totalGst || 0, i.grandTotal || 0,
-      i.paidAmount || 0,
-      Math.max(0, (i.grandTotal || 0) - (i.paidAmount || 0)),
-      i.paidAt ? new Date(i.paidAt).toLocaleDateString('en-IN') : '',
-      i.paymentMethod ? i.paymentMethod.replace(/_/g, ' ') : '',
-      i.transactionId || '',
-    ]);
+    const hdr = ['Invoice #','Date','Due Date','Client','Client GST','Status','Subtotal (₹)','GST (₹)','Grand Total (₹)','Paid Amount (₹)','TDS Amount (₹)','TDS Rate (%)','Balance (₹)','Payment Received Date','Payment Method','Transaction ID'];
+    const rows = allInvoices.map(i => {
+      const tds = i.tdsAmount || 0;
+      const bal = Math.max(0, (i.grandTotal || 0) - (i.paidAmount || 0) - tds);
+      return [
+        i.invoiceNumber,
+        new Date(i.invoiceDate || i.createdAt).toLocaleDateString('en-IN'),
+        i.dueDate ? new Date(i.dueDate).toLocaleDateString('en-IN') : '',
+        i.clientName || '', i.clientGst || '', i.status,
+        i.subtotal || 0, i.totalGst || 0, i.grandTotal || 0,
+        i.paidAmount || 0,
+        tds,
+        i.tdsRate || 0,
+        bal,
+        i.paidAt ? new Date(i.paidAt).toLocaleDateString('en-IN') : '',
+        i.paymentMethod ? i.paymentMethod.replace(/_/g, ' ') : '',
+        i.transactionId || '',
+      ];
+    });
     const csv = [hdr, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
     const a = document.createElement('a');
     a.href = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(csv);
@@ -625,7 +749,8 @@ function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
     if (!w) return;
     const SC_COLOR: Record<string, string> = { PAID: '#16a34a', SENT: '#3b82f6', DRAFT: '#94a3b8', PARTIAL: '#f97316', OVERDUE: '#ef4444', CANCELLED: '#94a3b8' };
     const tRows = allInvoices.map(i => {
-      const bal = Math.max(0, (i.grandTotal || 0) - (i.paidAmount || 0));
+      const tds = i.tdsAmount || 0;
+      const bal = Math.max(0, (i.grandTotal || 0) - (i.paidAmount || 0) - tds);
       return `<tr>
         <td>${i.invoiceNumber}</td>
         <td>${new Date(i.invoiceDate || i.createdAt).toLocaleDateString('en-IN')}</td>
@@ -635,6 +760,7 @@ function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
         <td style="text-align:right;color:#6366f1">${fmtInr(i.totalGst||0)}</td>
         <td style="text-align:right;font-weight:700">${fmtInr(i.grandTotal||0)}</td>
         <td style="text-align:right;color:${(i.paidAmount||0)>0?'#16a34a':'#94a3b8'}">${fmtInr(i.paidAmount||0)}</td>
+        <td style="text-align:right;color:#7c3aed">${tds > 0 ? fmtInr(tds) + ' (' + (i.tdsRate||0) + '%)' : '—'}</td>
         <td style="text-align:right;color:${bal>0?'#ef4444':'#16a34a'}">${fmtInr(bal)}</td>
       </tr>`;
     }).join('');
@@ -643,7 +769,7 @@ function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
   *{box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:32px;color:#1e293b;font-size:13px}
   h1{font-size:22px;font-weight:800;margin:0 0 2px;color:#1f293f}
   .sub{color:#64748b;font-size:12px;margin-bottom:24px}
-  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px}
+  .kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:28px}@media(min-width:600px){.kpis{grid-template-columns:repeat(4,1fr)}}
   .kpi{border:1px solid #e2e8f0;border-radius:10px;padding:14px 16px}
   .kpi-label{font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
   .kpi-val{font-size:20px;font-weight:800}
@@ -657,12 +783,12 @@ function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
 <div class="sub">Generated ${new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'})} &nbsp;·&nbsp; ${allInvoices.length} invoices total${fyFilter !== 'ALL' ? ' &nbsp;·&nbsp; ' + fyFilter : ''}</div>
 <div class="kpis">
   <div class="kpi"><div class="kpi-label">Total Revenue</div><div class="kpi-val" style="color:#3199d4">${fmtInr(totalRevenue)}</div></div>
-  <div class="kpi"><div class="kpi-label">Collected (Paid)</div><div class="kpi-val" style="color:#16a34a">${fmtInr(collected)}</div></div>
-  <div class="kpi"><div class="kpi-label">Subtotal (Taxable)</div><div class="kpi-val">${fmtInr(totalSubtotal)}</div></div>
+  <div class="kpi"><div class="kpi-label">Cash Received</div><div class="kpi-val" style="color:#16a34a">${fmtInr(collected)}</div></div>
+  <div class="kpi"><div class="kpi-label">TDS Deducted</div><div class="kpi-val" style="color:#7c3aed">${fmtInr(totalTds)}</div></div>
   <div class="kpi"><div class="kpi-label">Total GST</div><div class="kpi-val" style="color:#6366f1">${fmtInr(totalTax)}</div></div>
 </div>
 <table>
-  <thead><tr><th>Invoice #</th><th>Date</th><th>Client</th><th>Status</th><th style="text-align:right">Subtotal</th><th style="text-align:right">GST</th><th style="text-align:right">Grand Total</th><th style="text-align:right">Paid</th><th style="text-align:right">Balance</th></tr></thead>
+  <thead><tr><th>Invoice #</th><th>Date</th><th>Client</th><th>Status</th><th style="text-align:right">Subtotal</th><th style="text-align:right">GST</th><th style="text-align:right">Grand Total</th><th style="text-align:right">Paid</th><th style="text-align:right">TDS</th><th style="text-align:right">Balance</th></tr></thead>
   <tbody>${tRows}</tbody>
   <tfoot><tr>
     <td colspan="4">TOTAL (${allInvoices.length} invoices)</td>
@@ -670,7 +796,8 @@ function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
     <td style="text-align:right">${fmtInr(totalTax)}</td>
     <td style="text-align:right">${fmtInr(totalRevenue)}</td>
     <td style="text-align:right">${fmtInr(collected)}</td>
-    <td style="text-align:right">${fmtInr(Math.max(0, totalRevenue - collected))}</td>
+    <td style="text-align:right;color:#7c3aed">${totalTds > 0 ? fmtInr(totalTds) : '—'}</td>
+    <td style="text-align:right">${fmtInr(Math.max(0, totalRevenue - collected - totalTds))}</td>
   </tr></tfoot>
 </table>
 </body></html>`);
@@ -704,13 +831,14 @@ function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
       </div>
 
       {/* ── KPI Row ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {[
-          { label: 'Total Revenue',    val: totalRevenue,  sub: `${activeInvs.length} invoices`,                  color: 'text-blue-600',    border: 'border-blue-100' },
-          { label: 'Collected',        val: collected,     sub: `${paidInvs.length} paid`,                        color: 'text-emerald-600', border: 'border-emerald-100' },
-          { label: 'Outstanding',      val: pending,       sub: `${allInvoices.filter(i=>['SENT','PARTIAL'].includes(i.status)).length} unpaid`, color: 'text-amber-600', border: 'border-amber-100' },
-          { label: 'Subtotal (Taxable)',val: totalSubtotal,sub: 'Before GST',                                      color: 'text-slate-700',   border: 'border-slate-200' },
-          { label: 'Total GST',        val: totalTax,      sub: totalSubtotal > 0 ? `${((totalTax/totalSubtotal)*100).toFixed(1)}% eff. rate` : '—', color: 'text-indigo-600', border: 'border-indigo-100' },
+          { label: 'Total Revenue',     val: totalRevenue,  sub: `${activeInvs.length} invoices`,                                                           color: 'text-blue-600',    border: 'border-blue-100'   },
+          { label: 'Collected (Cash)',   val: collected,     sub: `${paidInvs.length} paid`,                                                                 color: 'text-emerald-600', border: 'border-emerald-100'},
+          { label: 'TDS Deducted',       val: totalTds,      sub: totalTds > 0 ? `${allInvoices.filter(i=>i.tdsAmount>0).length} inv. with TDS` : 'No TDS recorded', color: 'text-purple-600',  border: 'border-purple-100' },
+          { label: 'Outstanding',        val: pending,       sub: `${allInvoices.filter(i=>['SENT','PARTIAL'].includes(i.status)).length} unpaid`,           color: 'text-amber-600',   border: 'border-amber-100'  },
+          { label: 'Subtotal (Taxable)', val: totalSubtotal, sub: 'Before GST',                                                                              color: 'text-slate-700',   border: 'border-slate-200'  },
+          { label: 'Total GST',          val: totalTax,      sub: totalSubtotal > 0 ? `${((totalTax/totalSubtotal)*100).toFixed(1)}% eff. rate` : '—',       color: 'text-indigo-600',  border: 'border-indigo-100' },
         ].map((k, i) => (
           <div key={i} className={`bg-white border ${k.border} rounded-xl px-4 py-3`}>
             <div className="text-xs text-slate-400 font-medium mb-1">{k.label}</div>
@@ -744,12 +872,18 @@ function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
           <div className="font-semibold text-slate-800 text-sm mb-4">Invoice Status</div>
           <DonutChart segs={donutSegs} />
           <div className="mt-4 pt-4 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
-            <div className="text-slate-400">Paid Revenue</div>
+            <div className="text-slate-400">Cash Received</div>
             <div className="font-bold text-emerald-600 text-right">{shortFmt(collected)}</div>
+            {totalTds > 0 && <>
+              <div className="text-slate-400">TDS Deducted</div>
+              <div className="font-bold text-purple-600 text-right">{shortFmt(totalTds)}</div>
+              <div className="text-slate-400">Total Cleared</div>
+              <div className="font-bold text-blue-600 text-right">{shortFmt(collected + totalTds)}</div>
+            </>}
             <div className="text-slate-400">Outstanding</div>
             <div className="font-bold text-amber-600 text-right">{shortFmt(pending)}</div>
             <div className="text-slate-400">Collection Rate</div>
-            <div className="font-bold text-indigo-600 text-right">{totalRevenue > 0 ? `${((collected/totalRevenue)*100).toFixed(1)}%` : '—'}</div>
+            <div className="font-bold text-indigo-600 text-right">{totalRevenue > 0 ? `${(((collected+totalTds)/totalRevenue)*100).toFixed(1)}%` : '—'}</div>
           </div>
         </Card>
       </div>
@@ -1005,17 +1139,18 @@ export default function InvoicesPage() {
   const activeTab = TABS.find(t => t.key === tab) || TABS[0];
   const invoices  = allInvoices.filter(activeTab.fn);
 
-  // Summary
-  const collected = allInvoices.filter(i => i.status === 'PAID').reduce((a, i) => a + (i.grandTotal || 0), 0);
-  const pending   = allInvoices.filter(i => ['SENT','PARTIAL'].includes(i.status)).reduce((a, i) => a + (i.grandTotal || 0), 0);
-  const overdue   = allInvoices.filter(i => i.status === 'SENT' && new Date(i.dueDate) < new Date()).reduce((a, i) => a + (i.grandTotal || 0), 0);
-  const fmtL      = (n: number) => n >= 100000 ? `₹${(n / 100000).toFixed(1)}L` : inr(n);
-
   // Totals breakdown (all non-cancelled invoices)
   const activeInvs    = allInvoices.filter(i => i.status !== 'CANCELLED');
   const totalSubtotal = activeInvs.reduce((a, i) => a + (i.subtotal  || 0), 0);
   const totalTax      = activeInvs.reduce((a, i) => a + (i.totalGst  || 0), 0);
   const totalRevenue  = activeInvs.reduce((a, i) => a + (i.grandTotal|| 0), 0);
+
+  // Summary — exclude CANCELLED from all financial calculations
+  const collected = activeInvs.reduce((a, i) => a + (i.paidAmount || 0), 0);
+  const pending   = activeInvs.filter(i => ['SENT','PARTIAL'].includes(i.status))
+    .reduce((a, i) => a + Math.max(0, (i.grandTotal || 0) - (i.paidAmount || 0)), 0);
+  const overdue   = activeInvs.filter(i => i.status === 'SENT' && new Date(i.dueDate) < new Date()).reduce((a, i) => a + (i.grandTotal || 0), 0);
+  const fmtL      = (n: number) => n >= 100000 ? `₹${(n / 100000).toFixed(1)}L` : inr(n);
 
   // Item helpers
   const updItem = (i: number, k: string, v: any) => setForm(f => ({ ...f, items: f.items.map((it: any, idx: number) => idx === i ? { ...it, [k]: v } : it) }));
@@ -1109,7 +1244,7 @@ export default function InvoicesPage() {
               { label: 'Collected',     value: fmtL(collected), color: 'text-emerald-600', border: 'border-emerald-200', icon: '₹' },
               { label: 'Pending',       value: fmtL(pending),   color: 'text-blue-600',    border: 'border-blue-200',    icon: '⏳' },
               { label: 'Overdue',       value: fmtL(overdue),   color: 'text-red-600',     border: 'border-red-200',     icon: '!' },
-              { label: 'Total Invoices',value: String(allInvoices.length), color: 'text-slate-700', border: 'border-slate-200', icon: '#' },
+              { label: 'Total Invoices',value: String(activeInvs.length),  color: 'text-slate-700', border: 'border-slate-200', icon: '#' },
             ].map((s, i) => (
               <div key={i} className={`bg-white border ${s.border} rounded-xl px-4 py-3 flex items-center gap-3`}>
                 <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-sm font-bold text-slate-500 flex-shrink-0">{s.icon}</div>
@@ -1219,6 +1354,9 @@ export default function InvoicesPage() {
                                 {inv.totalGst > 0 && <span className="text-indigo-400">+GST {inr(inv.totalGst)}</span>}
                               </div>
                             )}
+                            {inv.tdsAmount > 0 && (
+                              <div className="text-xs text-purple-500 mt-0.5 font-medium">TDS {inr(inv.tdsAmount)} ({inv.tdsRate}%)</div>
+                            )}
                             {inv.status === 'PAID' && <div className="text-xs text-emerald-500 font-medium mt-0.5">✓ Fully Paid</div>}
                             {inv.status === 'PARTIAL' && balance > 0 && <div className="text-xs text-amber-500 mt-0.5">Due {inr(balance)}</div>}
                             {inv.paidAmount > 0 && !['PAID'].includes(inv.status) && <div className="text-xs text-slate-400">Paid {inr(inv.paidAmount)}</div>}
@@ -1240,6 +1378,12 @@ export default function InvoicesPage() {
                                   <div className="text-xs text-emerald-600 font-medium flex items-center gap-1 mt-0.5">
                                     <span>Received:</span>
                                     <span>{dateStr(inv.paidAt)}</span>
+                                  </div>
+                                )}
+                                {inv.tdsAmount > 0 && (
+                                  <div className="text-xs text-purple-600 font-semibold mt-0.5 flex items-center gap-1">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-purple-400 inline-block flex-shrink-0" />
+                                    TDS: {inr(inv.tdsAmount)}
                                   </div>
                                 )}
                               </div>
@@ -1349,7 +1493,7 @@ export default function InvoicesPage() {
                           <div className={`text-sm font-bold ${s.color}`}>{s.value}</div>
                         </div>
                       ))}
-                      <div className="col-span-4 flex items-center gap-4 text-xs text-slate-400 pt-1">
+                      <div className="col-span-2 sm:col-span-4 flex items-center gap-4 text-xs text-slate-400 pt-1">
                         <span>{clientInvs.length} invoices</span>
                         <span>Subtotal {inr(sub)}</span>
                         <span>GST {inr(gst)}</span>
@@ -1499,7 +1643,7 @@ export default function InvoicesPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <Input label="Invoice Date" type="date" value={form.invoiceDate} onChange={e => setForm(f => ({ ...f, invoiceDate: e.target.value }))} />
             <Input label="Due Date" type="date" value={form.dueDate} onChange={e => setForm(f => ({ ...f, dueDate: e.target.value }))} />
             <Sel label="Payment Terms" value={form.paymentTerms} onChange={e => setForm(f => ({ ...f, paymentTerms: e.target.value }))}

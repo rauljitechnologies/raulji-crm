@@ -397,7 +397,7 @@ export default function SettingsPage() {
               </Card>
 
               {/* ── Facebook Pixel + Razorpay row ── */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Card>
                   <div className="flex items-center gap-3 mb-4" style={{ borderBottom: '1px solid #f0f5fa', paddingBottom: 14 }}>
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: '#ebf0fb' }}>

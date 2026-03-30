@@ -233,6 +233,8 @@ model Invoice {
   paidAt         DateTime? @map("paid_at")
   paymentMethod  String?   @map("payment_method")
   transactionId  String?   @map("transaction_id")
+  tdsAmount      Float?    @map("tds_amount")
+  tdsRate        Float?    @map("tds_rate")
   notes          String?
   sentAt         DateTime? @map("sent_at")
   createdAt      DateTime  @default(now()) @map("created_at")
