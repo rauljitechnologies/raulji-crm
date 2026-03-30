@@ -77,7 +77,7 @@ const NAV = [
   ]},
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ mobileOpen = false, onMobileClose }: { mobileOpen?: boolean; onMobileClose?: () => void }) {
   const pathname = usePathname();
   const router   = useRouter();
   const [user, setUser] = useState<any>(null);
@@ -91,6 +91,9 @@ export default function Sidebar() {
     } catch {}
   }, []);
 
+  // Auto-close mobile sidebar on route change
+  useEffect(() => { onMobileClose?.(); }, [pathname]);
+
   const logout = () => {
     localStorage.clear();
     document.cookie = 'accessToken=; max-age=0; path=/';
@@ -101,7 +104,19 @@ export default function Sidebar() {
   const roleFmt  = user?.role?.replace(/_/g, ' ') || 'User';
 
   return (
-    <aside className="w-58 flex flex-col flex-shrink-0 overflow-y-auto" style={{ width: 228, background: '#192b3f' }}>
+    <>
+      {/* Mobile backdrop */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 md:hidden"
+          style={{ background: 'rgba(0,0,0,0.5)' }}
+          onClick={onMobileClose}
+        />
+      )}
+
+    <aside
+      className={`flex-col flex-shrink-0 overflow-y-auto ${mobileOpen ? 'fixed inset-y-0 left-0 z-50 flex' : 'hidden md:flex'}`}
+      style={{ width: 228, background: '#192b3f' }}>
 
       {/* Logo */}
       <div className="px-4 py-4 flex items-center gap-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
@@ -179,5 +194,6 @@ export default function Sidebar() {
       </div>
 
     </aside>
+    </>
   );
 }

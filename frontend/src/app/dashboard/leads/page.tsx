@@ -97,7 +97,7 @@ export default function LeadsPage() {
 
         {/* Filters */}
         <div className="flex gap-2 flex-wrap items-center">
-          <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} placeholder="Search name, phone, email..." className="border border-slate-200 rounded-lg px-3 py-1.5 text-xs w-48 outline-none focus:border-indigo-500" />
+          <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} placeholder="Search name, phone, email..." className="border border-slate-200 rounded-lg px-3 py-1.5 text-xs w-full sm:w-48 outline-none focus:border-indigo-500" />
           <select value={status} onChange={e => { setStatus(e.target.value); setPage(1); }} className="border border-slate-200 rounded-lg px-3 py-1.5 text-xs outline-none focus:border-indigo-500">
             {STATUSES.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
@@ -182,7 +182,7 @@ export default function LeadsPage() {
               </select>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <div>
               <div className="text-xs font-medium text-slate-600 mb-1">Country</div>
               <select value={form.country} onChange={(e:any)=>setForm((f:any)=>({...f,country:e.target.value,state:''}))}
@@ -205,7 +205,7 @@ export default function LeadsPage() {
             </div>
             <Input label="City" value={form.city} onChange={(e:any)=>setForm((f:any)=>({...f,city:e.target.value}))} placeholder="City" />
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <Sel label="Source"   value={form.source}   onChange={(e:any)=>setForm((f:any)=>({...f,source:e.target.value}))}   options={SOURCES.slice(1)} />
             <Sel label="Status"   value={form.status}   onChange={(e:any)=>setForm((f:any)=>({...f,status:e.target.value}))}   options={STATUSES.slice(1)} />
             <Sel label="Priority" value={form.priority} onChange={(e:any)=>setForm((f:any)=>({...f,priority:e.target.value}))} options={[{value:'LOW',label:'Low'},{value:'MEDIUM',label:'Medium'},{value:'HIGH',label:'High'},{value:'URGENT',label:'Urgent'}]} />

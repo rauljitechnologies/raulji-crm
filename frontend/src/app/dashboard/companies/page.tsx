@@ -100,7 +100,7 @@ export default function CompaniesPage() {
 
       <div className="flex-1 overflow-y-auto p-5">
         {loading ? <div className="flex items-center justify-center py-20 text-slate-400">Loading...</div> : (
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {companies.map((co: any, i: number) => {
               const initials = co.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
               return (

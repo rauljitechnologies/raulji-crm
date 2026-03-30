@@ -4,13 +4,13 @@ import { useState, useRef, useEffect } from 'react';
 // ── Topbar ────────────────────────────────────────────────────
 export function Topbar({ title, subtitle, actions }: { title: string; subtitle?: string; actions?: React.ReactNode }) {
   return (
-    <header className="flex-shrink-0 px-6 flex items-center justify-between"
+    <header className="flex-shrink-0 pl-14 pr-3 md:px-6 flex items-center justify-between topbar-mobile"
       style={{ background: '#ffffff', borderBottom: '1px solid #e2eaf2', height: 56, minHeight: 56 }}>
-      <div>
-        <h1 style={{ fontSize: 15, fontWeight: 700, color: '#192b3f', lineHeight: 1.2 }}>{title}</h1>
-        {subtitle && <p style={{ fontSize: 11.5, color: '#7a9baf', marginTop: 2 }}>{subtitle}</p>}
+      <div className="min-w-0 flex-1 mr-2">
+        <h1 className="truncate" style={{ fontSize: 15, fontWeight: 700, color: '#192b3f', lineHeight: 1.2 }}>{title}</h1>
+        {subtitle && <p className="truncate" style={{ fontSize: 11.5, color: '#7a9baf', marginTop: 2 }}>{subtitle}</p>}
       </div>
-      <div className="flex items-center gap-2">{actions}</div>
+      <div className="flex items-center gap-1.5 flex-shrink-0">{actions}</div>
     </header>
   );
 }

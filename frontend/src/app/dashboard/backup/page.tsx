@@ -173,7 +173,7 @@ export default function BackupPage() {
       <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-5">
 
         {/* KPI Cards */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[
             { label: 'Total Backups',  value: total,   color: '#3199d4', icon: '🗂' },
             { label: 'Successful',     value: success, color: '#10b981', icon: '✅' },
@@ -345,7 +345,7 @@ export default function BackupPage() {
         {/* Info box */}
         <div className="rounded-xl p-5" style={{ background:'#fff', border:'1px solid #e2eaf2' }}>
           <div style={{ fontSize:13, fontWeight:700, color:'#192b3f', marginBottom:12 }}>Backup Information</div>
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div>
               <div style={{ fontSize:11.5, fontWeight:600, color:'#7a9baf', marginBottom:6, textTransform:'uppercase', letterSpacing:'0.04em' }}>Schedule</div>
               <div style={{ fontSize:12.5, color:'#192b3f' }}>Daily at <strong>5:00 AM IST</strong></div>

@@ -131,12 +131,14 @@ function PdfModal({ inv, cid, onClose }: { inv: any; cid: string; onClose: () =>
 
 // ─── Mark Paid modal ─────────────────────────────────────────
 function PaidModal({ inv, cid, onClose, onDone }: any) {
-  const [f, setF] = useState({ paidAmount: String(inv.grandTotal || ''), paymentMethod: 'bank_transfer', transactionId: '', notes: '' });
+  const today = new Date().toISOString().split('T')[0];
+  const [f, setF] = useState({ paidAmount: String(inv.grandTotal || ''), paymentMethod: 'bank_transfer', transactionId: '', paymentDate: today, notes: '' });
   const [saving, setSaving] = useState(false);
   const { toast, ToastContainer } = useToast();
 
   const save = async () => {
     if (!f.paidAmount || +f.paidAmount <= 0) return toast('Enter valid amount', 'err');
+    if (!f.paymentDate) return toast('Payment received date is required', 'err');
     setSaving(true);
     try {
       await invoiceApi.markPaid(cid, inv.invoiceId, { ...f, paidAmount: +f.paidAmount });
@@ -187,6 +189,11 @@ function PaidModal({ inv, cid, onClose, onDone }: any) {
               </select>
             </div>
             <Input label="Transaction / Reference ID" value={f.transactionId} onChange={e => setF(p => ({ ...p, transactionId: e.target.value }))} placeholder="UTR1234567890 / Cheque No." />
+            <div>
+              <label className="text-xs font-semibold text-slate-600 mb-1 block">Payment Received Date *</label>
+              <input type="date" value={f.paymentDate} onChange={e => setF(p => ({ ...p, paymentDate: e.target.value }))}
+                className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all" />
+            </div>
             <div>
               <label className="text-xs font-semibold text-slate-600 mb-1 block">Notes (optional)</label>
               <textarea rows={2} value={f.notes} onChange={e => setF(p => ({ ...p, notes: e.target.value }))}
@@ -592,7 +599,7 @@ function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
 
   // Download CSV
   const downloadCSV = () => {
-    const hdr = ['Invoice #','Date','Due Date','Client','Client GST','Status','Subtotal (₹)','GST (₹)','Grand Total (₹)','Paid Amount (₹)','Balance (₹)'];
+    const hdr = ['Invoice #','Date','Due Date','Client','Client GST','Status','Subtotal (₹)','GST (₹)','Grand Total (₹)','Paid Amount (₹)','Balance (₹)','Payment Received Date','Payment Method','Transaction ID'];
     const rows = allInvoices.map(i => [
       i.invoiceNumber,
       new Date(i.invoiceDate || i.createdAt).toLocaleDateString('en-IN'),
@@ -601,6 +608,9 @@ function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
       i.subtotal || 0, i.totalGst || 0, i.grandTotal || 0,
       i.paidAmount || 0,
       Math.max(0, (i.grandTotal || 0) - (i.paidAmount || 0)),
+      i.paidAt ? new Date(i.paidAt).toLocaleDateString('en-IN') : '',
+      i.paymentMethod ? i.paymentMethod.replace(/_/g, ' ') : '',
+      i.transactionId || '',
     ]);
     const csv = [hdr, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
     const a = document.createElement('a');
@@ -711,7 +721,7 @@ function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
       </div>
 
       {/* ── FY Bar Chart + Status Donut ── */}
-      <div className="grid grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
         <Card className="col-span-3 p-4">
           <div className="flex items-center justify-between mb-4">
             <div className="font-semibold text-slate-800 text-sm">Revenue by Financial Year</div>
@@ -757,7 +767,7 @@ function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
       </Card>
 
       {/* ── Client Chart + GST Breakdown ── */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="p-4">
           <div className="font-semibold text-slate-800 text-sm mb-4">Top Clients by Revenue</div>
           {clientRows.length === 0 ? (
@@ -1094,7 +1104,7 @@ export default function InvoicesPage() {
         <div className="p-5 flex flex-col gap-4">
 
           {/* Summary row 1 — status */}
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
               { label: 'Collected',     value: fmtL(collected), color: 'text-emerald-600', border: 'border-emerald-200', icon: '₹' },
               { label: 'Pending',       value: fmtL(pending),   color: 'text-blue-600',    border: 'border-blue-200',    icon: '⏳' },
@@ -1112,7 +1122,7 @@ export default function InvoicesPage() {
           </div>
 
           {/* Summary row 2 — revenue breakdown */}
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="bg-white border border-slate-200 rounded-xl px-5 py-4 flex flex-col gap-1">
               <div className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Subtotal (Taxable)</div>
               <div className="text-2xl font-bold text-slate-800">{fmtL(totalSubtotal)}</div>
@@ -1226,7 +1236,12 @@ export default function InvoicesPage() {
                               <div>
                                 <div className="text-xs font-medium text-slate-700 capitalize">{inv.paymentMethod.replace(/_/g, ' ')}</div>
                                 {inv.transactionId && <div className="text-xs text-slate-400 font-mono truncate max-w-28">{inv.transactionId}</div>}
-                                {inv.paidAt        && <div className="text-xs text-slate-400">{dateStr(inv.paidAt)}</div>}
+                                {inv.paidAt && (
+                                  <div className="text-xs text-emerald-600 font-medium flex items-center gap-1 mt-0.5">
+                                    <span>Received:</span>
+                                    <span>{dateStr(inv.paidAt)}</span>
+                                  </div>
+                                )}
                               </div>
                             ) : <span className="text-xs text-slate-300">—</span>}
                           </td>
@@ -1322,7 +1337,7 @@ export default function InvoicesPage() {
                   const sub     = clientInvs.reduce((a, i) => a + (i.subtotal || 0), 0);
                   const gst     = clientInvs.reduce((a, i) => a + (i.totalGst || 0), 0);
                   return (
-                    <div className="grid grid-cols-4 gap-3 px-6 py-4 border-b border-slate-50 flex-shrink-0">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 px-6 py-4 border-b border-slate-50 flex-shrink-0">
                       {[
                         { label: 'Total Revenue', value: inr(total),   color: 'text-slate-800' },
                         { label: 'Collected',      value: inr(paid),    color: 'text-emerald-600' },

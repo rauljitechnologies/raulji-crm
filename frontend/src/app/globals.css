@@ -71,3 +71,30 @@ a, button { transition: all 0.15s ease; }
 .brand-gradient-soft {
   background: linear-gradient(135deg, #e8f5fd 0%, #d0eaf8 100%);
 }
+
+/* ── Mobile Responsive Utilities ─────────────────────────────── */
+
+/* Touch-friendly scrolling for tables */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Responsive table: hide less-important columns on mobile */
+@media (max-width: 639px) {
+  /* Give horizontal scroll tables a minimum swipe hint */
+  .table-scroll::after {
+    content: '';
+    display: block;
+    min-width: 1px;
+  }
+}
+
+/* Prevent layout breakage on very small screens */
+@media (max-width: 767px) {
+  /* Topbar: add left padding on mobile for hamburger button */
+  .topbar-mobile { padding-left: 3.5rem !important; padding-right: 1rem !important; }
+
+  /* Ensure modals don't overflow on mobile */
+  .modal-inner { max-height: 85vh !important; }
+}

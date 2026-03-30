@@ -251,7 +251,7 @@ export default function SeoPage() {
                   <ScoreGauge score={audit.score || 0} />
                   <div className="flex-1">
                     <div style={{ fontSize: 12, color: '#7a9baf', marginBottom: 8 }}>Last audit: {fmt(audit.createdAt)} · {audit.domain}</div>
-                    <div className="grid grid-cols-4 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {[
                         { label: 'Critical', val: summary.critical || 0, color: '#dc2626', bg: '#fef2f2' },
                         { label: 'Warnings', val: summary.warning || 0, color: '#b45309', bg: '#fffbeb' },

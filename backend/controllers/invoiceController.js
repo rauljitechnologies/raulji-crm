@@ -153,12 +153,13 @@ exports.removeInvoice = async (req, res) => {
 exports.markPaid = async (req, res) => {
   try {
     const { companyId, id } = req.params;
-    const { paidAmount, paymentMethod, transactionId } = req.body;
+    const { paidAmount, paymentMethod, transactionId, paymentDate } = req.body;
     const inv    = await prisma.invoice.findFirst({ where: { invoiceId: id, companyId } });
     if (!inv) return res.status(404).json({ success: false, error: { message: 'Not found.' } });
     const paid   = +(paidAmount || inv.grandTotal);
     const status = paid >= inv.grandTotal ? 'PAID' : 'PARTIAL';
-    const upd    = { paidAmount: paid, status, paidAt: new Date() };
+    const resolvedPaidAt = paymentDate ? new Date(paymentDate) : new Date();
+    const upd    = { paidAmount: paid, status, paidAt: resolvedPaidAt };
     if (paymentMethod !== undefined) upd.paymentMethod = paymentMethod;
     if (transactionId !== undefined) upd.transactionId = transactionId;
     await prisma.invoice.update({ where: { invoiceId: id }, data: upd });

@@ -143,7 +143,7 @@ export default function DashboardPage() {
       <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
 
         {/* ── KPI Metrics ───────────────────────────────────── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 14 }}>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
           <MetricCard
             label="Total Leads"
             value={fmt(summary.totalLeads)}
@@ -179,7 +179,7 @@ export default function DashboardPage() {
         </div>
 
         {/* ── Charts Row ────────────────────────────────────── */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14 }}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
 
           {/* Lead Sources */}
           <div className="rounded-2xl p-5" style={{ background: '#ffffff', border: '1px solid #e2eaf2', boxShadow: '0 1px 4px rgba(25,43,63,0.06)' }}>

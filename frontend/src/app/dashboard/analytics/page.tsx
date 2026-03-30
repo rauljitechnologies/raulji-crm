@@ -157,14 +157,14 @@ export default function AnalyticsPage() {
         {tab === 'crm' && (
           <>
             {/* KPIs */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12 }}>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <MetricTile label="Total Leads"      value={(s.totalLeads||0).toLocaleString()}   sub="All time"          color="#3199d4" icon={<svg viewBox="0 0 20 20" fill="currentColor" className="w-4.5 h-4.5"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/></svg>} />
               <MetricTile label="Deals Won"         value={(s.wonDeals||0).toLocaleString()}     sub="Closed won"        color="#10b981" icon={<svg viewBox="0 0 20 20" fill="currentColor" className="w-4.5 h-4.5"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>} />
               <MetricTile label="Revenue"            value={fmtL(s.totalRevenue||0)}             sub="Paid invoices"     color="#f97316" icon={<svg viewBox="0 0 20 20" fill="currentColor" className="w-4.5 h-4.5"><path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd"/></svg>} />
               <MetricTile label="Conversion Rate"    value={`${s.conversionRate||0}%`}           sub="Leads → Won"       color="#8b5cf6" icon={<svg viewBox="0 0 20 20" fill="currentColor" className="w-4.5 h-4.5"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>} />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14 }}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
               {/* Lead Sources */}
               <div className="rounded-2xl p-5" style={{ background: '#ffffff', border: '1px solid #e2eaf2', boxShadow: '0 1px 3px rgba(25,43,63,0.05)' }}>
                 <SectionHead title="Lead Sources" badge="All time" />
@@ -214,7 +214,7 @@ export default function AnalyticsPage() {
               {team.length === 0
                 ? <div style={{ fontSize: 12.5, color: '#7a9baf', textAlign: 'center', padding: '20px 0' }}>No team data</div>
                 : (
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                     {team.slice(0, 6).map((m: any, i: number) => {
                       const medal = i === 0 ? { bg: '#fef9c3', color: '#b45309', label: '🥇' } : i === 1 ? { bg: '#f1f5f9', color: '#475569', label: '🥈' } : i === 2 ? { bg: '#fff7ed', color: '#c2410c', label: '🥉' } : null;
                       return (
@@ -275,7 +275,7 @@ export default function AnalyticsPage() {
             )}
 
             {/* GA4 Metrics Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12 }}>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
                 { label: 'Sessions',        value: gaConnected ? '—'    : 'N/A', sub: 'Last 30 days',   color: '#3199d4', icon: '📱' },
                 { label: 'Page Views',      value: gaConnected ? '—'    : 'N/A', sub: 'Last 30 days',   color: '#10b981', icon: '👁' },
@@ -287,7 +287,7 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Traffic Sources + Top Pages */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
               <div className="rounded-2xl p-5" style={{ background: '#ffffff', border: '1px solid #e2eaf2' }}>
                 <SectionHead title="Traffic by Channel" badge={gaConnected ? 'GA4' : 'Connect GA4'} />
                 {[
@@ -323,7 +323,7 @@ export default function AnalyticsPage() {
             {/* Domain Tracking Info */}
             <div className="rounded-2xl p-5" style={{ background: '#ffffff', border: '1px solid #e2eaf2' }}>
               <SectionHead title="Domain-Wise Tracking Setup" />
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14 }}>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
                 {[
                   {
                     step: '1', title: 'Company Domain', desc: 'Set your company website/domain in Company Profile settings',
@@ -392,7 +392,7 @@ export default function AnalyticsPage() {
             )}
 
             {/* SEO KPIs */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12 }}>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
                 { label: 'Organic Clicks',   value: gscConnected ? '—' : 'N/A', sub: 'Last 28 days', color: '#10b981', icon: '🖱' },
                 { label: 'Impressions',      value: gscConnected ? '—' : 'N/A', sub: 'Last 28 days', color: '#3199d4', icon: '👁' },
@@ -404,7 +404,7 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Keyword Rankings + SEO Health */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
               {/* Keyword Rankings */}
               <div className="rounded-2xl p-5" style={{ background: '#ffffff', border: '1px solid #e2eaf2' }}>
                 <SectionHead title="Keyword Rankings" badge={gscConnected ? 'GSC Live' : 'Demo Data'} />
@@ -466,7 +466,7 @@ export default function AnalyticsPage() {
             {/* Domain Info Card */}
             <div className="rounded-2xl p-5" style={{ background: '#ffffff', border: '1px solid #e2eaf2' }}>
               <SectionHead title="Company Domain Overview" />
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14 }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
                 {companies.slice(0, 6).map((co: any, i: number) => {
                   const ws = co.website || '';
                   const domain = ws.replace(/^https?:\/\//, '').split('/')[0];

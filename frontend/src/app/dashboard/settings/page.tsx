@@ -244,7 +244,7 @@ export default function SettingsPage() {
                 <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-xl">⚙</div>
                 <div><div className="font-bold text-slate-900">General Settings</div><div className="text-xs text-slate-400">Currency, GST rate, document prefixes</div></div>
               </div>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <Sel label="Currency"   value={general.currency}   onChange={e=>setGeneral(g=>({...g,currency:e.target.value}))}
                   options={[{value:'INR',label:'INR — ₹ Rupee'},{value:'USD',label:'USD — $ Dollar'},{value:'EUR',label:'EUR — € Euro'}]} />
                 <Sel label="Default GST Rate" value={general.gstRate} onChange={e=>setGeneral(g=>({...g,gstRate:e.target.value}))}

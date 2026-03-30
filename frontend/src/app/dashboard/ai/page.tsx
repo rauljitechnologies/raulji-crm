@@ -73,7 +73,7 @@ export default function AiPage() {
         }
       />
 
-      <div className="flex-1 overflow-y-auto p-5 grid grid-cols-[1fr_1.4fr] gap-4 items-start">
+      <div className="flex-1 overflow-y-auto p-5 grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-4 items-start">
 
         {/* Left column */}
         <div className="flex flex-col gap-4">
