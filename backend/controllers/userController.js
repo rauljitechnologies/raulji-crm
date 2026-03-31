@@ -19,10 +19,9 @@ exports.getUsers = async (req, res) => {
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await prisma.user.findMany({
-      where: { isActive: true },
       select: {
         userId: true, name: true, email: true, role: true, permissions: true,
-        isVerified: true, lastLogin: true, createdAt: true, companyId: true,
+        isActive: true, isVerified: true, lastLogin: true, createdAt: true, companyId: true,
         company: { select: { companyId: true, name: true } }
       },
       orderBy: { createdAt: 'desc' }
@@ -50,8 +49,30 @@ exports.invite = async (req, res) => {
     if (normalizedRole === 'SUPER_ADMIN' && req.user?.role !== 'SUPER_ADMIN')
       return res.status(403).json({ success: false, error: { message: 'Only Super Admins can create Super Admin accounts.' } });
 
-    if (await prisma.user.findUnique({ where: { email: email.toLowerCase() } }))
-      return res.status(422).json({ success: false, error: { message: 'Email already registered.' } });
+    const existing = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+    if (existing) {
+      if (existing.isActive)
+        return res.status(422).json({ success: false, error: { message: 'Email already registered.' } });
+      // Reactivate a previously removed user
+      const useDirectPassword = password && password.length >= 8;
+      const updated = await prisma.user.update({
+        where: { userId: existing.userId },
+        data: {
+          name: name.trim(),
+          role: normalizedRole,
+          companyId,
+          isActive: true,
+          permissions: {},
+          ...(useDirectPassword
+            ? { password: await bcrypt.hash(password, 12), isVerified: true, inviteToken: null, inviteExpiry: null }
+            : { inviteToken: crypto.randomBytes(32).toString('hex'), inviteExpiry: new Date(Date.now() + 7 * 86400000), isVerified: false })
+        }
+      });
+      return res.status(200).json({
+        success: true,
+        data: { userId: updated.userId, name: updated.name, email: updated.email, role: updated.role, status: useDirectPassword ? 'active' : 'pending' }
+      });
+    }
 
     const useDirectPassword = password && password.length >= 8;
     const user = await prisma.user.create({
