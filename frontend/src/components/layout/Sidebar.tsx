@@ -70,10 +70,10 @@ const NAV = [
     { href: '/dashboard/seo',         label: 'SEO Audit',      key: 'seo',        perm: 'seo'        },
   ]},
   { section: 'System', items: [
-    { href: '/dashboard/users',       label: 'Users',          key: 'users',      perm: 'users'      },
-    { href: '/dashboard/settings',    label: 'Settings',       key: 'settings',   perm: 'settings'   },
-    { href: '/dashboard/api-docs',    label: 'API & Webhooks', key: 'api',        perm: 'api'        },
-    { href: '/dashboard/backup',      label: 'Backups',        key: 'backup',     perm: 'backup'     },
+    { href: '/dashboard/users',         label: 'Users',          key: 'users',        perm: 'users'        },
+    { href: '/dashboard/settings',      label: 'Settings',       key: 'settings',     perm: 'settings'     },
+    { href: '/dashboard/api-docs',      label: 'API & Webhooks', key: 'api',          perm: 'api'          },
+    { href: '/dashboard/backup',        label: 'Backups',        key: 'backup',       perm: 'backup'       },
   ]},
 ];
 

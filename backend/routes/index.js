@@ -46,6 +46,7 @@ router.get(   '/companies/:companyId/settings',       ...authCo, company.getSett
 router.put(   '/companies/:companyId/settings',       ...authCo, requireRole(['SUPER_ADMIN', 'ADMIN']), company.updateSettings);
 
 // ── Users ─────────────────────────────────────────────────────────────────────
+router.get(   '/admin/users',                                    authenticate, requireRole(['SUPER_ADMIN']), user.getAllUsers);
 router.get(   '/companies/:companyId/users',                     ...authCo, user.getUsers);
 router.post(  '/companies/:companyId/users/invite',              ...authCo, requireRole(['SUPER_ADMIN', 'ADMIN']), user.invite);
 router.put(   '/companies/:companyId/users/:userId/role',        ...authCo, requireRole(['SUPER_ADMIN', 'ADMIN']), user.updateRole);
@@ -162,6 +163,7 @@ router.delete('/admin/backups/:id',                authenticate, requireRole(['S
 
 // ── Public API ────────────────────────────────────────────────────────────────
 router.post('/public/leads', apiKeyAuth, lead.createPublicLead);
+
 
 const project = require('../controllers/projectController');
 

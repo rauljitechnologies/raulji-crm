@@ -111,6 +111,7 @@ export const gstApi = {
 
 // Users
 export const userApi = {
+  listAll:    ()                         => request<any>(`/admin/users`),
   list:       (cid: string)              => request<any>(`/companies/${cid}/users`),
   invite:     (cid: string, body: any)   => request<any>(`/companies/${cid}/users/invite`, { method: 'POST', body: JSON.stringify(body) }),
   updateRole:        (cid: string, uid: string, role: string)        => request<any>(`/companies/${cid}/users/${uid}/role`,        { method: 'PUT', body: JSON.stringify({ role }) }),
