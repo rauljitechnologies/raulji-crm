@@ -9,87 +9,84 @@ datasource db {
 }
 
 model Company {
-  companyId    String    @id @default(cuid()) @map("company_id")
-  name         String
-  slug         String    @unique
-  domain       String?
-  logo         String?
-  gst          String?
-  industry     String?
-  phone        String?
-  email        String?
-  website      String?
-  plan         Plan      @default(STARTER)
-  status       String    @default("ACTIVE")
-  apiKey       String    @unique @map("api_key")
-  apiSecret    String    @map("api_secret")
-  address      Json      @default("{}")
-  bankDetails  Json?     @map("bank_details")
-  settings     Json      @default("{}")
-  deletedAt    DateTime? @map("deleted_at")
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
-
-  users      User[]
-  leads      Lead[]
-  deals      Deal[]
-  quotations Quotation[]
-  invoices   Invoice[]
-  webhooks   Webhook[]
-  clients          Client[]
-  campaigns        Campaign[]
-  automationRules  AutomationRule[]
-  automationJobs   AutomationJob[]
-  communications   Communication[]
-  messageTemplates MessageTemplate[]
-  projects         Project[]
-  seoAudits        SeoAudit[]
-  seoKeywords      SeoKeyword[]
-  autoReplyRules   AutoReplyRule[]
+  companyId           String              @id @default(cuid()) @map("company_id")
+  name                String
+  slug                String              @unique
+  domain              String?
+  logo                String?
+  gst                 String?
+  industry            String?
+  plan                Plan                @default(STARTER)
+  address             Json                @default("{}")
+  settings            Json                @default("{}")
+  apiKey              String              @unique @map("api_key")
+  apiSecret           String              @map("api_secret")
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt @map("updated_at")
+  deletedAt           DateTime?           @map("deleted_at")
+  status              String              @default("ACTIVE")
+  bankDetails         Json?               @map("bank_details")
+  email               String?
+  phone               String?
+  website             String?
+  autoReplyRules      AutoReplyRule[]
+  automationRules     AutomationRule[]
+  campaigns           Campaign[]
+  clients             Client[]
+  deals               Deal[]
+  invoices            Invoice[]
+  leads               Lead[]
+  messageTemplates    MessageTemplate[]
+  project_assignments ProjectAssignment[]
+  projects            Project[]
+  quotations          Quotation[]
+  seoAudits           SeoAudit[]
+  seoKeywords         SeoKeyword[]
+  users               User[]
+  webhooks            Webhook[]
+  members             UserCompany[]
 
   @@map("companies")
 }
 
-enum Plan {
-  STARTER
-  GROWTH
-  ENTERPRISE
-}
-
 model User {
-  userId       String    @id @default(cuid()) @map("user_id")
-  name         String
-  email        String    @unique
-  phone        String?
-  password     String
-  role         Role      @default(SALES_REP)
-  permissions  Json      @default("{}")
-  avatar       String?
-  companyId    String?   @map("company_id")
-  isActive     Boolean   @default(true) @map("is_active")
-  isVerified   Boolean   @default(false) @map("is_verified")
-  inviteToken  String?   @map("invite_token")
-  inviteExpiry DateTime? @map("invite_expiry")
-  lastLogin    DateTime? @map("last_login")
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
-
-  company       Company?      @relation(fields: [companyId], references: [companyId])
-  assignedLeads Lead[]        @relation("AssignedLeads")
+  userId        String         @id @default(cuid()) @map("user_id")
+  companyId     String?        @map("company_id")
+  name          String
+  email         String         @unique
+  phone         String?
+  password      String
+  role          Role           @default(SALES_REP)
+  permissions   Json           @default("{}")
+  avatar        String?
+  isActive      Boolean        @default(true) @map("is_active")
+  isVerified    Boolean        @default(false) @map("is_verified")
+  lastLogin     DateTime?      @map("last_login")
+  inviteToken   String?        @map("invite_token")
+  inviteExpiry  DateTime?      @map("invite_expiry")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
   activities    Activity[]
+  assignedLeads Lead[]         @relation("AssignedLeads")
   refreshTokens RefreshToken[]
-
-  projectAssignments ProjectAssignment[]
+  company       Company?       @relation(fields: [companyId], references: [companyId])
+  companies     UserCompany[]
 
   @@map("users")
 }
 
-enum Role {
-  SUPER_ADMIN
-  ADMIN
-  SALES_MANAGER
-  SALES_REP
-  VIEWER
+model UserCompany {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  companyId String   @map("company_id")
+  role      Role     @default(SALES_REP)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user    User    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [companyId], onDelete: Cascade)
+
+  @@unique([userId, companyId])
+  @@map("user_companies")
 }
 
 model RefreshToken {
@@ -98,51 +95,49 @@ model RefreshToken {
   userId    String   @map("user_id")
   expiresAt DateTime @map("expires_at")
   createdAt DateTime @default(now()) @map("created_at")
-
-  user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@map("refresh_tokens")
 }
 
 model Lead {
-  leadId         String    @id @default(cuid()) @map("lead_id")
-  companyId      String    @map("company_id")
+  leadId         String          @id @default(cuid()) @map("lead_id")
+  companyId      String          @map("company_id")
   name           String
   email          String?
   phone          String
   city           String?
   state          String?
+  aiScore        Int?            @map("ai_score")
+  aiScoreFactors Json?           @map("ai_score_factors")
+  dealValue      Float?          @map("deal_value")
+  currency       String          @default("INR")
+  assignedToId   String?         @map("assigned_to_id")
+  tags           String[]        @default([])
+  notes          String?
+  customFields   Json?           @map("custom_fields")
+  lastActivityAt DateTime?       @map("last_activity_at")
+  nextFollowUpAt DateTime?       @map("next_follow_up_at")
+  isDeleted      Boolean         @default(false) @map("is_deleted")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+  source         String          @default("MANUAL")
+  status         String          @default("NEW")
+  priority       String          @default("MEDIUM")
   country        String?
   service        String?
-  source         String    @default("MANUAL")
-  status         String    @default("NEW")
-  priority       String    @default("MEDIUM")
-  dealValue      Float?    @map("deal_value")
-  currency       String    @default("INR")
-  aiScore        Int?      @map("ai_score")
-  aiScoreFactors Json?     @map("ai_score_factors")
-  assignedToId   String?   @map("assigned_to_id")
-  tags           String[]  @default([])
-  notes          String?
-  customFields   Json?     @map("custom_fields")
-  lastActivityAt DateTime? @map("last_activity_at")
-  nextFollowUpAt DateTime? @map("next_follow_up_at")
-  isDeleted      Boolean   @default(false) @map("is_deleted")
-  createdAt      DateTime  @default(now()) @map("created_at")
-  updatedAt      DateTime  @updatedAt @map("updated_at")
-
-  company    Company    @relation(fields: [companyId], references: [companyId])
-  assignedTo User?      @relation("AssignedLeads", fields: [assignedToId], references: [userId])
-  activities Activity[]
-  deals      Deal[]
-  quotations Quotation[]
-  invoices   Invoice[]
-
+  activities     Activity[]
   campaignLeads  CampaignLead[]
   communications Communication[]
+  deals          Deal[]
+  invoices       Invoice[]
+  assignedTo     User?           @relation("AssignedLeads", fields: [assignedToId], references: [userId])
+  company        Company         @relation(fields: [companyId], references: [companyId])
+  quotations     Quotation[]
 
   @@unique([companyId, email])
   @@index([companyId, status])
+  @@index([companyId, source])
   @@map("leads")
 }
 
@@ -151,37 +146,35 @@ model Activity {
   companyId   String   @map("company_id")
   leadId      String?  @map("lead_id")
   userId      String?  @map("user_id")
-  type        String
   description String
   metadata    Json?
   createdAt   DateTime @default(now()) @map("created_at")
-
-  lead Lead? @relation(fields: [leadId], references: [leadId])
-  user User? @relation(fields: [userId], references: [userId])
+  type        String
+  lead        Lead?    @relation(fields: [leadId], references: [leadId])
+  user        User?    @relation(fields: [userId], references: [userId])
 
   @@map("activities")
 }
 
 model Deal {
-  dealId            String    @id @default(cuid()) @map("deal_id")
-  companyId         String    @map("company_id")
-  leadId            String?   @map("lead_id")
+  dealId            String      @id @default(cuid()) @map("deal_id")
+  companyId         String      @map("company_id")
+  leadId            String?     @map("lead_id")
   name              String
-  value             Float     @default(0)
-  currency          String    @default("INR")
-  stage             String    @default("NEW_LEAD")
-  probability       Int       @default(0)
-  expectedCloseDate DateTime? @map("expected_close_date")
-  closedAt          DateTime? @map("closed_at")
-  lostReason        String?   @map("lost_reason")
-  assignedToId      String?   @map("assigned_to_id")
-  tags              String[]  @default([])
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
-
-  company    Company    @relation(fields: [companyId], references: [companyId])
-  lead       Lead?      @relation(fields: [leadId], references: [leadId])
-  quotations Quotation[]
+  value             Float       @default(0)
+  currency          String      @default("INR")
+  probability       Int         @default(0)
+  expectedCloseDate DateTime?   @map("expected_close_date")
+  closedAt          DateTime?   @map("closed_at")
+  assignedToId      String?     @map("assigned_to_id")
+  lostReason        String?     @map("lost_reason")
+  tags              String[]    @default([])
+  createdAt         DateTime    @default(now()) @map("created_at")
+  updatedAt         DateTime    @updatedAt @map("updated_at")
+  stage             String      @default("NEW_LEAD")
+  company           Company     @relation(fields: [companyId], references: [companyId])
+  lead              Lead?       @relation(fields: [leadId], references: [leadId])
+  quotations        Quotation[]
 
   @@map("deals")
 }
@@ -204,7 +197,6 @@ model Quotation {
   totalGst             Float     @default(0) @map("total_gst")
   totalDiscount        Float     @default(0) @map("total_discount")
   grandTotal           Float     @default(0) @map("grand_total")
-  status               String    @default("DRAFT")
   notes                String?
   termsConditions      String?   @map("terms_conditions")
   pdfUrl               String?   @map("pdf_url")
@@ -212,51 +204,50 @@ model Quotation {
   convertedToInvoiceId String?   @map("converted_to_invoice_id")
   createdAt            DateTime  @default(now()) @map("created_at")
   updatedAt            DateTime  @updatedAt @map("updated_at")
-
-  company Company  @relation(fields: [companyId], references: [companyId])
-  lead    Lead?    @relation(fields: [leadId], references: [leadId])
-  deal    Deal?    @relation(fields: [dealId], references: [dealId])
+  status               String    @default("DRAFT")
+  company              Company   @relation(fields: [companyId], references: [companyId])
+  deal                 Deal?     @relation(fields: [dealId], references: [dealId])
+  lead                 Lead?     @relation(fields: [leadId], references: [leadId])
 
   @@map("quotations")
 }
 
 model Invoice {
-  invoiceId      String    @id @default(cuid()) @map("invoice_id")
-  invoiceNumber  String    @map("invoice_number")
-  invoiceDate    DateTime? @default(now()) @map("invoice_date")
-  companyId      String    @map("company_id")
-  leadId         String?   @map("lead_id")
-  quotationId    String?   @map("quotation_id")
-  clientName     String    @map("client_name")
-  clientEmail    String?   @map("client_email")
-  clientPhone    String?   @map("client_phone")
-  clientAddress  String?   @map("client_address")
-  clientGst      String?   @map("client_gst")
-  dueDate        DateTime  @map("due_date")
-  currency       String    @default("INR")
-  items          Json
-  subtotal       Float     @default(0)
-  totalGst       Float     @default(0) @map("total_gst")
-  totalDiscount  Float     @default(0) @map("total_discount")
-  grandTotal     Float     @default(0) @map("grand_total")
-  paidAmount     Float?    @map("paid_amount")
-  status         String    @default("DRAFT")
-  paymentTerms   String?   @map("payment_terms")
-  bankDetails    Json?     @map("bank_details")
-  paymentLink    String?   @map("payment_link")
-  pdfUrl         String?   @map("pdf_url")
-  paidAt         DateTime? @map("paid_at")
-  paymentMethod  String?   @map("payment_method")
-  transactionId  String?   @map("transaction_id")
-  tdsAmount      Float?    @map("tds_amount")
-  tdsRate        Float?    @map("tds_rate")
-  notes          String?
-  sentAt         DateTime? @map("sent_at")
-  createdAt      DateTime  @default(now()) @map("created_at")
-  updatedAt      DateTime  @updatedAt @map("updated_at")
-
-  company Company @relation(fields: [companyId], references: [companyId])
-  lead    Lead?   @relation(fields: [leadId], references: [leadId])
+  invoiceId     String    @id @default(cuid()) @map("invoice_id")
+  invoiceNumber String    @map("invoice_number")
+  companyId     String    @map("company_id")
+  leadId        String?   @map("lead_id")
+  quotationId   String?   @map("quotation_id")
+  clientName    String    @map("client_name")
+  clientEmail   String?   @map("client_email")
+  clientPhone   String?   @map("client_phone")
+  clientGst     String?   @map("client_gst")
+  clientAddress String?   @map("client_address")
+  dueDate       DateTime  @map("due_date")
+  currency      String    @default("INR")
+  items         Json
+  subtotal      Float     @default(0)
+  totalGst      Float     @default(0) @map("total_gst")
+  totalDiscount Float     @default(0) @map("total_discount")
+  grandTotal    Float     @default(0) @map("grand_total")
+  paidAmount    Float?    @map("paid_amount")
+  paymentTerms  String?   @map("payment_terms")
+  bankDetails   Json?     @map("bank_details")
+  notes         String?
+  pdfUrl        String?   @map("pdf_url")
+  paymentLink   String?   @map("payment_link")
+  sentAt        DateTime? @map("sent_at")
+  paidAt        DateTime? @map("paid_at")
+  paymentMethod String?   @map("payment_method")
+  transactionId String?   @map("transaction_id")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  status        String    @default("DRAFT")
+  invoiceDate   DateTime  @default(now()) @map("invoice_date")
+  tdsAmount     Float?    @map("tds_amount")
+  tdsRate       Float?    @map("tds_rate")
+  company       Company   @relation(fields: [companyId], references: [companyId])
+  lead          Lead?     @relation(fields: [leadId], references: [leadId])
 
   @@map("invoices")
 }
@@ -269,12 +260,10 @@ model Webhook {
   secret    String
   isActive  Boolean  @default(true) @map("is_active")
   createdAt DateTime @default(now()) @map("created_at")
-
-  company Company @relation(fields: [companyId], references: [companyId])
+  company   Company  @relation(fields: [companyId], references: [companyId])
 
   @@map("webhooks")
 }
-
 
 model Client {
   clientId  String   @id @default(cuid()) @map("client_id")
@@ -292,202 +281,221 @@ model Client {
   isActive  Boolean  @default(true) @map("is_active")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-
-  company Company @relation(fields: [companyId], references: [companyId])
-
-  projects Project[]
+  company   Company  @relation(fields: [companyId], references: [companyId])
 
   @@index([companyId])
   @@map("clients")
 }
 
-// ── AutoReplyRule ─────────────────────────────────────────────
 model AutoReplyRule {
-  id          String   @id @default(cuid())
-  companyId   String   @map("company_id")
-  name        String
-  trigger     String
-  channel     String   @default("whatsapp")
-  message     String
-  isActive    Boolean  @default(true) @map("is_active")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  reply_rule_id String   @id
+  companyId     String   @map("company_id")
+  keyword       String
+  matchType     String   @default("CONTAINS")
+  reply_body    String
+  isActive      Boolean  @default(true) @map("is_active")
+  priority      Int      @default(0)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  company       Company  @relation(fields: [companyId], references: [companyId])
 
-  company Company @relation(fields: [companyId], references: [companyId])
-
+  @@index([companyId, isActive])
   @@map("auto_reply_rules")
 }
 
-// ── AutomationRule ────────────────────────────────────────────
 model AutomationRule {
-  id          String   @id @default(cuid())
-  companyId   String   @map("company_id")
-  name        String
-  trigger     String
-  channel     String   @default("email")
-  conditions  Json     @default("{}")
-  actions     Json     @default("{}")
-  isActive    Boolean  @default(true) @map("is_active")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  rule_id           String          @id
+  companyId         String          @map("company_id")
+  name              String
+  isActive          Boolean         @default(true) @map("is_active")
+  trigger           String
+  trigger_value     String?
+  channel           String          @default("WHATSAPP")
+  template_id       String
+  delay_minutes     Int             @default(0)
+  conditions        Json?
+  execution_count   Int             @default(0)
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+  jobs              AutomationJob[]
+  company           Company         @relation(fields: [companyId], references: [companyId])
+  message_templates MessageTemplate @relation(fields: [template_id], references: [template_id])
 
-  company Company        @relation(fields: [companyId], references: [companyId])
-  jobs    AutomationJob[]
-
+  @@index([companyId, trigger])
   @@map("automation_rules")
 }
 
-// ── AutomationJob ─────────────────────────────────────────────
 model AutomationJob {
-  jobId       String   @id @default(cuid()) @map("job_id")
-  companyId   String   @map("company_id")
-  ruleId      String?  @map("rule_id")
-  status      String   @default("PENDING")
-  payload     Json     @default("{}")
-  result      Json?
-  error       String?
-  attempts    Int      @default(0)
-  runAt       DateTime @default(now()) @map("run_at")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  jobId        String         @id @default(cuid()) @map("job_id")
+  ruleId       String         @map("rule_id")
+  lead_id      String
+  companyId    String         @map("company_id")
+  status       String         @default("PENDING")
+  scheduled_at DateTime
+  executed_at  DateTime?
+  error        String?
+  createdAt    DateTime       @default(now()) @map("created_at")
+  rule         AutomationRule @relation(fields: [ruleId], references: [rule_id])
 
-  company Company         @relation(fields: [companyId], references: [companyId])
-  rule    AutomationRule? @relation(fields: [ruleId], references: [id])
-
+  @@index([companyId, lead_id])
+  @@index([status, scheduled_at])
   @@map("automation_jobs")
 }
 
-// ── BackupLog ─────────────────────────────────────────────────
 model BackupLog {
-  id          String   @id @default(cuid())
-  companyId   String?  @map("company_id")
-  type        String   @default("full")
-  status      String   @default("SUCCESS")
-  size        String?
-  path        String?
-  error       String?
-  createdAt   DateTime @default(now()) @map("created_at")
+  id              String    @id @default(cuid())
+  stamp           String
+  label           String
+  status          String    @default("RUNNING")
+  trigger         String    @default("SCHEDULED")
+  db_file         String?
+  code_file       String?
+  db_size_bytes   Int?
+  code_size_bytes Int?
+  drive_folder    String?
+  error           String?
+  completed_at    DateTime?
+  createdAt       DateTime  @default(now()) @map("created_at")
 
+  @@index([createdAt])
+  @@index([status])
   @@map("backup_logs")
 }
 
-// ── Campaign ──────────────────────────────────────────────────
 model Campaign {
-  id          String   @id @default(cuid())
-  companyId   String   @map("company_id")
-  name        String
-  type        String   @default("email")
-  status      String   @default("DRAFT")
-  subject     String?
-  message     String?
-  scheduledAt DateTime? @map("scheduled_at")
-  sentAt      DateTime? @map("sent_at")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  campaign_id     String         @id
+  companyId       String         @map("company_id")
+  name            String
+  description     String?
+  channel         String         @default("WHATSAPP")
+  status          String         @default("DRAFT")
+  template_id     String?
+  subject         String?
+  body            String?
+  filters         Json?
+  scheduledAt     DateTime?      @map("scheduled_at")
+  started_at      DateTime?
+  completed_at    DateTime?
+  total_leads     Int            @default(0)
+  sent_count      Int            @default(0)
+  delivered_count Int            @default(0)
+  failed_count    Int            @default(0)
+  created_by_id   String?
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
+  leads           CampaignLead[]
+  company         Company        @relation(fields: [companyId], references: [companyId])
 
-  company Company        @relation(fields: [companyId], references: [companyId])
-  leads   CampaignLead[]
-
+  @@index([companyId, status])
   @@map("campaigns")
 }
 
-// ── CampaignLead ──────────────────────────────────────────────
 model CampaignLead {
-  id         String   @id @default(cuid())
-  campaignId String   @map("campaign_id")
-  leadId     String   @map("lead_id")
-  status     String   @default("PENDING")
-  sentAt     DateTime? @map("sent_at")
-  createdAt  DateTime @default(now()) @map("created_at")
-
-  campaign Campaign @relation(fields: [campaignId], references: [id])
-  lead     Lead     @relation(fields: [leadId], references: [leadId])
+  id           String    @id @default(cuid())
+  campaignId   String    @map("campaign_id")
+  leadId       String    @map("lead_id")
+  status       String    @default("PENDING")
+  sentAt       DateTime? @map("sent_at")
+  delivered_at DateTime?
+  error        String?
+  createdAt    DateTime  @default(now()) @map("created_at")
+  campaign     Campaign  @relation(fields: [campaignId], references: [campaign_id])
+  lead         Lead      @relation(fields: [leadId], references: [leadId])
 
   @@unique([campaignId, leadId])
+  @@index([campaignId, status])
   @@map("campaign_leads")
 }
 
-// ── Communication ─────────────────────────────────────────────
 model Communication {
-  id          String   @id @default(cuid())
-  companyId   String   @map("company_id")
-  leadId      String?  @map("lead_id")
-  type        String   @default("email")
-  direction   String   @default("outbound")
-  subject     String?
-  message     String?
-  status      String   @default("SENT")
-  metadata    Json?
-  createdAt   DateTime @default(now()) @map("created_at")
+  comm_id           String           @id
+  companyId         String           @map("company_id")
+  leadId            String?          @map("lead_id")
+  channel           String
+  direction         String           @default("OUTBOUND")
+  status            String           @default("SENT")
+  from_number       String?
+  to_number         String?
+  template_id       String?
+  subject           String?
+  body              String
+  wati_message_id   String?
+  metadata          Json?
+  sent_at           DateTime?
+  delivered_at      DateTime?
+  read_at           DateTime?
+  user_id           String?
+  createdAt         DateTime         @default(now()) @map("created_at")
+  lead              Lead?            @relation(fields: [leadId], references: [leadId])
+  message_templates MessageTemplate? @relation(fields: [template_id], references: [template_id])
 
-  company Company @relation(fields: [companyId], references: [companyId])
-  lead    Lead?   @relation(fields: [leadId], references: [leadId])
-
+  @@index([companyId, channel])
+  @@index([leadId, createdAt])
   @@map("communications")
 }
 
-// ── MessageTemplate ───────────────────────────────────────────
 model MessageTemplate {
-  id          String   @id @default(cuid())
-  companyId   String   @map("company_id")
-  name        String
-  type        String   @default("email")
-  subject     String?
-  body        String
-  variables   Json     @default("[]")
-  isActive    Boolean  @default(true) @map("is_active")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  template_id      String           @id
+  companyId        String           @map("company_id")
+  name             String
+  category         String           @default("CUSTOM")
+  channel          String           @default("WHATSAPP")
+  subject          String?
+  body             String
+  variables        String[]         @default([])
+  isActive         Boolean          @default(true) @map("is_active")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+  automation_rules AutomationRule[]
+  communications   Communication[]
+  company          Company          @relation(fields: [companyId], references: [companyId])
 
-  company Company @relation(fields: [companyId], references: [companyId])
-
+  @@index([companyId])
   @@map("message_templates")
 }
 
-// ── Project ───────────────────────────────────────────────────
 model Project {
-  id          String   @id @default(cuid())
-  companyId   String   @map("company_id")
-  clientId    String?  @map("client_id")
+  project_id  String              @id
+  companyId   String              @map("company_id")
   name        String
   description String?
-  status      String   @default("ACTIVE")
-  startDate   DateTime? @map("start_date")
-  endDate     DateTime? @map("end_date")
+  client_name String?
+  status      String              @default("ACTIVE")
+  priority    String              @default("MEDIUM")
+  startDate   DateTime?           @map("start_date")
+  endDate     DateTime?           @map("end_date")
   budget      Float?
-  currency    String   @default("INR")
-  metadata    Json?
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
-  company     Company             @relation(fields: [companyId], references: [companyId])
-  client      Client?             @relation(fields: [clientId], references: [clientId])
+  currency    String              @default("INR")
+  tags        String[]            @default([])
+  notes       String?
+  created_by  String?
+  createdAt   DateTime            @default(now()) @map("created_at")
+  updatedAt   DateTime            @updatedAt @map("updated_at")
   assignments ProjectAssignment[]
   credentials ProjectCredential[]
   documents   ProjectDocument[]
   history     ProjectHistory[]
+  company     Company             @relation(fields: [companyId], references: [companyId])
 
+  @@index([companyId, status])
   @@map("projects")
 }
 
-// ── ProjectAssignment ─────────────────────────────────────────
 model ProjectAssignment {
-  id        String   @id @default(cuid())
-  projectId String   @map("project_id")
-  userId    String   @map("user_id")
-  role      String   @default("MEMBER")
-  createdAt DateTime @default(now()) @map("created_at")
+  id          String   @id @default(cuid())
+  projectId   String   @map("project_id")
+  company_id  String
+  role        String   @default("MEMBER")
+  assigned_at DateTime @default(now())
+  companies   Company  @relation(fields: [company_id], references: [companyId])
+  project     Project  @relation(fields: [projectId], references: [project_id], onDelete: Cascade)
 
-  project Project @relation(fields: [projectId], references: [id])
-  user    User    @relation(fields: [userId], references: [userId])
-
-  @@unique([projectId, userId])
+  @@unique([projectId, company_id])
   @@map("project_assignments")
 }
 
-// ── ProjectCredential ─────────────────────────────────────────
 model ProjectCredential {
-  id        String   @id @default(cuid())
+  cred_id   String   @id
   projectId String   @map("project_id")
   label     String
   username  String?
@@ -496,70 +504,131 @@ model ProjectCredential {
   notes     String?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  project   Project  @relation(fields: [projectId], references: [project_id], onDelete: Cascade)
 
-  project Project @relation(fields: [projectId], references: [id])
-
+  @@index([projectId])
   @@map("project_credentials")
 }
 
-// ── ProjectDocument ───────────────────────────────────────────
 model ProjectDocument {
-  id        String   @id @default(cuid())
-  projectId String   @map("project_id")
-  name      String
-  url       String?
-  type      String?
-  size      Int?
-  createdAt DateTime @default(now()) @map("created_at")
+  doc_id      String   @id
+  projectId   String   @map("project_id")
+  name        String
+  file_url    String?
+  file_size   Int?
+  mime_type   String?
+  notes       String?
+  uploaded_by String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  project     Project  @relation(fields: [projectId], references: [project_id], onDelete: Cascade)
 
-  project Project @relation(fields: [projectId], references: [id])
-
+  @@index([projectId])
   @@map("project_documents")
 }
 
-// ── ProjectHistory ────────────────────────────────────────────
 model ProjectHistory {
-  id          String   @id @default(cuid())
+  hist_id     String   @id
   projectId   String   @map("project_id")
-  userId      String?  @map("user_id")
   action      String
-  description String?
+  description String
+  userId      String?  @map("user_id")
+  user_name   String?
   metadata    Json?
   createdAt   DateTime @default(now()) @map("created_at")
+  project     Project  @relation(fields: [projectId], references: [project_id], onDelete: Cascade)
 
-  project Project @relation(fields: [projectId], references: [id])
-
+  @@index([projectId, createdAt])
   @@map("project_history")
 }
 
-// ── SeoAudit ──────────────────────────────────────────────────
 model SeoAudit {
-  id          String   @id @default(cuid())
-  companyId   String   @map("company_id")
-  domain      String
-  score       Int?
-  issues      Json?
-  report      Json?
-  createdAt   DateTime @default(now()) @map("created_at")
+  audit_id     String   @id
+  companyId    String   @map("company_id")
+  domain       String
+  score        Int      @default(0)
+  status       String   @default("PENDING")
+  summary      Json     @default("{}")
+  issues       Json     @default("[]")
+  pageData     Json     @default("{}")
+  triggered_by String   @default("SCHEDULED")
+  createdAt    DateTime @default(now()) @map("created_at")
+  company      Company  @relation(fields: [companyId], references: [companyId], onDelete: Cascade)
 
-  company Company @relation(fields: [companyId], references: [companyId])
-
+  @@index([companyId, createdAt])
   @@map("seo_audits")
 }
 
-// ── SeoKeyword ────────────────────────────────────────────────
 model SeoKeyword {
-  id          String   @id @default(cuid())
-  companyId   String   @map("company_id")
-  keyword     String
-  position    Int?
-  volume      Int?
-  difficulty  Int?
-  url         String?
-  updatedAt   DateTime @updatedAt @map("updated_at")
-  createdAt   DateTime @default(now()) @map("created_at")
+  keyword_id     String   @id
+  companyId      String   @map("company_id")
+  keyword        String
+  target_url     String?
+  target_country String   @default("IN")
+  notes          String?
+  createdAt      DateTime @default(now()) @map("created_at")
+  company        Company  @relation(fields: [companyId], references: [companyId], onDelete: Cascade)
 
-  company Company @relation(fields: [companyId], references: [companyId])
-
+  @@index([companyId])
   @@map("seo_keywords")
+}
+
+model search_credits {
+  credit_id      String         @id
+  domain_id      String
+  type           String
+  amount         Float
+  description    String?
+  created_at     DateTime       @default(now())
+  search_domains search_domains @relation(fields: [domain_id], references: [domain_id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([domain_id])
+}
+
+model search_domains {
+  domain_id        String           @id
+  domain           String           @unique
+  name             String
+  anthropic_key    String
+  system_prompt    String?
+  auto_reply       Boolean          @default(false)
+  auto_reply_msg   String?
+  credit_balance   Float            @default(0)
+  credit_per_query Float            @default(2)
+  is_active        Boolean          @default(true)
+  search_api_key   String           @unique
+  total_queries    Int              @default(0)
+  created_at       DateTime         @default(now())
+  updated_at       DateTime         @default(now())
+  search_credits   search_credits[]
+  search_logs      search_logs[]
+}
+
+model search_logs {
+  log_id         String         @id
+  domain_id      String
+  query          String
+  answer         String?
+  credit_used    Float
+  tokens         Int?
+  success        Boolean        @default(true)
+  error_msg      String?
+  ip             String?
+  created_at     DateTime       @default(now())
+  search_domains search_domains @relation(fields: [domain_id], references: [domain_id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([domain_id])
+}
+
+enum Plan {
+  STARTER
+  GROWTH
+  ENTERPRISE
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  SALES_MANAGER
+  SALES_REP
+  VIEWER
 }

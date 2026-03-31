@@ -80,6 +80,12 @@ export default function UsersPage() {
   const [inviteCo,    setInviteCo]    = useState('');
   const [form, setForm] = useState({ name:'', email:'', role:'SALES_REP', password:'' });
 
+  // Assign company modal
+  const [assignUser,    setAssignUser]    = useState<any>(null);
+  const [assignCoId,    setAssignCoId]    = useState('');
+  const [assignRole,    setAssignRole]    = useState('SALES_REP');
+  const [assignSaving,  setAssignSaving]  = useState(false);
+
   // Permission editor
   const [permUser,  setPermUser]  = useState<any>(null);
   const [permState, setPermState] = useState<Record<string,boolean>>({});
@@ -149,6 +155,30 @@ export default function UsersPage() {
   const permanentDelete = async (u: any) => {
     if (!confirm(`PERMANENTLY DELETE ${u.name}? This cannot be undone.`)) return;
     try { await userApi.permanentDelete(u.userId); toast('User permanently deleted.'); load(); }
+    catch(e: any) { toast(e.message, 'err'); }
+  };
+
+  const openAssign = (u: any) => {
+    setAssignUser(u);
+    setAssignCoId(u.companyId || (companies[0]?.companyId ?? ''));
+    setAssignRole(u.role === 'SUPER_ADMIN' ? 'ADMIN' : (u.role || 'SALES_REP'));
+  };
+
+  const saveAssign = async () => {
+    if (!assignCoId) return toast('Select a company', 'err');
+    setAssignSaving(true);
+    try {
+      await userApi.assignCompany(assignUser.userId, { companyId: assignCoId, role: assignRole });
+      toast('Company assigned!');
+      setAssignUser(null);
+      load();
+    } catch(e: any) { toast(e.message, 'err'); }
+    finally { setAssignSaving(false); }
+  };
+
+  const removeFromCo = async (u: any, coId: string, coName: string) => {
+    if (!confirm(`Remove ${u.name} from ${coName}?`)) return;
+    try { await userApi.removeFromCompany(u.userId, coId); toast('Removed from company.'); load(); }
     catch(e: any) { toast(e.message, 'err'); }
   };
 
@@ -242,8 +272,23 @@ export default function UsersPage() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-3 py-3">
-                        <span className="text-slate-700 font-medium">{u.company?.name || <span className="text-slate-300 italic">No company</span>}</span>
+                      <td className="px-3 py-3 max-w-[200px]">
+                        {(u.companies?.length > 0) ? (
+                          <div className="flex flex-wrap gap-1">
+                            {u.companies.map((uc: any) => (
+                              <span key={uc.companyId}
+                                className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-100">
+                                {uc.company.name}
+                                {isSuperAdmin && u.isActive && (
+                                  <button onClick={() => removeFromCo(u, uc.companyId, uc.company.name)}
+                                    className="text-sky-400 hover:text-red-500 font-bold leading-none ml-0.5">×</button>
+                                )}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-slate-300 italic text-xs">No company</span>
+                        )}
                       </td>
                       <td className="px-3 py-3">
                         <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${ROLE_BADGE[u.role] || 'bg-slate-100 text-slate-500'}`}>
@@ -271,6 +316,12 @@ export default function UsersPage() {
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-2">
+                          {isSuperAdmin && u.role !== 'SUPER_ADMIN' && (
+                            <button onClick={() => openAssign(u)}
+                              className="text-xs text-sky-500 hover:text-sky-700 font-semibold transition-colors px-2 py-1 rounded hover:bg-sky-50">
+                              Assign
+                            </button>
+                          )}
                           {u.isActive && u.companyId && (
                             <button onClick={() => openPermEditor(u)}
                               className="text-xs text-indigo-500 hover:text-indigo-700 font-semibold transition-colors px-2 py-1 rounded hover:bg-indigo-50">
@@ -415,6 +466,41 @@ export default function UsersPage() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+      </Modal>
+
+      {/* Assign Company Modal */}
+      <Modal open={!!assignUser} onClose={() => setAssignUser(null)} title={`Assign Company — ${assignUser?.name}`}
+        footer={<>
+          <Btn variant="secondary" onClick={() => setAssignUser(null)}>Cancel</Btn>
+          <Btn variant="primary" loading={assignSaving} onClick={saveAssign}>Save</Btn>
+        </>}>
+        {assignUser && (
+          <div className="flex flex-col gap-4">
+            <div className="bg-slate-50 rounded-lg px-3 py-2 text-xs text-slate-500">
+              <span className="font-semibold text-slate-700">{assignUser.email}</span>
+              {assignUser.company?.name && (
+                <span className="ml-2 text-slate-400">· currently at <span className="font-medium text-slate-600">{assignUser.company.name}</span></span>
+              )}
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-slate-600 mb-1 block">Company *</label>
+              <select value={assignCoId} onChange={e => setAssignCoId(e.target.value)}
+                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-indigo-400">
+                <option value="">— Select company —</option>
+                {companies.map((c: any) => (
+                  <option key={c.companyId} value={c.companyId}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-slate-600 mb-1 block">Role</label>
+              <select value={assignRole} onChange={e => setAssignRole(e.target.value)}
+                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-indigo-400">
+                {ROLES.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
+              </select>
+            </div>
           </div>
         )}
       </Modal>

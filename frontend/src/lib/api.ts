@@ -44,6 +44,7 @@ export const authApi = {
 
 // Companies
 export const companyApi = {
+  mine:           ()                      => request<any>('/companies/mine'),
   list:           (params?: any)          => request<any>(`/companies?${new URLSearchParams(params||{})}`),
   get:            (id: string)            => request<any>(`/companies/${id}`),
   create:         (body: any)             => request<any>('/companies', { method: 'POST', body: JSON.stringify(body) }),
@@ -119,6 +120,8 @@ export const userApi = {
   remove:            (cid: string, uid: string)                     => request<any>(`/companies/${cid}/users/${uid}`, { method: 'DELETE' }),
   unremove:          (uid: string)                                  => request<any>(`/admin/users/${uid}/unremove`, { method: 'POST' }),
   permanentDelete:   (uid: string)                                  => request<any>(`/admin/users/${uid}/permanent`, { method: 'DELETE' }),
+  assignCompany:        (uid: string, body: { companyId: string; role?: string }) => request<any>(`/admin/users/${uid}/assign-company`,      { method: 'PUT',    body: JSON.stringify(body) }),
+  removeFromCompany:    (uid: string, cid: string)                                => request<any>(`/admin/users/${uid}/companies/${cid}`,        { method: 'DELETE' }),
 };
 
 // Message Templates

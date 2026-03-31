@@ -4,6 +4,37 @@ const prisma = require('../lib/prisma');
 
 const genKey = (slug) => `rcrm_live_${slug.slice(0,6)}_${crypto.randomBytes(16).toString('hex')}`;
 
+// Returns companies the current user is assigned to.
+// SUPER_ADMIN gets all companies.
+exports.myCompanies = async (req, res) => {
+  try {
+    if (req.user?.role === 'SUPER_ADMIN') {
+      const companies = await prisma.company.findMany({
+        where: { deletedAt: null },
+        select: { companyId: true, name: true, logo: true, plan: true, status: true },
+        orderBy: { name: 'asc' }
+      });
+      return res.json({ success: true, data: { companies } });
+    }
+    const memberships = await prisma.userCompany.findMany({
+      where: { userId: req.user.userId },
+      include: { company: { select: { companyId: true, name: true, logo: true, plan: true, status: true } } },
+      orderBy: { createdAt: 'asc' }
+    });
+    // Also include primary companyId if not in junction table
+    const inJunction = new Set(memberships.map(m => m.companyId));
+    const companies = memberships.map(m => m.company);
+    if (req.user.companyId && !inJunction.has(req.user.companyId)) {
+      const primary = await prisma.company.findUnique({
+        where: { companyId: req.user.companyId },
+        select: { companyId: true, name: true, logo: true, plan: true, status: true }
+      });
+      if (primary) companies.unshift(primary);
+    }
+    return res.json({ success: true, data: { companies } });
+  } catch (err) { return res.status(500).json({ success: false, error: { message: err.message } }); }
+};
+
 exports.getAll = async (req, res) => {
   try {
     const { search, status, page=1, limit=20 } = req.query;

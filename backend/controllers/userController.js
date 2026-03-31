@@ -22,7 +22,11 @@ exports.getAllUsers = async (req, res) => {
       select: {
         userId: true, name: true, email: true, role: true, permissions: true,
         isActive: true, isVerified: true, lastLogin: true, createdAt: true, companyId: true,
-        company: { select: { companyId: true, name: true } }
+        company: { select: { companyId: true, name: true } },
+        companies: {
+          select: { companyId: true, role: true, company: { select: { companyId: true, name: true } } },
+          orderBy: { createdAt: 'asc' }
+        }
       },
       orderBy: { createdAt: 'desc' }
     });
@@ -143,6 +147,52 @@ exports.updatePermissions = async (req, res) => {
     await prisma.user.updateMany({ where: { userId, companyId }, data: { permissions: sanitized } });
     return res.json({ success: true, message: 'Permissions updated.' });
   } catch { return res.status(500).json({ success: false, error: { message: 'Update failed.' } }); }
+};
+
+exports.assignCompany = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { companyId, role } = req.body;
+    if (!companyId) return res.status(400).json({ success: false, error: { message: 'companyId required.' } });
+
+    const u = await prisma.user.findUnique({ where: { userId } });
+    if (!u) return res.status(404).json({ success: false, error: { message: 'User not found.' } });
+
+    const normalizedRole = role ? role.toUpperCase() : (u.role === 'SUPER_ADMIN' ? 'ADMIN' : u.role);
+    if (!VALID_ROLES.includes(normalizedRole))
+      return res.status(400).json({ success: false, error: { message: 'Invalid role.' } });
+
+    const company = await prisma.company.findUnique({ where: { companyId } });
+    if (!company) return res.status(404).json({ success: false, error: { message: 'Company not found.' } });
+
+    // Upsert into UserCompany junction (add, not replace)
+    await prisma.userCompany.upsert({
+      where: { userId_companyId: { userId, companyId } },
+      update: { role: normalizedRole },
+      create: { userId, companyId, role: normalizedRole }
+    });
+
+    // If user has no primary company set, assign this one
+    if (!u.companyId) {
+      await prisma.user.update({ where: { userId }, data: { companyId, role: normalizedRole, isActive: true } });
+    }
+
+    return res.json({ success: true, message: 'Company assigned.' });
+  } catch { return res.status(500).json({ success: false, error: { message: 'Assign failed.' } }); }
+};
+
+exports.removeFromCompany = async (req, res) => {
+  try {
+    const { userId, companyId } = req.params;
+    await prisma.userCompany.deleteMany({ where: { userId, companyId } });
+    // If this was their primary company, clear it and set next available
+    const u = await prisma.user.findUnique({ where: { userId } });
+    if (u?.companyId === companyId) {
+      const next = await prisma.userCompany.findFirst({ where: { userId } });
+      await prisma.user.update({ where: { userId }, data: { companyId: next?.companyId || null } });
+    }
+    return res.json({ success: true, message: 'Removed from company.' });
+  } catch { return res.status(500).json({ success: false, error: { message: 'Remove failed.' } }); }
 };
 
 exports.unremove = async (req, res) => {
