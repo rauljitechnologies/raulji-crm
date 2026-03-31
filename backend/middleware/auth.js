@@ -27,13 +27,23 @@ exports.requireRole = (roles) => (req, res, next) => {
 // ── Company Ownership Guard ───────────────────────────────────────────────────
 // Ensures the authenticated user belongs to the companyId in the URL param.
 // SUPER_ADMIN bypasses this check (they manage all companies).
-exports.requireCompanyAccess = (req, res, next) => {
-  const { companyId } = req.params;
-  if (!companyId)      return next();
-  if (req.user?.role === 'SUPER_ADMIN') return next();
-  if (req.user?.companyId !== companyId)
-    return res.status(403).json({ success: false, error: { code: 'AUTH_005', message: 'Access denied to this company.' } });
-  next();
+// Regular users pass if their primary companyId matches OR they have a UserCompany entry.
+exports.requireCompanyAccess = async (req, res, next) => {
+  try {
+    const { companyId } = req.params;
+    if (!companyId)                       return next();
+    if (req.user?.role === 'SUPER_ADMIN') return next();
+    if (req.user?.companyId === companyId) return next();
+    // Check multi-company membership
+    const membership = await prisma.userCompany.findUnique({
+      where: { userId_companyId: { userId: req.user.userId, companyId } }
+    });
+    if (!membership)
+      return res.status(403).json({ success: false, error: { code: 'AUTH_005', message: 'Access denied to this company.' } });
+    next();
+  } catch {
+    return res.status(500).json({ success: false, error: { code: 'SERVER_001', message: 'Authentication error.' } });
+  }
 };
 
 // ── API Key Auth ──────────────────────────────────────────────────────────────

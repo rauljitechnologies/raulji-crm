@@ -36,6 +36,7 @@ router.post('/auth/reset-password',  auth.resetPassword);
 router.post('/auth/accept-invite',   user.acceptInvite);
 
 // ── Companies ─────────────────────────────────────────────────────────────────
+router.get(   '/companies/mine',                      authenticate, company.myCompanies);
 router.get(   '/companies',                           authenticate, requireRole(['SUPER_ADMIN']), company.getAll);
 router.post(  '/companies',                           authenticate, requireRole(['SUPER_ADMIN']), company.create);
 router.get(   '/companies/:companyId',                ...authCo, company.getOne);
@@ -46,9 +47,11 @@ router.get(   '/companies/:companyId/settings',       ...authCo, company.getSett
 router.put(   '/companies/:companyId/settings',       ...authCo, requireRole(['SUPER_ADMIN', 'ADMIN']), company.updateSettings);
 
 // ── Users ─────────────────────────────────────────────────────────────────────
-router.get(   '/admin/users',                                    authenticate, requireRole(['SUPER_ADMIN']), user.getAllUsers);
-router.post(  '/admin/users/:userId/unremove',                   authenticate, requireRole(['SUPER_ADMIN']), user.unremove);
-router.delete('/admin/users/:userId/permanent',                  authenticate, requireRole(['SUPER_ADMIN']), user.permanentDelete);
+router.get(   '/admin/users',                                          authenticate, requireRole(['SUPER_ADMIN']), user.getAllUsers);
+router.put(   '/admin/users/:userId/assign-company',                   authenticate, requireRole(['SUPER_ADMIN']), user.assignCompany);
+router.delete('/admin/users/:userId/companies/:companyId',             authenticate, requireRole(['SUPER_ADMIN']), user.removeFromCompany);
+router.post(  '/admin/users/:userId/unremove',                         authenticate, requireRole(['SUPER_ADMIN']), user.unremove);
+router.delete('/admin/users/:userId/permanent',                        authenticate, requireRole(['SUPER_ADMIN']), user.permanentDelete);
 router.get(   '/companies/:companyId/users',                     ...authCo, user.getUsers);
 router.post(  '/companies/:companyId/users/invite',              ...authCo, requireRole(['SUPER_ADMIN', 'ADMIN']), user.invite);
 router.put(   '/companies/:companyId/users/:userId/role',        ...authCo, requireRole(['SUPER_ADMIN', 'ADMIN']), user.updateRole);
