@@ -67,12 +67,13 @@ const MATRIX_ROLES: { key: string; label: string }[] = [
 ];
 
 export default function UsersPage() {
-  const [companies,   setCompanies]   = useState<any[]>([]);
-  const [users,       setUsers]       = useState<any[]>([]);
-  const [loading,     setLoading]     = useState(false);
-  const [search,      setSearch]      = useState('');
-  const [filterCo,    setFilterCo]    = useState('');
-  const [showInvite,  setShowInvite]  = useState(false);
+  const [companies,    setCompanies]   = useState<any[]>([]);
+  const [users,        setUsers]       = useState<any[]>([]);
+  const [loading,      setLoading]     = useState(false);
+  const [search,       setSearch]      = useState('');
+  const [filterCo,     setFilterCo]    = useState('');
+  const [showRemoved,  setShowRemoved] = useState(false);
+  const [showInvite,   setShowInvite]  = useState(false);
   const [saving,      setSaving]      = useState(false);
   const [inviteCo,    setInviteCo]    = useState('');
   const [form, setForm] = useState({ name:'', email:'', role:'SALES_REP', password:'' });
@@ -98,7 +99,9 @@ export default function UsersPage() {
   useEffect(() => { load(); }, []);
 
   // Filtered view
+  const activeUsers  = users.filter(u => u.isActive);
   const visible = users.filter(u => {
+    if (!showRemoved && !u.isActive) return false;
     const matchCo = !filterCo || u.companyId === filterCo;
     const q = search.toLowerCase();
     const matchQ  = !q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || (u.company?.name||'').toLowerCase().includes(q);
@@ -159,14 +162,14 @@ export default function UsersPage() {
 
   return (
     <>
-      <Topbar title="Users & Roles" subtitle={`${users.length} users across ${companies.length} companies`}
+      <Topbar title="Users & Roles" subtitle={`${activeUsers.length} active users across ${companies.length} companies`}
         actions={<Btn variant="primary" size="sm" onClick={() => setShowInvite(true)}>+ Add User</Btn>}
       />
 
       <div className="flex-1 min-h-0 overflow-y-auto p-5 flex flex-col gap-4">
 
         {/* Filters */}
-        <div className="flex gap-3 flex-wrap">
+        <div className="flex gap-3 flex-wrap items-center">
           <input
             value={search} onChange={e => setSearch(e.target.value)}
             placeholder="Search by name, email or company..."
@@ -179,6 +182,10 @@ export default function UsersPage() {
               <option key={c.companyId} value={c.companyId}>{c.name}</option>
             ))}
           </select>
+          <label className="flex items-center gap-1.5 text-xs text-slate-500 cursor-pointer select-none">
+            <input type="checkbox" checked={showRemoved} onChange={e => setShowRemoved(e.target.checked)} className="accent-indigo-600" />
+            Show removed
+          </label>
         </div>
 
         {/* Users table */}
@@ -207,14 +214,14 @@ export default function UsersPage() {
                 </thead>
                 <tbody>
                   {visible.map((u: any) => (
-                    <tr key={u.userId} className="border-b border-slate-50 last:border-none hover:bg-slate-50/50">
+                    <tr key={u.userId} className={`border-b border-slate-50 last:border-none ${u.isActive ? 'hover:bg-slate-50/50' : 'opacity-50 bg-slate-50/40'}`}>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0 ${u.isActive ? 'bg-indigo-50 text-indigo-600' : 'bg-slate-100 text-slate-400'}`}>
                             {u.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
                           </div>
                           <div>
-                            <div className="font-semibold text-slate-800">{u.name}</div>
+                            <div className={`font-semibold ${u.isActive ? 'text-slate-800' : 'text-slate-400 line-through'}`}>{u.name}</div>
                             <div className="text-slate-400 text-[10px]">{u.email}</div>
                           </div>
                         </div>
@@ -228,7 +235,7 @@ export default function UsersPage() {
                         </span>
                       </td>
                       <td className="px-3 py-3">
-                        {u.role !== 'SUPER_ADMIN' ? (
+                        {u.isActive && u.role !== 'SUPER_ADMIN' ? (
                           <select value={u.role} onChange={e => changeRole(u, e.target.value)}
                             className="text-xs border border-slate-200 rounded-lg px-2 py-1 outline-none focus:border-indigo-500 bg-white">
                             {ROLES.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
@@ -238,19 +245,23 @@ export default function UsersPage() {
                         )}
                       </td>
                       <td className="px-3 py-3">
-                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${u.isVerified ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
-                          {u.isVerified ? 'Active' : 'Pending'}
-                        </span>
+                        {!u.isActive ? (
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-50 text-red-400">Removed</span>
+                        ) : (
+                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${u.isVerified ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+                            {u.isVerified ? 'Active' : 'Pending'}
+                          </span>
+                        )}
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-2">
-                          {u.companyId && (
+                          {u.isActive && u.companyId && (
                             <button onClick={() => openPermEditor(u)}
                               className="text-xs text-indigo-500 hover:text-indigo-700 font-semibold transition-colors px-2 py-1 rounded hover:bg-indigo-50">
                               Edit Perms
                             </button>
                           )}
-                          {u.role !== 'SUPER_ADMIN' && u.companyId && (
+                          {u.isActive && u.role !== 'SUPER_ADMIN' && u.companyId && (
                             <button onClick={() => remove(u)}
                               className="text-xs text-red-400 hover:text-red-600 font-medium transition-colors px-2 py-1 rounded hover:bg-red-50">
                               Remove
