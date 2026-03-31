@@ -7,7 +7,8 @@ const calcTotals = (items) => {
   let subtotal = 0, totalGst = 0, totalDiscount = 0;
   const processed = items.map(item => {
     const after   = item.quantity * (item.unitPrice || 0) - (item.discount || 0);
-    const gst     = Math.round(after * (item.gstPercent || 18) / 100);
+    // gstPercent === null means "No GST" — treat as 0, NOT default to 18
+    const gst     = item.gstPercent != null ? Math.round(after * item.gstPercent / 100) : 0;
     subtotal      += after;
     totalGst      += gst;
     totalDiscount += (item.discount || 0);

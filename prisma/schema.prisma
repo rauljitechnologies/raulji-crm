@@ -101,12 +101,15 @@ model Lead {
   phone          String
   city           String?
   state          String?
+  country        String?
+  service        String?
   source         String    @default("MANUAL")
   status         String    @default("NEW")
   priority       String    @default("MEDIUM")
   dealValue      Float?    @map("deal_value")
   currency       String    @default("INR")
   aiScore        Int?      @map("ai_score")
+  aiScoreFactors Json?     @map("ai_score_factors")
   assignedToId   String?   @map("assigned_to_id")
   tags           String[]  @default([])
   notes          String?
@@ -175,7 +178,6 @@ model Quotation {
   companyId            String    @map("company_id")
   leadId               String?   @map("lead_id")
   dealId               String?   @map("deal_id")
-  clientId             String?   @map("client_id")
   clientName           String    @map("client_name")
   clientEmail          String?   @map("client_email")
   clientPhone          String?   @map("client_phone")
@@ -211,7 +213,6 @@ model Invoice {
   companyId      String    @map("company_id")
   leadId         String?   @map("lead_id")
   quotationId    String?   @map("quotation_id")
-  clientId       String?   @map("client_id")
   clientName     String    @map("client_name")
   clientEmail    String?   @map("client_email")
   clientPhone    String?   @map("client_phone")

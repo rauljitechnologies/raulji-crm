@@ -50,8 +50,7 @@ const ROLE_DEFAULTS: Record<string, Record<PermKey, boolean>> = {
 
 function effectivePerms(user: any): Record<PermKey, boolean> {
   const base = ROLE_DEFAULTS[user.role] || ROLE_DEFAULTS.VIEWER;
-  const overrides = user.permissions || {};
-  return { ...base, ...overrides } as Record<PermKey, boolean>;
+  return { ...base, ...(user.permissions || {}) } as Record<PermKey, boolean>;
 }
 
 function groupBySection(perms: typeof ALL_PERMS) {
@@ -68,12 +67,14 @@ const MATRIX_ROLES: { key: string; label: string }[] = [
 ];
 
 export default function UsersPage() {
-  const [companies, setCompanies] = useState<any[]>([]);
-  const [companyId, setCompanyId] = useState('');
-  const [users,     setUsers]     = useState<any[]>([]);
-  const [loading,   setLoading]   = useState(false);
-  const [showInvite, setShowInvite] = useState(false);
-  const [saving,     setSaving]    = useState(false);
+  const [companies,   setCompanies]   = useState<any[]>([]);
+  const [users,       setUsers]       = useState<any[]>([]);
+  const [loading,     setLoading]     = useState(false);
+  const [search,      setSearch]      = useState('');
+  const [filterCo,    setFilterCo]    = useState('');
+  const [showInvite,  setShowInvite]  = useState(false);
+  const [saving,      setSaving]      = useState(false);
+  const [inviteCo,    setInviteCo]    = useState('');
   const [form, setForm] = useState({ name:'', email:'', role:'SALES_REP', password:'' });
 
   // Permission editor
@@ -83,43 +84,53 @@ export default function UsersPage() {
 
   const { toast, ToastContainer } = useToast();
 
-  const loadCos = async () => {
-    try { const d = await companyApi.list({ limit:'20' }); const cos = d.companies||[]; setCompanies(cos); if (cos[0]) setCompanyId(cos[0].companyId); } catch {}
-  };
-  useEffect(() => { loadCos(); }, []);
-
   const load = async () => {
-    if (!companyId) return;
     setLoading(true);
-    try { const d = await userApi.list(companyId); setUsers(d.users||[]); }
-    catch(e:any){ toast(e.message,'err'); }
+    try {
+      const [ud, cd] = await Promise.all([userApi.listAll(), companyApi.list({ limit: '100' })]);
+      setUsers(ud.users || []);
+      const cos = cd.companies || [];
+      setCompanies(cos);
+      if (!inviteCo && cos[0]) setInviteCo(cos[0].companyId);
+    } catch(e: any) { toast(e.message, 'err'); }
     finally { setLoading(false); }
   };
-  useEffect(() => { load(); }, [companyId]);
+  useEffect(() => { load(); }, []);
+
+  // Filtered view
+  const visible = users.filter(u => {
+    const matchCo = !filterCo || u.companyId === filterCo;
+    const q = search.toLowerCase();
+    const matchQ  = !q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || (u.company?.name||'').toLowerCase().includes(q);
+    return matchCo && matchQ;
+  });
 
   const invite = async () => {
-    if (!form.name||!form.email) return toast('Name and email required','err');
-    if (form.password && form.password.length < 8) return toast('Password must be at least 8 characters','err');
+    if (!form.name || !form.email) return toast('Name and email required', 'err');
+    if (!inviteCo) return toast('Select a company', 'err');
+    if (form.password && form.password.length < 8) return toast('Password must be at least 8 characters', 'err');
     setSaving(true);
     try {
-      await userApi.invite(companyId, form);
+      await userApi.invite(inviteCo, form);
       toast(form.password ? 'User added!' : 'Invite sent!');
       setShowInvite(false);
-      setForm({name:'',email:'',role:'SALES_REP',password:''});
+      setForm({ name:'', email:'', role:'SALES_REP', password:'' });
       load();
-    }
-    catch(e:any){ toast(e.message,'err'); } finally { setSaving(false); }
+    } catch(e: any) { toast(e.message, 'err'); }
+    finally { setSaving(false); }
   };
 
-  const changeRole = async (uid: string, role: string) => {
-    try { await userApi.updateRole(companyId, uid, role); toast('Role updated!'); load(); }
-    catch(e:any){ toast(e.message,'err'); }
+  const changeRole = async (u: any, role: string) => {
+    if (!u.companyId) return toast('No company for user', 'err');
+    try { await userApi.updateRole(u.companyId, u.userId, role); toast('Role updated!'); load(); }
+    catch(e: any) { toast(e.message, 'err'); }
   };
 
-  const remove = async (uid: string, name: string) => {
-    if (!confirm(`Remove ${name} from this company?`)) return;
-    try { await userApi.remove(companyId, uid); toast('User removed.'); load(); }
-    catch(e:any){ toast(e.message,'err'); }
+  const remove = async (u: any) => {
+    if (!confirm(`Remove ${u.name} from ${u.company?.name || 'this company'}?`)) return;
+    if (!u.companyId) return toast('No company for user', 'err');
+    try { await userApi.remove(u.companyId, u.userId); toast('User removed.'); load(); }
+    catch(e: any) { toast(e.message, 'err'); }
   };
 
   const openPermEditor = (u: any) => {
@@ -128,14 +139,14 @@ export default function UsersPage() {
   };
 
   const savePerms = async () => {
-    if (!permUser) return;
+    if (!permUser?.companyId) return;
     setPermSaving(true);
     try {
-      await userApi.updatePermissions(companyId, permUser.userId, permState);
+      await userApi.updatePermissions(permUser.companyId, permUser.userId, permState);
       toast('Permissions saved!');
       setPermUser(null);
       load();
-    } catch(e:any){ toast(e.message,'err'); }
+    } catch(e: any) { toast(e.message, 'err'); }
     finally { setPermSaving(false); }
   };
 
@@ -148,87 +159,111 @@ export default function UsersPage() {
 
   return (
     <>
-      <Topbar title="Users & Roles" subtitle="Manage team members and permissions"
-        actions={<>
-          <select value={companyId} onChange={e=>setCompanyId(e.target.value)}
-            className="border border-slate-200 rounded-lg px-3 py-1.5 text-xs outline-none focus:border-indigo-500">
-            {companies.map((c:any)=><option key={c.companyId} value={c.companyId}>{c.name}</option>)}
-          </select>
-          <Btn variant="primary" size="sm" onClick={() => setShowInvite(true)}>+ Add User</Btn>
-        </>}
+      <Topbar title="Users & Roles" subtitle={`${users.length} users across ${companies.length} companies`}
+        actions={<Btn variant="primary" size="sm" onClick={() => setShowInvite(true)}>+ Add User</Btn>}
       />
 
       <div className="flex-1 min-h-0 overflow-y-auto p-5 flex flex-col gap-4">
+
+        {/* Filters */}
+        <div className="flex gap-3 flex-wrap">
+          <input
+            value={search} onChange={e => setSearch(e.target.value)}
+            placeholder="Search by name, email or company..."
+            className="flex-1 min-w-48 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-indigo-400 bg-white"
+          />
+          <select value={filterCo} onChange={e => setFilterCo(e.target.value)}
+            className="border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-indigo-400 bg-white">
+            <option value="">All Companies ({companies.length})</option>
+            {companies.map((c: any) => (
+              <option key={c.companyId} value={c.companyId}>{c.name}</option>
+            ))}
+          </select>
+        </div>
+
         {/* Users table */}
         <Card className="p-0">
           <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
-            <div className="text-xs font-bold text-slate-900">Team Members ({users.length})</div>
+            <div className="text-xs font-bold text-slate-900">
+              All Users <span className="text-slate-400 font-normal">({visible.length}{visible.length !== users.length ? ` of ${users.length}` : ''})</span>
+            </div>
           </div>
-          {loading
-            ? <div className="py-10 text-center text-slate-400 text-xs">Loading...</div>
-            : users.length === 0
-              ? <div className="py-10 text-center text-slate-400 text-xs">No users yet. Invite your team!</div>
-              : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-xs border-collapse">
-                    <thead>
-                      <tr className="border-b border-slate-100 bg-slate-50">
-                        <th className="text-left px-4 py-2.5 text-slate-500 font-semibold">User</th>
-                        <th className="text-left px-3 py-2.5 text-slate-500 font-semibold">Role</th>
-                        <th className="text-left px-3 py-2.5 text-slate-500 font-semibold">Change Role</th>
-                        <th className="text-left px-3 py-2.5 text-slate-500 font-semibold">Status</th>
-                        <th className="text-right px-4 py-2.5 text-slate-500 font-semibold">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {users.map((u:any) => (
-                        <tr key={u.userId} className="border-b border-slate-50 last:border-none hover:bg-slate-50/50">
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-2.5">
-                              <div className="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs flex-shrink-0">
-                                {u.name.split(' ').map((n:string)=>n[0]).join('').slice(0,2)}
-                              </div>
-                              <div>
-                                <div className="font-semibold text-slate-800">{u.name}</div>
-                                <div className="text-slate-400 text-[10px]">{u.email}</div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-3 py-3">
-                            <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${ROLE_BADGE[u.role]||'bg-slate-100 text-slate-500'}`}>
-                              {u.role.replace(/_/g,' ')}
-                            </span>
-                          </td>
-                          <td className="px-3 py-3">
-                            <select value={u.role} onChange={e=>changeRole(u.userId, e.target.value)}
-                              className="text-xs border border-slate-200 rounded-lg px-2 py-1 outline-none focus:border-indigo-500 bg-white">
-                              {ROLES.map(r=><option key={r.value} value={r.value}>{r.label}</option>)}
-                            </select>
-                          </td>
-                          <td className="px-3 py-3">
-                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${u.isVerified ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
-                              {u.isVerified ? 'Active' : 'Pending'}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 text-right">
-                            <div className="flex items-center justify-end gap-2">
-                              <button onClick={() => openPermEditor(u)}
-                                className="text-xs text-indigo-500 hover:text-indigo-700 font-semibold transition-colors px-2 py-1 rounded hover:bg-indigo-50">
-                                Edit Perms
-                              </button>
-                              <button onClick={() => remove(u.userId, u.name)}
-                                className="text-xs text-red-400 hover:text-red-600 font-medium transition-colors px-2 py-1 rounded hover:bg-red-50">
-                                Remove
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )
-          }
+          {loading ? (
+            <div className="py-10 text-center text-slate-400 text-xs">Loading...</div>
+          ) : visible.length === 0 ? (
+            <div className="py-10 text-center text-slate-400 text-xs">No users found.</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-100 bg-slate-50">
+                    <th className="text-left px-4 py-2.5 text-slate-500 font-semibold">User</th>
+                    <th className="text-left px-3 py-2.5 text-slate-500 font-semibold">Company</th>
+                    <th className="text-left px-3 py-2.5 text-slate-500 font-semibold">Role</th>
+                    <th className="text-left px-3 py-2.5 text-slate-500 font-semibold">Change Role</th>
+                    <th className="text-left px-3 py-2.5 text-slate-500 font-semibold">Status</th>
+                    <th className="text-right px-4 py-2.5 text-slate-500 font-semibold">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {visible.map((u: any) => (
+                    <tr key={u.userId} className="border-b border-slate-50 last:border-none hover:bg-slate-50/50">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                            {u.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
+                          </div>
+                          <div>
+                            <div className="font-semibold text-slate-800">{u.name}</div>
+                            <div className="text-slate-400 text-[10px]">{u.email}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-3 py-3">
+                        <span className="text-slate-700 font-medium">{u.company?.name || <span className="text-slate-300 italic">No company</span>}</span>
+                      </td>
+                      <td className="px-3 py-3">
+                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${ROLE_BADGE[u.role] || 'bg-slate-100 text-slate-500'}`}>
+                          {u.role.replace(/_/g, ' ')}
+                        </span>
+                      </td>
+                      <td className="px-3 py-3">
+                        {u.role !== 'SUPER_ADMIN' ? (
+                          <select value={u.role} onChange={e => changeRole(u, e.target.value)}
+                            className="text-xs border border-slate-200 rounded-lg px-2 py-1 outline-none focus:border-indigo-500 bg-white">
+                            {ROLES.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
+                          </select>
+                        ) : (
+                          <span className="text-slate-300 text-xs italic">—</span>
+                        )}
+                      </td>
+                      <td className="px-3 py-3">
+                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${u.isVerified ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+                          {u.isVerified ? 'Active' : 'Pending'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          {u.companyId && (
+                            <button onClick={() => openPermEditor(u)}
+                              className="text-xs text-indigo-500 hover:text-indigo-700 font-semibold transition-colors px-2 py-1 rounded hover:bg-indigo-50">
+                              Edit Perms
+                            </button>
+                          )}
+                          {u.role !== 'SUPER_ADMIN' && u.companyId && (
+                            <button onClick={() => remove(u)}
+                              className="text-xs text-red-400 hover:text-red-600 font-medium transition-colors px-2 py-1 rounded hover:bg-red-50">
+                              Remove
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </Card>
 
         {/* Role defaults matrix */}
@@ -242,9 +277,9 @@ export default function UsersPage() {
               <thead>
                 <tr className="border-b border-slate-100">
                   <th className="text-left py-2 pr-4 text-slate-500 font-semibold w-32">Module</th>
-                  {MATRIX_ROLES.map(r=>(
+                  {MATRIX_ROLES.map(r => (
                     <th key={r.key} className="text-center py-2 px-3 text-slate-500 font-semibold">
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] ${ROLE_BADGE[r.key]||'bg-slate-100 text-slate-500'}`}>{r.label}</span>
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] ${ROLE_BADGE[r.key] || 'bg-slate-100 text-slate-500'}`}>{r.label}</span>
                     </th>
                   ))}
                 </tr>
@@ -272,14 +307,24 @@ export default function UsersPage() {
         </Card>
       </div>
 
-      {/* Invite Modal */}
-      <Modal open={showInvite} onClose={() => { setShowInvite(false); setForm({name:'',email:'',role:'SALES_REP',password:''}); }} title="Add New User"
-        footer={<><Btn variant="secondary" onClick={() => { setShowInvite(false); setForm({name:'',email:'',role:'SALES_REP',password:''}); }}>Cancel</Btn><Btn variant="primary" loading={saving} onClick={invite}>{form.password ? 'Add User' : 'Send Invite'}</Btn></>}>
+      {/* Add User Modal */}
+      <Modal open={showInvite} onClose={() => { setShowInvite(false); setForm({ name:'', email:'', role:'SALES_REP', password:'' }); }} title="Add New User"
+        footer={<>
+          <Btn variant="secondary" onClick={() => { setShowInvite(false); setForm({ name:'', email:'', role:'SALES_REP', password:'' }); }}>Cancel</Btn>
+          <Btn variant="primary" loading={saving} onClick={invite}>{form.password ? 'Add User' : 'Send Invite'}</Btn>
+        </>}>
         <div className="flex flex-col gap-3">
-          <Input label="Full name *" value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))} placeholder="Priya Mehta" />
-          <Input label="Email *" type="email" value={form.email} onChange={e=>setForm(f=>({...f,email:e.target.value}))} placeholder="priya@company.com" />
-          <Sel label="Role" value={form.role} onChange={e=>setForm(f=>({...f,role:e.target.value}))} options={ROLES} />
-          <Input label="Password (optional)" type="password" value={form.password} onChange={e=>setForm(f=>({...f,password:e.target.value}))} placeholder="Set password directly (min 8 chars)" />
+          <div>
+            <label className="text-xs font-semibold text-slate-600 mb-1 block">Company *</label>
+            <select value={inviteCo} onChange={e => setInviteCo(e.target.value)}
+              className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-indigo-400">
+              {companies.map((c: any) => <option key={c.companyId} value={c.companyId}>{c.name}</option>)}
+            </select>
+          </div>
+          <Input label="Full name *" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Priya Mehta" />
+          <Input label="Email *" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="priya@company.com" />
+          <Sel label="Role" value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))} options={ROLES} />
+          <Input label="Password (optional)" type="password" value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} placeholder="Set password directly (min 8 chars)" />
           <div className="bg-slate-50 rounded-lg p-3 text-xs text-slate-500">
             {form.password
               ? 'User will be created with this password and can log in immediately.'
@@ -297,12 +342,14 @@ export default function UsersPage() {
         </>}>
         {permUser && (
           <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-2 bg-slate-50 rounded-lg px-3 py-2 text-xs text-slate-600">
+            <div className="flex items-center gap-2 bg-slate-50 rounded-lg px-3 py-2 text-xs text-slate-600 flex-wrap">
+              <span>Company:</span>
+              <span className="font-semibold text-slate-800">{permUser.company?.name || '—'}</span>
+              <span className="text-slate-300">·</span>
               <span>Role:</span>
-              <span className={`font-semibold px-2 py-0.5 rounded-full text-[10px] ${ROLE_BADGE[permUser.role]||'bg-slate-100 text-slate-500'}`}>
-                {permUser.role.replace(/_/g,' ')}
+              <span className={`font-semibold px-2 py-0.5 rounded-full text-[10px] ${ROLE_BADGE[permUser.role] || 'bg-slate-100 text-slate-500'}`}>
+                {permUser.role.replace(/_/g, ' ')}
               </span>
-              <span className="text-slate-400 ml-1">— toggle individual access below</span>
             </div>
             {Object.entries(sections).map(([section, perms]) => (
               <div key={section}>

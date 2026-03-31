@@ -16,6 +16,21 @@ exports.getUsers = async (req, res) => {
   } catch { return res.status(500).json({ success: false, error: { message: 'Failed to fetch users.' } }); }
 };
 
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await prisma.user.findMany({
+      where: { isActive: true },
+      select: {
+        userId: true, name: true, email: true, role: true, permissions: true,
+        isVerified: true, lastLogin: true, createdAt: true, companyId: true,
+        company: { select: { companyId: true, name: true } }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    return res.json({ success: true, data: { users } });
+  } catch { return res.status(500).json({ success: false, error: { message: 'Failed to fetch users.' } }); }
+};
+
 exports.invite = async (req, res) => {
   try {
     const { companyId } = req.params;
