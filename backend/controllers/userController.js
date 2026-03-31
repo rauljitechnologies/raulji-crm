@@ -145,6 +145,28 @@ exports.updatePermissions = async (req, res) => {
   } catch { return res.status(500).json({ success: false, error: { message: 'Update failed.' } }); }
 };
 
+exports.unremove = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const u = await prisma.user.findUnique({ where: { userId } });
+    if (!u) return res.status(404).json({ success: false, error: { message: 'User not found.' } });
+    if (u.isActive) return res.status(400).json({ success: false, error: { message: 'User is already active.' } });
+    await prisma.user.update({ where: { userId }, data: { isActive: true } });
+    return res.json({ success: true, message: 'User restored.' });
+  } catch { return res.status(500).json({ success: false, error: { message: 'Restore failed.' } }); }
+};
+
+exports.permanentDelete = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const u = await prisma.user.findUnique({ where: { userId } });
+    if (!u) return res.status(404).json({ success: false, error: { message: 'User not found.' } });
+    if (u.isActive) return res.status(400).json({ success: false, error: { message: 'Cannot permanently delete an active user. Remove them first.' } });
+    await prisma.user.delete({ where: { userId } });
+    return res.json({ success: true, message: 'User permanently deleted.' });
+  } catch { return res.status(500).json({ success: false, error: { message: 'Delete failed.' } }); }
+};
+
 exports.acceptInvite = async (req, res) => {
   try {
     const { token, password } = req.body;

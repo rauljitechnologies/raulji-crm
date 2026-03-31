@@ -47,6 +47,8 @@ router.put(   '/companies/:companyId/settings',       ...authCo, requireRole(['S
 
 // ── Users ─────────────────────────────────────────────────────────────────────
 router.get(   '/admin/users',                                    authenticate, requireRole(['SUPER_ADMIN']), user.getAllUsers);
+router.post(  '/admin/users/:userId/unremove',                   authenticate, requireRole(['SUPER_ADMIN']), user.unremove);
+router.delete('/admin/users/:userId/permanent',                  authenticate, requireRole(['SUPER_ADMIN']), user.permanentDelete);
 router.get(   '/companies/:companyId/users',                     ...authCo, user.getUsers);
 router.post(  '/companies/:companyId/users/invite',              ...authCo, requireRole(['SUPER_ADMIN', 'ADMIN']), user.invite);
 router.put(   '/companies/:companyId/users/:userId/role',        ...authCo, requireRole(['SUPER_ADMIN', 'ADMIN']), user.updateRole);

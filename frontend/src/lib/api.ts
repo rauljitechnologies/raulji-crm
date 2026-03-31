@@ -117,6 +117,8 @@ export const userApi = {
   updateRole:        (cid: string, uid: string, role: string)        => request<any>(`/companies/${cid}/users/${uid}/role`,        { method: 'PUT', body: JSON.stringify({ role }) }),
   updatePermissions: (cid: string, uid: string, permissions: any)   => request<any>(`/companies/${cid}/users/${uid}/permissions`, { method: 'PUT', body: JSON.stringify({ permissions }) }),
   remove:            (cid: string, uid: string)                     => request<any>(`/companies/${cid}/users/${uid}`, { method: 'DELETE' }),
+  unremove:          (uid: string)                                  => request<any>(`/admin/users/${uid}/unremove`, { method: 'POST' }),
+  permanentDelete:   (uid: string)                                  => request<any>(`/admin/users/${uid}/permanent`, { method: 'DELETE' }),
 };
 
 // Message Templates

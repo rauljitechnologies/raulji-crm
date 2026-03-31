@@ -67,6 +67,7 @@ const MATRIX_ROLES: { key: string; label: string }[] = [
 ];
 
 export default function UsersPage() {
+  const [me,           setMe]          = useState<any>(null);
   const [companies,    setCompanies]   = useState<any[]>([]);
   const [users,        setUsers]       = useState<any[]>([]);
   const [loading,      setLoading]     = useState(false);
@@ -74,6 +75,7 @@ export default function UsersPage() {
   const [filterCo,     setFilterCo]    = useState('');
   const [showRemoved,  setShowRemoved] = useState(false);
   const [showInvite,   setShowInvite]  = useState(false);
+  const isSuperAdmin = me?.role === 'SUPER_ADMIN';
   const [saving,      setSaving]      = useState(false);
   const [inviteCo,    setInviteCo]    = useState('');
   const [form, setForm] = useState({ name:'', email:'', role:'SALES_REP', password:'' });
@@ -88,6 +90,8 @@ export default function UsersPage() {
   const load = async () => {
     setLoading(true);
     try {
+      const meRaw = JSON.parse(localStorage.getItem('user') || '{}');
+      setMe(meRaw);
       const [ud, cd] = await Promise.all([userApi.listAll(), companyApi.list({ limit: '100' })]);
       setUsers(ud.users || []);
       const cos = cd.companies || [];
@@ -133,6 +137,18 @@ export default function UsersPage() {
     if (!confirm(`Remove ${u.name} from ${u.company?.name || 'this company'}?`)) return;
     if (!u.companyId) return toast('No company for user', 'err');
     try { await userApi.remove(u.companyId, u.userId); toast('User removed.'); load(); }
+    catch(e: any) { toast(e.message, 'err'); }
+  };
+
+  const unremove = async (u: any) => {
+    if (!confirm(`Restore ${u.name}? They will become active again (without a company until re-assigned).`)) return;
+    try { await userApi.unremove(u.userId); toast('User restored.'); load(); }
+    catch(e: any) { toast(e.message, 'err'); }
+  };
+
+  const permanentDelete = async (u: any) => {
+    if (!confirm(`PERMANENTLY DELETE ${u.name}? This cannot be undone.`)) return;
+    try { await userApi.permanentDelete(u.userId); toast('User permanently deleted.'); load(); }
     catch(e: any) { toast(e.message, 'err'); }
   };
 
@@ -265,6 +281,18 @@ export default function UsersPage() {
                             <button onClick={() => remove(u)}
                               className="text-xs text-red-400 hover:text-red-600 font-medium transition-colors px-2 py-1 rounded hover:bg-red-50">
                               Remove
+                            </button>
+                          )}
+                          {!u.isActive && isSuperAdmin && (
+                            <button onClick={() => unremove(u)}
+                              className="text-xs text-emerald-500 hover:text-emerald-700 font-semibold transition-colors px-2 py-1 rounded hover:bg-emerald-50">
+                              Restore
+                            </button>
+                          )}
+                          {!u.isActive && isSuperAdmin && (
+                            <button onClick={() => permanentDelete(u)}
+                              className="text-xs text-red-500 hover:text-red-700 font-bold transition-colors px-2 py-1 rounded hover:bg-red-50">
+                              Delete
                             </button>
                           )}
                         </div>
