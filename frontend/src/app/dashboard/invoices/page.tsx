@@ -65,17 +65,34 @@ function PdfModal({ inv, cid, onClose }: { inv: any; cid: string; onClose: () =>
         a.click();
         URL.revokeObjectURL(a.href);
       } else {
-        window.open(viewUrl, '_blank');
+        // Server returned HTML fallback — open as blob so no auth header needed
+        const blobUrl = URL.createObjectURL(new Blob([await blob.text()], { type: 'text/html' }));
+        window.open(blobUrl, '_blank');
       }
-    } catch { window.open(viewUrl, '_blank'); }
+    } catch {
+      // Network error — fetch HTML view with auth and open as blob
+      try {
+        const r = await fetch(viewUrl, { headers: { Authorization: `Bearer ${tok()}` } });
+        const html = await r.text();
+        window.open(URL.createObjectURL(new Blob([html], { type: 'text/html' })), '_blank');
+      } catch { /* silent */ }
+    }
     finally { setLoading(false); }
   };
 
-  const print = () => {
+  const print = async () => {
     if (iframeSrc) {
       const w = window.open('', '_blank');
       if (w) { w.document.write(`<iframe src="${iframeSrc}" style="width:100%;height:100%;border:none"></iframe>`); w.print(); }
-    } else { window.open(viewUrl, '_blank'); }
+    } else {
+      try {
+        const r = await fetch(viewUrl, { headers: { Authorization: `Bearer ${tok()}` } });
+        const html = await r.text();
+        const blobUrl = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+        const w = window.open(blobUrl, '_blank');
+        if (w) w.onload = () => w.print();
+      } catch { /* silent */ }
+    }
   };
 
   return (
