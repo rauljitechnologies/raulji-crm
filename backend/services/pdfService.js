@@ -116,7 +116,6 @@ function buildHtml(data, type) {
       const hsnRows = hsnEntries.map(e => `
         <tr style="border-bottom:1px solid #f1f5f9">
           <td style="padding:8px 12px;font-size:12px;color:#1e293b;font-family:monospace;font-weight:600">${e.hsn || '&#8212;'}</td>
-          <td style="padding:8px 12px;font-size:12px;color:#475569;max-width:160px">${e.desc}</td>
           <td style="padding:8px 12px;font-size:12px;color:#1e293b;text-align:right">${inr(e.taxable)}</td>
           <td style="padding:8px 12px;font-size:12px;color:#475569;text-align:center">${e.rate}%</td>
           <td style="padding:8px 12px;font-size:12px;color:#475569;text-align:center">${e.rate / 2}%</td>
@@ -132,7 +131,6 @@ function buildHtml(data, type) {
             <thead>
               <tr style="background:#f1f8fd">
                 <th style="padding:8px 12px;text-align:left;font-size:10px;font-weight:700;color:#1f293f;white-space:nowrap">HSN/SAC</th>
-                <th style="padding:8px 12px;text-align:left;font-size:10px;font-weight:700;color:#1f293f">Description</th>
                 <th style="padding:8px 12px;text-align:right;font-size:10px;font-weight:700;color:#1f293f;white-space:nowrap">Taxable Value</th>
                 <th style="padding:8px 12px;text-align:center;font-size:10px;font-weight:700;color:#1f293f;white-space:nowrap">GST Rate</th>
                 <th style="padding:8px 12px;text-align:center;font-size:10px;font-weight:700;color:#3199d4;white-space:nowrap">CGST %</th>
@@ -145,7 +143,7 @@ function buildHtml(data, type) {
             <tbody>${hsnRows}</tbody>
             <tfoot>
               <tr style="background:#e8f4fb;border-top:2px solid #3199d4">
-                <td colspan="2" style="padding:8px 12px;font-size:12px;font-weight:700;color:#1f293f">Total</td>
+                <td style="padding:8px 12px;font-size:12px;font-weight:700;color:#1f293f">Total</td>
                 <td style="padding:8px 12px;font-size:12px;font-weight:700;color:#0f172a;text-align:right">${inr(totalTaxable)}</td>
                 <td style="padding:8px 12px"></td>
                 <td style="padding:8px 12px"></td>
@@ -161,7 +159,6 @@ function buildHtml(data, type) {
       const hsnRows = hsnEntries.map(e => `
         <tr style="border-bottom:1px solid #f1f5f9">
           <td style="padding:8px 12px;font-size:12px;color:#1e293b;font-family:monospace;font-weight:600">${e.hsn || '&#8212;'}</td>
-          <td style="padding:8px 12px;font-size:12px;color:#475569;max-width:200px">${e.desc}</td>
           <td style="padding:8px 12px;font-size:12px;color:#1e293b;text-align:right">${inr(e.taxable)}</td>
           <td style="padding:8px 12px;font-size:12px;color:#475569;text-align:center">${e.rate}%</td>
           <td style="padding:8px 12px;font-size:12px;font-weight:700;color:#0f172a;text-align:right">${inr(e.tax)}</td>
@@ -173,7 +170,6 @@ function buildHtml(data, type) {
             <thead>
               <tr style="background:#f1f8fd">
                 <th style="padding:8px 12px;text-align:left;font-size:10px;font-weight:700;color:#1f293f;white-space:nowrap">HSN/SAC</th>
-                <th style="padding:8px 12px;text-align:left;font-size:10px;font-weight:700;color:#1f293f">Description</th>
                 <th style="padding:8px 12px;text-align:right;font-size:10px;font-weight:700;color:#1f293f;white-space:nowrap">Taxable Value</th>
                 <th style="padding:8px 12px;text-align:center;font-size:10px;font-weight:700;color:#3199d4;white-space:nowrap">IGST Rate</th>
                 <th style="padding:8px 12px;text-align:right;font-size:10px;font-weight:700;color:#3199d4;white-space:nowrap">IGST Amount</th>
@@ -182,7 +178,7 @@ function buildHtml(data, type) {
             <tbody>${hsnRows}</tbody>
             <tfoot>
               <tr style="background:#e8f4fb;border-top:2px solid #3199d4">
-                <td colspan="2" style="padding:8px 12px;font-size:12px;font-weight:700;color:#1f293f">Total</td>
+                <td style="padding:8px 12px;font-size:12px;font-weight:700;color:#1f293f">Total</td>
                 <td style="padding:8px 12px;font-size:12px;font-weight:700;color:#0f172a;text-align:right">${inr(totalTaxable)}</td>
                 <td style="padding:8px 12px"></td>
                 <td style="padding:8px 12px;font-size:12px;font-weight:800;color:#3199d4;text-align:right">${inr(totalTax)}</td>
