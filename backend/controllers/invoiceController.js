@@ -33,8 +33,14 @@ exports.getInvoices = async (req, res) => {
   try {
     const { companyId } = req.params;
     const { page = 1, limit = 100, status, search, clientName } = req.query;
+
+    // SUPER_ADMIN and ADMIN see all invoices; other roles see only their own
+    const isAdmin = req.user?.role === 'SUPER_ADMIN' || req.user?.role === 'ADMIN';
+    const userFilter = isAdmin ? {} : { createdByUserId: req.user?.userId };
+
     const where = {
       companyId,
+      ...userFilter,
       ...(status && { status }),
       ...(clientName
         ? { clientName: { equals: clientName, mode: 'insensitive' } }
@@ -104,11 +110,28 @@ exports.createInvoice = async (req, res) => {
         grandTotal:     totals.grandTotal,
         paymentTerms,
         bankDetails:    bankDetails   || null,
-        notes:          notes         || null,
-        status:         'DRAFT'
+        notes:            notes         || null,
+        status:           'DRAFT',
+        createdByUserId:  req.user?.userId || null,
       }
     });
     return res.status(201).json({ success: true, data: inv });
+  } catch (err) { return res.status(500).json({ success: false, error: { message: err.message } }); }
+};
+
+// ── GET NEXT NUMBER (preview for admin) ──────────────────────
+exports.getNextNumber = async (req, res) => {
+  try {
+    const { companyId } = req.params;
+    const next = await nextInvNum(companyId);
+    // Get last 3 invoice numbers for reference
+    const recent = await prisma.invoice.findMany({
+      where: { companyId },
+      orderBy: { createdAt: 'desc' },
+      take: 3,
+      select: { invoiceNumber: true, createdAt: true },
+    });
+    return res.json({ success: true, data: { nextNumber: next, recent } });
   } catch (err) { return res.status(500).json({ success: false, error: { message: err.message } }); }
 };
 
@@ -129,6 +152,11 @@ exports.updateInvoice = async (req, res) => {
     if (b.notes         !== undefined) updateData.notes         = b.notes;
     if (b.status        !== undefined) updateData.status        = b.status;
     if (b.bankDetails   !== undefined) updateData.bankDetails   = b.bankDetails;
+    // invoiceNumber can only be changed by SUPER_ADMIN
+    if (b.invoiceNumber !== undefined && req.user?.role === 'SUPER_ADMIN') {
+      const trimmed = b.invoiceNumber.trim();
+      if (trimmed) updateData.invoiceNumber = trimmed;
+    }
     if (b.items && b.items.length) {
       const totals = calcTotals(b.items);
       updateData.items         = totals.items;

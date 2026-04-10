@@ -134,6 +134,12 @@ export default function LeadDetailPage() {
                   <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${SERVICE_COLOR[lead.service]||'bg-slate-100 text-slate-600'}`}>{lead.service}</span>
                 </div>
               )}
+              {lead.message && (
+                <div className="mt-3">
+                  <div className="text-slate-400 text-[10px] uppercase tracking-wider mb-1">Message</div>
+                  <div className="text-xs text-slate-600 bg-slate-50 rounded-lg px-3 py-2">{lead.message}</div>
+                </div>
+              )}
               {lead.notes && (
                 <div className="mt-3">
                   <div className="text-slate-400 text-[10px] uppercase tracking-wider mb-1">Notes</div>

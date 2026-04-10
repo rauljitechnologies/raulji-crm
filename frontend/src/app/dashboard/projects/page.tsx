@@ -130,7 +130,7 @@ export default function ProjectsPage() {
       const u = JSON.parse(localStorage.getItem('user') || '{}');
       setUserId(u?.userId || '');
     } catch {}
-    companyApi.list({ limit: '50' })
+    companyApi.mine()
       .then((d: any) => {
         const cos = d.companies || [];
         setCompanies(cos);

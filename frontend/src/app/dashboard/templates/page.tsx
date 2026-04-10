@@ -31,7 +31,7 @@ export default function TemplatesPage() {
   const { toast, ToastContainer } = useToast();
 
   const loadCos = async () => {
-    try { const d = await companyApi.list({ limit:'20' }); const cos = d.companies||[]; setCompanies(cos); if (cos[0]) setCompanyId(cos[0].companyId); } catch {}
+    try { const d = await companyApi.mine(); const cos = d.companies||[]; setCompanies(cos); if (cos[0]) setCompanyId(cos[0].companyId); } catch {}
   };
   useEffect(() => { loadCos(); }, []);
 

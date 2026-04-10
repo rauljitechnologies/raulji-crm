@@ -12,7 +12,7 @@ export default function SettingsPage() {
   const { toast, ToastContainer } = useToast();
 
   const [profile, setProfile] = useState({
-    name:'', logo:'', phone:'', email:'', website:'', gst:'',
+    name:'', logo:'', phone:'', email:'', website:'', gst:'', udyamNumber:'',
     address: { line1:'', city:'', state:'', pincode:'', country:'India' }
   });
   const [bank, setBank] = useState({
@@ -28,7 +28,7 @@ export default function SettingsPage() {
   });
 
   const loadCos = async () => {
-    try { const d=await companyApi.list({limit:'20'}); const cos=d.companies||[]; setCompanies(cos); if(cos[0]) setCid(cos[0].companyId); } catch {}
+    try { const d=await companyApi.mine(); const cos=d.companies||[]; setCompanies(cos); if(cos[0]) setCid(cos[0].companyId); } catch {}
   };
   useEffect(() => { loadCos(); }, []);
 
@@ -40,7 +40,7 @@ export default function SettingsPage() {
       const a    = d.address || {};
       const bd   = d.bankDetails || {};
       const s    = d.settings || {};
-      setProfile({ name:d.name||'', logo:d.logo||'', phone:d.phone||'', email:d.email||'', website:d.website||'', gst:d.gst||'', address:{line1:a.line1||'',city:a.city||'',state:a.state||'',pincode:a.pincode||'',country:a.country||'India'} });
+      setProfile({ name:d.name||'', logo:d.logo||'', phone:d.phone||'', email:d.email||'', website:d.website||'', gst:d.gst||'', udyamNumber:s.udyamNumber||'', address:{line1:a.line1||'',city:a.city||'',state:a.state||'',pincode:a.pincode||'',country:a.country||'India'} });
       setBank({ bankName:bd.bankName||'', accountNumber:bd.accountNumber||'', ifsc:bd.ifsc||'', accountName:bd.accountName||'', upiId:bd.upiId||'', paymentTerms:bd.paymentTerms||'Net 30' });
       setGeneral({ currency:s.currency||'INR', timezone:s.timezone||'Asia/Kolkata', gstRate:String(s.gstRate||18), invoicePrefix:s.invoicePrefix||'INV', quotationPrefix:s.quotationPrefix||'QT' });
       setIntegrations({
@@ -58,7 +58,7 @@ export default function SettingsPage() {
     setSaving(true);
     try {
       await companyApi.update(cid, { name: profile.name });
-      await companyApi.updateSettings(cid, { phone:profile.phone, email:profile.email, website:profile.website, gst:profile.gst, logo:profile.logo, address:profile.address });
+      await companyApi.updateSettings(cid, { phone:profile.phone, email:profile.email, website:profile.website, gst:profile.gst, logo:profile.logo, address:profile.address, udyamNumber:profile.udyamNumber });
       setCoData((d:any) => ({ ...d, logo: profile.logo, name: profile.name }));
       toast('Company profile saved!');
     } catch(e:any){ toast(e.message,'err'); } finally { setSaving(false); }
@@ -171,6 +171,10 @@ export default function SettingsPage() {
                     <Input label="Phone"          value={profile.phone}   onChange={e=>setProfile(p=>({...p,phone:e.target.value}))}   placeholder="+91 98765 43210" />
                     <Input label="Email"          value={profile.email}   onChange={e=>setProfile(p=>({...p,email:e.target.value}))}   placeholder="billing@raulji.com" />
                     <Input label="Website"        value={profile.website} onChange={e=>setProfile(p=>({...p,website:e.target.value}))} placeholder="https://rauljitechnologies.com" className="col-span-2" />
+                    <div className="col-span-2">
+                      <Input label="Udyam Registration Number (if applicable)" value={profile.udyamNumber} onChange={e=>setProfile(p=>({...p,udyamNumber:e.target.value.toUpperCase()}))} placeholder="UDYAM-GJ-00-0000000" />
+                      <div className="text-xs text-slate-400 mt-1">MSME / Udyam Aadhar registration number — printed on invoices when filled.</div>
+                    </div>
                   </div>
                 </div>
                 <div>
@@ -202,7 +206,10 @@ export default function SettingsPage() {
               </div>
               <div className="bg-blue-50 border border-blue-100 rounded-xl p-3.5 mb-4 flex items-start gap-2.5">
                 <span className="text-blue-500 text-base mt-0.5 flex-shrink-0">ℹ</span>
-                <div className="text-xs text-blue-700 leading-relaxed">These bank details appear at the bottom of every invoice PDF so clients can pay directly. They also auto-fill the bank details section when you create a new invoice.</div>
+                <div className="text-xs text-blue-700 leading-relaxed">These bank details appear at the bottom of every invoice PDF so clients can pay directly. They also auto-fill the bank details section when you create a new invoice.
+                  {profile.udyamNumber && <span className="block mt-1 text-green-700 font-semibold">Udyam: {profile.udyamNumber} — will print on invoices.</span>}
+                  {!profile.udyamNumber && <span className="block mt-1 text-slate-500">To add your Udyam Registration number, go to <strong>Company Profile</strong> tab.</span>}
+                </div>
               </div>
               <div className="flex flex-col gap-3">
                 <div className="grid grid-cols-2 gap-3">

@@ -3,13 +3,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { authApi } from '@/lib/api';
 
-const DEMO = [
-  { label: 'Super Admin',   email: 'admin@raulji.com' },
-  { label: 'Company Admin', email: 'ariya@raulji.com' },
-  { label: 'Sales Manager', email: 'priya@raulji.com' },
-  { label: 'Sales Rep',     email: 'kiran@raulji.com' },
-];
-
 export default function LoginPage() {
   const router = useRouter();
   const [form, setForm]       = useState({ email: '', password: '' });
@@ -72,19 +65,6 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Demo accounts */}
-          <div className="mt-6 pt-5 border-t border-slate-100">
-            <p className="text-xs text-slate-400 text-center font-medium uppercase tracking-wider mb-3">Demo accounts — password: Admin@123</p>
-            <div className="grid grid-cols-2 gap-1.5">
-              {DEMO.map(d => (
-                <button key={d.email} onClick={() => setForm({ email: d.email, password: 'Admin@123' })}
-                  className="flex flex-col items-start px-3 py-2 bg-slate-50 hover:bg-indigo-50 rounded-lg text-left transition-colors border border-transparent hover:border-indigo-200">
-                  <span className="text-xs font-semibold text-slate-700">{d.label}</span>
-                  <span className="text-xs text-slate-400 truncate w-full">{d.email}</span>
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
 
         <p className="text-center text-indigo-400 text-xs mt-6">© {new Date().getFullYear()} Raulji Technologies</p>

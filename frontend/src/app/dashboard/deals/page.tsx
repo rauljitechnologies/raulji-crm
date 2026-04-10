@@ -11,7 +11,7 @@ export default function DealsPage() {
   const [loading,   setLoading]   = useState(false);
   const { toast, ToastContainer } = useToast();
 
-  const loadCos = async () => { try { const d=await companyApi.list({limit:'20'}); const cos=d.companies||[]; setCompanies(cos); if(cos[0]) setCompanyId(cos[0].companyId); } catch {} };
+  const loadCos = async () => { try { const d=await companyApi.mine(); const cos=d.companies||[]; setCompanies(cos); if(cos[0]) setCompanyId(cos[0].companyId); } catch {} };
   useEffect(() => { loadCos(); }, []);
 
   const load = async () => { if(!companyId) return; setLoading(true); try { const d=await dealApi.list(companyId,{limit:'50'}); setDeals(d.deals||[]); setPipeline(d.pipeline||[]); } catch(e:any){toast(e.message,'err');} finally{setLoading(false);} };

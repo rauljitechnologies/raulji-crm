@@ -7,12 +7,23 @@ const VALID_ROLES = ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'SALES_REP', 'VIEWER'];
 
 exports.getUsers = async (req, res) => {
   try {
+    const { companyId } = req.params;
+    // Include users whose primary companyId matches OR who are in the UserCompany junction
     const users = await prisma.user.findMany({
-      where: { companyId: req.params.companyId, isActive: true },
+      where: {
+        isActive: true,
+        OR: [
+          { companyId },
+          { companies: { some: { companyId } } }
+        ]
+      },
       select: { userId: true, name: true, email: true, phone: true, role: true, permissions: true, avatar: true, isVerified: true, lastLogin: true, createdAt: true },
       orderBy: { createdAt: 'asc' }
     });
-    return res.json({ success: true, data: { users } });
+    // Deduplicate by userId (a user may match both conditions)
+    const seen = new Set();
+    const unique = users.filter(u => { if (seen.has(u.userId)) return false; seen.add(u.userId); return true; });
+    return res.json({ success: true, data: { users: unique } });
   } catch { return res.status(500).json({ success: false, error: { message: 'Failed to fetch users.' } }); }
 };
 

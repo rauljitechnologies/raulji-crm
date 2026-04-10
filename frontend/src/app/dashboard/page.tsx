@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { companyApi, leadApi, analyticsApi } from '@/lib/api';
-import { Topbar, Card, Badge, ScoreBar, Btn } from '@/components/ui';
+import { Topbar, Badge, ScoreBar, Btn } from '@/components/ui';
 
 // ── Mini Sparkline ────────────────────────────────────────────
 function Sparkline({ color = '#3199d4', bars = [30,45,35,60,48,72,55,80,65,88,72,95] }: { color?: string; bars?: number[] }) {
@@ -51,14 +51,14 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 }
 
 // ── Source/Funnel Bar Row ─────────────────────────────────────
-function BarRow({ label, pct, color, extra }: { label: string; pct: number; color: string; extra?: string }) {
+function BarRow({ label, pct, color }: { label: string; pct: number; color: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
       <span style={{ width: 80, fontSize: 12, color: '#64748b', flexShrink: 0 }}>{label}</span>
       <div style={{ flex: 1, height: 6, background: '#f0f5fa', borderRadius: 9999, overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 9999, transition: 'width 0.6s ease' }} />
       </div>
-      <span style={{ width: 34, textAlign: 'right', fontSize: 12, fontWeight: 700, color: '#192b3f', flexShrink: 0 }}>{extra || `${pct}%`}</span>
+      <span style={{ width: 34, textAlign: 'right', fontSize: 12, fontWeight: 700, color: '#192b3f', flexShrink: 0 }}>{pct}%</span>
     </div>
   );
 }
@@ -68,50 +68,131 @@ function Dot({ color }: { color: string }) {
   return <span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: color, flexShrink: 0 }} />;
 }
 
+const LEAD_SOURCES = [
+  { label: 'Facebook',  pct: 38, color: '#3b82f6' },
+  { label: 'Google',    pct: 26, color: '#22c55e' },
+  { label: 'WhatsApp',  pct: 18, color: '#25d366' },
+  { label: 'Referral',  pct: 11, color: '#f97316' },
+  { label: 'Organic',   pct:  7, color: '#8b5cf6' },
+];
+
+// ─────────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const router = useRouter();
-  const [companies, setCompanies] = useState<any[]>([]);
-  const [leads,     setLeads]     = useState<any[]>([]);
-  const [summary,   setSummary]   = useState<any>({});
-  const [loading,   setLoading]   = useState(true);
+  const [companies,    setCompanies]    = useState<any[]>([]);
+  const [selectedCid,  setSelectedCid]  = useState<string>('ALL');
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [leads,        setLeads]        = useState<any[]>([]);
+  const [summary,      setSummary]      = useState<any>({});
+  // per-company summaries for "All Companies" view
+  const [coSummaries,  setCoSummaries]  = useState<Record<string,any>>({});
+  const [loading,      setLoading]      = useState(true);
+  const [loadingData,  setLoadingData]  = useState(false);
 
+  // ── initial load ──────────────────────────────────────────
   useEffect(() => {
     (async () => {
       try {
-        const coData = await companyApi.list({ limit: '10' });
-        const cos = coData.companies || [];
-        setCompanies(cos);
-        if (cos[0]) {
-          const [lData, aData] = await Promise.all([
-            leadApi.list(cos[0].companyId, { limit: '8', sortBy: 'createdAt', sortOrder: 'desc' }),
-            analyticsApi.overview(cos[0].companyId),
-          ]);
-          setLeads(lData.leads || []);
-          setSummary(aData.summary || {});
+        const u = JSON.parse(localStorage.getItem('user') || '{}');
+        const isAdmin = u?.role === 'SUPER_ADMIN';
+        setIsSuperAdmin(isAdmin);
+
+        let coList: any[] = [];
+        if (isAdmin) {
+          const all = await companyApi.list({ limit: '200' });
+          coList = all.companies || all || [];
+        } else {
+          const mine = await companyApi.mine();
+          coList = mine.companies || [];
+        }
+        setCompanies(coList);
+
+        if (coList.length === 0) return;
+
+        // SUPER_ADMIN defaults to ALL; others default to their first company
+        if (isAdmin) {
+          setSelectedCid('ALL');
+          await loadAllCompanies(coList);
+        } else {
+          const firstCid = coList[0]?.companyId || '';
+          setSelectedCid(firstCid);
+          if (firstCid) await loadCompanyData(firstCid);
         }
       } catch (e) { console.error(e); }
       finally { setLoading(false); }
     })();
   }, []);
 
+  // ── load single company ───────────────────────────────────
+  async function loadCompanyData(cid: string) {
+    setLoadingData(true);
+    try {
+      const [lData, aData] = await Promise.all([
+        leadApi.list(cid, { limit: '8', sortBy: 'createdAt', sortOrder: 'desc' }),
+        analyticsApi.overview(cid),
+      ]);
+      setLeads(lData.leads || []);
+      setSummary(aData.summary || {});
+    } catch (e) { console.error(e); }
+    finally { setLoadingData(false); }
+  }
+
+  // ── load ALL companies (aggregate) ───────────────────────
+  async function loadAllCompanies(coList: any[]) {
+    setLoadingData(true);
+    try {
+      const results = await Promise.all(
+        coList.map(co =>
+          Promise.all([
+            leadApi.list(co.companyId, { limit: '50', sortBy: 'createdAt', sortOrder: 'desc' }).catch(() => ({ leads: [] })),
+            analyticsApi.overview(co.companyId).catch(() => ({ summary: {} })),
+          ]).then(([lData, aData]) => ({ companyId: co.companyId, name: co.name, leads: lData.leads || [], summary: aData.summary || {} }))
+        )
+      );
+
+      // Aggregate KPIs
+      const agg = results.reduce((acc, r) => ({
+        totalLeads:     (acc.totalLeads     || 0) + (r.summary.totalLeads     || 0),
+        wonDeals:       (acc.wonDeals       || 0) + (r.summary.wonDeals       || 0),
+        totalRevenue:   (acc.totalRevenue   || 0) + (r.summary.totalRevenue   || 0),
+        conversionRate: 0, // calculated below
+      }), {} as any);
+
+      const totalLeads = agg.totalLeads || 0;
+      const wonDeals   = agg.wonDeals   || 0;
+      agg.conversionRate = totalLeads > 0 ? Math.round((wonDeals / totalLeads) * 100) : 0;
+      setSummary(agg);
+
+      // Merge & sort leads by createdAt desc, keep top 8
+      const allLeads = results.flatMap(r => r.leads.map((l: any) => ({ ...l, _companyName: r.name })));
+      allLeads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      setLeads(allLeads.slice(0, 8));
+
+      // Store per-company summaries for the company list panel
+      const byCompany: Record<string, any> = {};
+      results.forEach(r => { byCompany[r.companyId] = r.summary; });
+      setCoSummaries(byCompany);
+    } catch (e) { console.error(e); }
+    finally { setLoadingData(false); }
+  }
+
+  // ── selector change ───────────────────────────────────────
+  const handleCompanyChange = async (cid: string) => {
+    setSelectedCid(cid);
+    if (cid === 'ALL') {
+      await loadAllCompanies(companies);
+    } else {
+      await loadCompanyData(cid);
+    }
+  };
+
   const fmt  = (n: number) => n?.toLocaleString('en-IN') || '0';
   const fmtL = (n: number) => n >= 100000 ? `₹${(n/100000).toFixed(1)}L` : `₹${fmt(n)}`;
 
-  if (loading) return (
-    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12 }}>
-      <div style={{ width: 40, height: 40, borderRadius: '50%', border: '3px solid #e2eaf2', borderTopColor: '#3199d4', animation: 'spin 0.8s linear infinite' }} />
-      <p style={{ fontSize: 13, color: '#7a9baf' }}>Loading dashboard…</p>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-    </div>
-  );
-
-  const LEAD_SOURCES = [
-    { label: 'Facebook',  pct: 38, color: '#3b82f6' },
-    { label: 'Google',    pct: 26, color: '#22c55e' },
-    { label: 'WhatsApp',  pct: 18, color: '#25d366' },
-    { label: 'Referral',  pct: 11, color: '#f97316' },
-    { label: 'Organic',   pct:  7, color: '#8b5cf6' },
-  ];
+  const showSelector   = isSuperAdmin || companies.length > 1;
+  const isAll          = selectedCid === 'ALL';
+  const selectedCompany = companies.find(c => c.companyId === selectedCid);
+  const subtitleLabel  = isAll ? `All Companies (${companies.length})` : (selectedCompany?.name || '');
 
   const FUNNEL = [
     { label: 'New Lead',    pct: 100, color: '#3199d4',  count: summary.totalLeads || 0 },
@@ -121,14 +202,38 @@ export default function DashboardPage() {
     { label: 'Won',         pct:  19, color: '#10b981',  count: summary.wonDeals || 0 },
   ];
 
-  const today = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  if (loading) return (
+    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12 }}>
+      <div style={{ width: 40, height: 40, borderRadius: '50%', border: '3px solid #e2eaf2', borderTopColor: '#3199d4', animation: 'spin 0.8s linear infinite' }} />
+      <p style={{ fontSize: 13, color: '#7a9baf' }}>Loading dashboard…</p>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
 
   return (
     <>
       <Topbar
         title="Dashboard"
-        subtitle={today}
+        subtitle={subtitleLabel}
         actions={<>
+          {showSelector && (
+            <select
+              value={selectedCid}
+              onChange={e => handleCompanyChange(e.target.value)}
+              style={{
+                fontSize: 12.5, fontWeight: 600, color: '#192b3f',
+                background: '#f0f5fa', border: '1px solid #d4e3ef',
+                borderRadius: 8, padding: '5px 10px', cursor: 'pointer',
+                minWidth: 170, maxWidth: 260,
+              }}>
+              {isSuperAdmin && (
+                <option value="ALL">All Companies ({companies.length})</option>
+              )}
+              {companies.map((co: any) => (
+                <option key={co.companyId} value={co.companyId}>{co.name}</option>
+              ))}
+            </select>
+          )}
           <Btn variant="secondary" size="sm" onClick={() => router.push('/dashboard/leads')}>
             <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5"><path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd"/></svg>
             Add Lead
@@ -141,11 +246,51 @@ export default function DashboardPage() {
       />
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+
+        {/* Loading bar */}
+        {loadingData && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: '#e8f5fd', borderRadius: 8, fontSize: 12.5, color: '#1a72a3', fontWeight: 600 }}>
+            <div style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid #a8d8f0', borderTopColor: '#3199d4', animation: 'spin 0.7s linear infinite', flexShrink: 0 }} />
+            {isAll ? `Loading all ${companies.length} companies…` : `Loading ${selectedCompany?.name}…`}
+          </div>
+        )}
+
+        {/* ── "All Companies" summary pills ─────────────────── */}
+        {isAll && companies.length > 0 && (
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {companies.map((co: any) => {
+              const cs = coSummaries[co.companyId];
+              return (
+                <button key={co.companyId}
+                  onClick={() => handleCompanyChange(co.companyId)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 7,
+                    padding: '5px 10px', borderRadius: 8, cursor: 'pointer',
+                    background: '#ffffff', border: '1px solid #d4e3ef',
+                    fontSize: 12, fontWeight: 600, color: '#192b3f',
+                    transition: 'all 0.15s',
+                  }}
+                  className="hover:border-sky-400 hover:text-sky-700">
+                  <span style={{ width: 22, height: 22, borderRadius: 6, background: '#e8f5fd', color: '#1a72a3', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 800, flexShrink: 0 }}>
+                    {co.name.split(' ').map((n: string) => n[0]).join('').slice(0,2)}
+                  </span>
+                  {co.name}
+                  {cs && (
+                    <span style={{ fontSize: 10.5, color: '#7a9baf', fontWeight: 500 }}>
+                      · {cs.totalLeads || 0} leads
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {/* ── KPI Metrics ───────────────────────────────────── */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
           <MetricCard
-            label="Total Leads"
+            label={isAll ? 'Total Leads (All)' : 'Total Leads'}
             value={fmt(summary.totalLeads)}
             change="vs last month" up
             color="#3199d4"
@@ -153,7 +298,7 @@ export default function DashboardPage() {
             bars={[20,35,28,50,40,62,48,70,55,80,65,90]}
           />
           <MetricCard
-            label="Deals Won"
+            label={isAll ? 'Deals Won (All)' : 'Deals Won'}
             value={fmt(summary.wonDeals)}
             change="vs last month" up
             color="#10b981"
@@ -161,7 +306,7 @@ export default function DashboardPage() {
             bars={[15,25,20,40,30,55,42,65,50,75,60,85]}
           />
           <MetricCard
-            label="Revenue"
+            label={isAll ? 'Revenue (All)' : 'Revenue'}
             value={fmtL(summary.totalRevenue || 0)}
             change="vs last month" up
             color="#f97316"
@@ -212,7 +357,7 @@ export default function DashboardPage() {
             ))}
           </div>
 
-          {/* Companies */}
+          {/* Companies panel */}
           <div className="rounded-2xl p-5" style={{ background: '#ffffff', border: '1px solid #e2eaf2', boxShadow: '0 1px 4px rgba(25,43,63,0.06)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
               <SectionTitle>Companies</SectionTitle>
@@ -221,21 +366,38 @@ export default function DashboardPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {companies.length === 0 ? (
                 <div style={{ fontSize: 12, color: '#7a9baf', textAlign: 'center', padding: '16px 0' }}>No companies yet</div>
-              ) : companies.slice(0, 5).map((co: any) => (
-                <div key={co.companyId}
-                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 8px', borderRadius: 10, cursor: 'pointer', transition: 'background 0.15s' }}
-                  className="hover:bg-slate-50"
-                  onClick={() => router.push('/dashboard/companies')}>
-                  <div style={{ width: 30, height: 30, borderRadius: 8, background: '#e8f5fd', color: '#1a72a3', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>
-                    {co.name.split(' ').map((n: string) => n[0]).join('').slice(0,2)}
+              ) : companies.slice(0, 5).map((co: any) => {
+                const cs = coSummaries[co.companyId];
+                const isSelected = co.companyId === selectedCid;
+                return (
+                  <div key={co.companyId}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 10, padding: '6px 8px', borderRadius: 10,
+                      cursor: 'pointer', transition: 'background 0.15s',
+                      background: isSelected ? '#e8f5fd' : 'transparent',
+                      border: isSelected ? '1px solid #b8d9f0' : '1px solid transparent',
+                    }}
+                    className="hover:bg-slate-50"
+                    onClick={() => handleCompanyChange(co.companyId)}>
+                    <div style={{ width: 30, height: 30, borderRadius: 8, background: '#e8f5fd', color: '#1a72a3', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>
+                      {co.name.split(' ').map((n: string) => n[0]).join('').slice(0,2)}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 12.5, fontWeight: 600, color: '#192b3f', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{co.name}</div>
+                      <div style={{ fontSize: 11, color: '#7a9baf' }}>
+                        {cs ? `${cs.totalLeads || 0} leads · ₹${cs.totalRevenue ? ((cs.totalRevenue/100000).toFixed(1)+'L') : '0'}` : `${co._count?.leads || 0} leads`}
+                      </div>
+                    </div>
+                    <Badge status={co.plan?.toLowerCase()} label={co.plan} />
                   </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 12.5, fontWeight: 600, color: '#192b3f', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{co.name}</div>
-                    <div style={{ fontSize: 11, color: '#7a9baf' }}>{co._count?.leads || 0} leads</div>
-                  </div>
-                  <Badge status={co.plan?.toLowerCase()} label={co.plan} />
-                </div>
-              ))}
+                );
+              })}
+              {companies.length > 5 && (
+                <button onClick={() => router.push('/dashboard/companies')}
+                  style={{ fontSize: 11.5, color: '#3199d4', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', textAlign: 'left' }}>
+                  +{companies.length - 5} more companies →
+                </button>
+              )}
             </div>
           </div>
 
@@ -245,7 +407,9 @@ export default function DashboardPage() {
         <div className="rounded-2xl overflow-hidden" style={{ background: '#ffffff', border: '1px solid #e2eaf2', boxShadow: '0 1px 4px rgba(25,43,63,0.06)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', borderBottom: '1px solid #f0f5fa' }}>
             <div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#192b3f' }}>Recent Leads</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#192b3f' }}>
+                Recent Leads{isAll ? ' — All Companies' : (selectedCompany ? ` — ${selectedCompany.name}` : '')}
+              </div>
               <div style={{ fontSize: 11.5, color: '#7a9baf', marginTop: 2 }}>Latest {leads.length} entries</div>
             </div>
             <Btn variant="primary" size="sm" onClick={() => router.push('/dashboard/leads')}>View All →</Btn>
@@ -253,12 +417,14 @@ export default function DashboardPage() {
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
               <colgroup>
-                <col style={{ width: 180 }}/><col style={{ width: 110 }}/><col style={{ width: 110 }}/>
-                <col style={{ width: 120 }}/><col style={{ width: 70 }}/><col style={{ width: 90 }}/><col style={{ width: 100 }}/>
+                <col style={{ width: 180 }}/>
+                {isAll && <col style={{ width: 110 }}/>}
+                <col style={{ width: 110 }}/><col style={{ width: 110 }}/>
+                <col style={{ width: 110 }}/><col style={{ width: 70 }}/><col style={{ width: 90 }}/><col style={{ width: 100 }}/>
               </colgroup>
               <thead>
                 <tr style={{ background: '#f8fbfd', borderBottom: '1px solid #f0f5fa' }}>
-                  {['Name', 'Source', 'Status', 'Phone', 'Score', 'Assigned', 'Created'].map(h => (
+                  {['Name', ...(isAll ? ['Company'] : []), 'Source', 'Status', 'Phone', 'Score', 'Assigned', 'Created'].map(h => (
                     <th key={h} style={{ textAlign: 'left', padding: '10px 16px', fontSize: 11, fontWeight: 700, color: '#7a9baf', textTransform: 'uppercase', letterSpacing: '0.07em' }}>{h}</th>
                   ))}
                 </tr>
@@ -266,7 +432,7 @@ export default function DashboardPage() {
               <tbody>
                 {leads.length === 0 ? (
                   <tr>
-                    <td colSpan={7} style={{ textAlign: 'center', padding: '40px 0', fontSize: 13, color: '#7a9baf' }}>
+                    <td colSpan={isAll ? 8 : 7} style={{ textAlign: 'center', padding: '40px 0', fontSize: 13, color: '#7a9baf' }}>
                       No leads yet.{' '}
                       <button onClick={() => router.push('/dashboard/leads')} style={{ color: '#3199d4', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', fontSize: 13 }}>
                         Add your first lead →
@@ -286,6 +452,13 @@ export default function DashboardPage() {
                         <span style={{ fontSize: 13, fontWeight: 600, color: '#192b3f', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l.name}</span>
                       </div>
                     </td>
+                    {isAll && (
+                      <td style={{ padding: '11px 16px' }}>
+                        <span style={{ fontSize: 11, fontWeight: 600, background: '#e8f5fd', color: '#1a72a3', padding: '2px 7px', borderRadius: 6, whiteSpace: 'nowrap' }}>
+                          {l._companyName || '—'}
+                        </span>
+                      </td>
+                    )}
                     <td style={{ padding: '11px 16px', fontSize: 12.5, color: '#64748b', textTransform: 'capitalize' }}>{l.source?.toLowerCase().replace(/_/g,' ')}</td>
                     <td style={{ padding: '11px 16px' }}><Badge status={l.status?.toLowerCase()} label={l.status} /></td>
                     <td style={{ padding: '11px 16px', fontSize: 12.5, color: '#64748b' }}>{l.phone}</td>

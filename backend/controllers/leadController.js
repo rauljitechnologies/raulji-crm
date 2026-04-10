@@ -48,7 +48,7 @@ exports.getLead = async (req, res) => {
 exports.createLead = async (req, res) => {
   try {
     const { companyId } = req.params;
-    const { name, email, phone, city, state, country, service, source='MANUAL', status='NEW', priority='MEDIUM', dealValue, notes, assignedToId } = req.body;
+    const { name, email, phone, city, state, country, service, source='MANUAL', status='NEW', priority='MEDIUM', dealValue, notes, message, assignedToId } = req.body;
     if (!name || !phone) return res.status(400).json({ success:false, error:{ message:'Name and phone required.' } });
     if (email) {
       const exists = await prisma.lead.findFirst({ where: { companyId, email, isDeleted: false } });
@@ -66,11 +66,13 @@ exports.createLead = async (req, res) => {
         source, status, priority,
         dealValue:    dealValue    ? +dealValue : null,
         notes:        notes        || null,
+        message:      message      || null,
         assignedToId: assignedToId || null,
         lastActivityAt: new Date()
       }
     });
-    await prisma.activity.create({ data:{ companyId, leadId:lead.leadId, userId:req.user?.userId, type:'NOTE', description:`Lead created via ${source.toLowerCase()}` } });
+    const activityDesc = message ? `Lead created via ${source.toLowerCase()} — Message: ${message}` : `Lead created via ${source.toLowerCase()}`;
+    await prisma.activity.create({ data:{ companyId, leadId:lead.leadId, userId:req.user?.userId, type:'NOTE', description:activityDesc } });
     // Fire automation triggers (async, non-blocking)
     fireTrigger('LEAD_CREATED', lead, companyId).catch(() => {});
     return res.status(201).json({ success:true, data:lead });
@@ -83,7 +85,7 @@ exports.updateLead = async (req, res) => {
     const old = await prisma.lead.findFirst({ where: { leadId, companyId } });
     if (!old) return res.status(404).json({ success:false, error:{ message:'Lead not found.' } });
 
-    const { name, email, phone, city, state, country, service, source, status, priority, dealValue, notes, assignedToId, nextFollowUpAt } = req.body;
+    const { name, email, phone, city, state, country, service, source, status, priority, dealValue, notes, message, assignedToId, nextFollowUpAt } = req.body;
 
     const data = { lastActivityAt: new Date() };
     if (name           !== undefined) data.name           = name;
@@ -98,6 +100,7 @@ exports.updateLead = async (req, res) => {
     if (priority       !== undefined) data.priority       = priority;
     if (dealValue      !== undefined) data.dealValue      = +dealValue;
     if (notes          !== undefined) data.notes          = notes;
+    if (message        !== undefined) data.message        = message;
     if (assignedToId   !== undefined) data.assignedToId   = assignedToId;
     if (nextFollowUpAt !== undefined) data.nextFollowUpAt = new Date(nextFollowUpAt);
 
@@ -172,7 +175,7 @@ exports.exportLeads = async (req, res) => {
 exports.createPublicLead = async (req, res) => {
   try {
     const companyId = req.companyId;
-    const { name, email, phone, city, state, country, service, source='WEBSITE_FORM', notes, customFields } = req.body;
+    const { name, email, phone, city, state, country, service, source='WEBSITE_FORM', notes, message, customFields } = req.body;
     if (!name || !phone) return res.status(400).json({ success:false, error:{ message:'Name and phone required.' } });
     const lead = await prisma.lead.create({
       data: {
@@ -185,10 +188,14 @@ exports.createPublicLead = async (req, res) => {
         service:      service      || null,
         source,
         notes:        notes        || null,
+        message:      message      || null,
         customFields: customFields || null,
         lastActivityAt: new Date()
       }
     });
+    if (message) {
+      await prisma.activity.create({ data:{ companyId, leadId:lead.leadId, type:'NOTE', description:`Message: ${message}` } });
+    }
     fireTrigger('LEAD_CREATED', lead, companyId).catch(() => {});
     return res.status(201).json({ success:true, data:{ leadId:lead.leadId, message:'Lead received.' } });
   } catch (err) { return res.status(500).json({ success:false, error:{ message:err.message } }); }

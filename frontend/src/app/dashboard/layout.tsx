@@ -20,7 +20,7 @@ function GALoader() {
   useEffect(() => {
     (async () => {
       try {
-        const coData = await companyApi.list({ limit: '1' });
+        const coData = await companyApi.mine();
         const co = coData.companies?.[0];
         if (!co) return;
         const s = await companyApi.getSettings(co.companyId);

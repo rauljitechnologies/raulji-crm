@@ -221,6 +221,10 @@ function DeleteModal({ client, cid, onClose, onDone }: any) {
 
 // ─── MAIN PAGE ────────────────────────────────────────────────
 export default function ClientsPage() {
+  const [isSuperAdmin] = useState<boolean>(() => {
+    try { return JSON.parse(localStorage.getItem('user') || '{}').role === 'SUPER_ADMIN'; } catch { return false; }
+  });
+
   const [companies,  setCompanies]  = useState<any[]>([]);
   const [cid,        setCid]        = useState('');
   const [clients,    setClients]    = useState<any[]>([]);
@@ -233,12 +237,13 @@ export default function ClientsPage() {
 
   const loadCos = useCallback(async () => {
     try {
-      const d = await companyApi.list({ limit: '20' });
+      const d = await companyApi.mine();
       const cos = d.companies || [];
       setCompanies(cos);
-      if (cos[0]) setCid(cos[0].companyId);
+      if (isSuperAdmin && cos.length > 1) setCid('ALL');
+      else if (cos[0]) setCid(cos[0].companyId);
     } catch {}
-  }, []);
+  }, [isSuperAdmin]);
 
   useEffect(() => { loadCos(); }, []);
 
@@ -246,11 +251,23 @@ export default function ClientsPage() {
     if (!cid) return;
     setLoading(true);
     try {
-      const d = await clientApi.list(cid, { limit: '200' });
-      setClients(d.clients || []);
+      if (cid === 'ALL') {
+        const results = await Promise.all(
+          companies.map((co: any) =>
+            clientApi.list(co.companyId, { limit: '500' })
+              .then((d: any) => (d.clients || []).map((cl: any) => ({ ...cl, _companyName: co.name, _companyId: co.companyId })))
+              .catch(() => [])
+          )
+        );
+        const merged = (results as any[][]).flat().sort((a: any, b: any) => a.name.localeCompare(b.name));
+        setClients(merged);
+      } else {
+        const d = await clientApi.list(cid, { limit: '500' });
+        setClients(d.clients || []);
+      }
     } catch (e: any) { toast(e.message, 'err'); }
     finally { setLoading(false); }
-  }, [cid]);
+  }, [cid, companies]);
 
   useEffect(() => { loadClients(); }, [cid]);
 
@@ -264,20 +281,39 @@ export default function ClientsPage() {
     <>
       <Topbar
         title="Clients"
-        subtitle={`${clients.length} client${clients.length !== 1 ? 's' : ''}`}
+        subtitle={`${clients.length} client${clients.length !== 1 ? 's' : ''}${cid === 'ALL' ? ' across all companies' : ''}`}
         actions={<>
           <select value={cid} onChange={e => setCid(e.target.value)}
             className="border border-slate-200 rounded-lg px-3 py-1.5 text-xs outline-none bg-white">
+            {isSuperAdmin && companies.length > 1 && <option value="ALL">All Companies</option>}
             {companies.map((c: any) => <option key={c.companyId} value={c.companyId}>{c.name}</option>)}
           </select>
-          <Btn variant="primary" size="sm" onClick={() => setAddOpen(true)}
-            style={{ background: 'linear-gradient(135deg,#3199d4,#1f293f)', border: 'none' }}>
-            + Add Client
-          </Btn>
+          {cid !== 'ALL' && (
+            <Btn variant="primary" size="sm" onClick={() => setAddOpen(true)}
+              style={{ background: 'linear-gradient(135deg,#3199d4,#1f293f)', border: 'none' }}>
+              + Add Client
+            </Btn>
+          )}
         </>}
       />
 
       <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-4">
+
+        {/* All-companies summary — SUPER_ADMIN only */}
+        {cid === 'ALL' && !loading && clients.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {companies.map((co: any) => {
+              const count = clients.filter((cl: any) => cl._companyId === co.companyId).length;
+              return (
+                <button key={co.companyId} onClick={() => setCid(co.companyId)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-sky-100 bg-sky-50 text-sky-700 text-xs font-semibold hover:bg-sky-100 transition-colors">
+                  🏢 {co.name}
+                  <span className="bg-sky-200 text-sky-800 rounded-full px-1.5 py-0.5 text-[10px] font-bold">{count}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {/* Search */}
         <div className="flex gap-3 items-center">
@@ -315,7 +351,16 @@ export default function ClientsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {filtered.map((c: any) => (
-              <div key={c.clientId} className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all p-5 flex flex-col gap-3">
+              <div key={`${c._companyId || cid}-${c.clientId}`} className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all p-5 flex flex-col gap-3">
+                {/* Company badge — ALL mode only */}
+                {cid === 'ALL' && c._companyName && (
+                  <div className="flex items-center gap-1.5 -mb-1">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-sky-700 border border-sky-100 truncate max-w-full">
+                      🏢 {c._companyName}
+                    </span>
+                  </div>
+                )}
+
                 {/* Top */}
                 <div className="flex items-start gap-3">
                   <div className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
@@ -376,8 +421,8 @@ export default function ClientsPage() {
       </div>
 
       {addOpen    && <ClientModal cid={cid} onClose={() => setAddOpen(false)} onDone={loadClients} />}
-      {editClient && <ClientModal client={editClient} cid={cid} onClose={() => setEditClient(null)} onDone={loadClients} />}
-      {delClient  && <DeleteModal client={delClient} cid={cid} onClose={() => setDelClient(null)} onDone={loadClients} />}
+      {editClient && <ClientModal client={editClient} cid={editClient._companyId || cid} onClose={() => setEditClient(null)} onDone={loadClients} />}
+      {delClient  && <DeleteModal client={delClient} cid={delClient._companyId || cid} onClose={() => setDelClient(null)} onDone={loadClients} />}
 
       <ToastContainer />
     </>

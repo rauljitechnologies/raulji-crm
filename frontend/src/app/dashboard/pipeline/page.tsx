@@ -22,7 +22,7 @@ export default function PipelinePage() {
   const [form, setForm] = useState({ name:'',value:'',stage:'NEW_LEAD',probability:'0' });
   const { toast, ToastContainer } = useToast();
 
-  const loadCos = async () => { try { const d = await companyApi.list({limit:'20'}); const cos = d.companies||[]; setCompanies(cos); if (cos[0]) setCompanyId(cos[0].companyId); } catch {} };
+  const loadCos = async () => { try { const d = await companyApi.mine(); const cos = d.companies||[]; setCompanies(cos); if (cos[0]) setCompanyId(cos[0].companyId); } catch {} };
   useEffect(() => { loadCos(); }, []);
 
   const loadDeals = async () => { if (!companyId) return; try { const d = await dealApi.list(companyId, {limit:'100'}); setDeals(d.deals||[]); } catch {} };

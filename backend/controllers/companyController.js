@@ -11,14 +11,14 @@ exports.myCompanies = async (req, res) => {
     if (req.user?.role === 'SUPER_ADMIN') {
       const companies = await prisma.company.findMany({
         where: { deletedAt: null },
-        select: { companyId: true, name: true, logo: true, plan: true, status: true },
+        select: { companyId: true, name: true, logo: true, plan: true, status: true, apiKey: true },
         orderBy: { name: 'asc' }
       });
       return res.json({ success: true, data: { companies } });
     }
     const memberships = await prisma.userCompany.findMany({
       where: { userId: req.user.userId },
-      include: { company: { select: { companyId: true, name: true, logo: true, plan: true, status: true } } },
+      include: { company: { select: { companyId: true, name: true, logo: true, plan: true, status: true, apiKey: true } } },
       orderBy: { createdAt: 'asc' }
     });
     // Also include primary companyId if not in junction table
@@ -27,7 +27,7 @@ exports.myCompanies = async (req, res) => {
     if (req.user.companyId && !inJunction.has(req.user.companyId)) {
       const primary = await prisma.company.findUnique({
         where: { companyId: req.user.companyId },
-        select: { companyId: true, name: true, logo: true, plan: true, status: true }
+        select: { companyId: true, name: true, logo: true, plan: true, status: true, apiKey: true }
       });
       if (primary) companies.unshift(primary);
     }

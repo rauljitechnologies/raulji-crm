@@ -10,19 +10,19 @@ const BLANK    = () => ({ description: '', hsnCode: '', quantity: 1, unitPrice: 
 const dateStr  = (d?: string) => d ? new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
 
 // ─── Status badge ────────────────────────────────────────────
-const S: Record<string, { bg: string; text: string; dot: string }> = {
-  DRAFT:     { bg: 'bg-slate-100',   text: 'text-slate-500',   dot: 'bg-slate-400'   },
-  SENT:      { bg: 'bg-blue-50',     text: 'text-blue-700',    dot: 'bg-blue-500'    },
-  PAID:      { bg: 'bg-emerald-100', text: 'text-emerald-700', dot: 'bg-emerald-500' },
-  PARTIAL:   { bg: 'bg-amber-50',    text: 'text-amber-700',   dot: 'bg-amber-500'   },
-  OVERDUE:   { bg: 'bg-red-50',      text: 'text-red-600',     dot: 'bg-red-500'     },
-  CANCELLED: { bg: 'bg-slate-100',   text: 'text-slate-400',   dot: 'bg-slate-300'   },
+const STATUS_STYLE: Record<string, { style: React.CSSProperties; icon: string }> = {
+  DRAFT:     { style: { background: '#64748b', color: '#fff' },                          icon: '✏️' },
+  SENT:      { style: { background: '#2563eb', color: '#fff' },                          icon: '📤' },
+  PAID:      { style: { background: '#16a34a', color: '#fff' },                          icon: '✅' },
+  PARTIAL:   { style: { background: '#d97706', color: '#fff' },                          icon: '⏳' },
+  OVERDUE:   { style: { background: '#dc2626', color: '#fff' },                          icon: '🔴' },
+  CANCELLED: { style: { background: '#94a3b8', color: '#fff', textDecoration: 'line-through' }, icon: '🚫' },
 };
 function Badge({ s }: { s: string }) {
-  const c = S[s] || S.DRAFT;
+  const c = STATUS_STYLE[s] || STATUS_STYLE.DRAFT;
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${c.bg} ${c.text}`}>
-      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${c.dot}`} />
+    <span style={{ ...c.style, display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 10px', borderRadius: 999, fontSize: 11, fontWeight: 700, letterSpacing: '0.03em', whiteSpace: 'nowrap' }}>
+      <span style={{ fontSize: 10 }}>{c.icon}</span>
       {s.charAt(0) + s.slice(1).toLowerCase()}
     </span>
   );
@@ -159,8 +159,11 @@ const TDS_RATES = [
 // ─── Mark Paid modal ─────────────────────────────────────────
 function PaidModal({ inv, cid, onClose, onDone }: any) {
   const today = new Date().toISOString().split('T')[0];
-  const [tdsEnabled, setTdsEnabled] = useState(false);
-  const [tdsRate,    setTdsRate]    = useState(10);
+  const [tdsEnabled,      setTdsEnabled]      = useState(false);
+  const [tdsMode,         setTdsMode]         = useState<'percent' | 'amount'>('percent');
+  const [tdsRate,         setTdsRate]         = useState(10);
+  const [tdsCustomRate,   setTdsCustomRate]   = useState('');   // free-typed % in percent mode
+  const [tdsCustomAmount, setTdsCustomAmount] = useState('');
   const [f, setF] = useState({
     paidAmount:    String(inv.grandTotal || ''),
     paymentMethod: 'bank_transfer',
@@ -171,26 +174,63 @@ function PaidModal({ inv, cid, onClose, onDone }: any) {
   const [saving, setSaving] = useState(false);
   const { toast, ToastContainer } = useToast();
 
-  // Auto-calc paidAmount when TDS toggled or rate changes
-  const tdsAmt   = tdsEnabled ? Math.round(inv.grandTotal * tdsRate / 100) : 0;
-  const autoAmt  = inv.grandTotal - tdsAmt;
+  // TDS amount: percent mode = calc from rate, amount mode = custom entry
+  const tdsAmt = tdsEnabled
+    ? tdsMode === 'percent'
+      ? Math.round(inv.grandTotal * tdsRate / 100)
+      : Math.max(0, Math.round(+(tdsCustomAmount || 0)))
+    : 0;
+  const autoAmt = inv.grandTotal - tdsAmt;
 
-  // When TDS is toggled on, auto-fill paidAmount
+  const syncPaidAmount = (tds: number) => {
+    setF(p => ({ ...p, paidAmount: String(Math.max(0, inv.grandTotal - tds)) }));
+  };
+
   const handleTdsToggle = (on: boolean) => {
     setTdsEnabled(on);
     if (on) {
-      const amt = inv.grandTotal - Math.round(inv.grandTotal * tdsRate / 100);
-      setF(p => ({ ...p, paidAmount: String(amt) }));
+      const tds = tdsMode === 'percent'
+        ? Math.round(inv.grandTotal * tdsRate / 100)
+        : Math.max(0, +(tdsCustomAmount || 0));
+      syncPaidAmount(tds);
     } else {
+      setTdsCustomRate('');
       setF(p => ({ ...p, paidAmount: String(inv.grandTotal) }));
     }
   };
 
   const handleTdsRateChange = (rate: number) => {
     setTdsRate(rate);
+    setTdsCustomRate('');          // clear custom input when preset is clicked
+    if (tdsEnabled && tdsMode === 'percent') {
+      syncPaidAmount(Math.round(inv.grandTotal * rate / 100));
+    }
+  };
+
+  const handleCustomRateChange = (val: string) => {
+    setTdsCustomRate(val);
+    const parsed = parseFloat(val);
+    if (!isNaN(parsed) && parsed >= 0 && parsed <= 100) {
+      setTdsRate(parsed);
+      if (tdsEnabled) syncPaidAmount(Math.round(inv.grandTotal * parsed / 100));
+    }
+  };
+
+  const handleModeSwitch = (mode: 'percent' | 'amount') => {
+    setTdsMode(mode);
     if (tdsEnabled) {
-      const amt = inv.grandTotal - Math.round(inv.grandTotal * rate / 100);
-      setF(p => ({ ...p, paidAmount: String(amt) }));
+      if (mode === 'percent') {
+        syncPaidAmount(Math.round(inv.grandTotal * tdsRate / 100));
+      } else {
+        syncPaidAmount(Math.max(0, +(tdsCustomAmount || 0)));
+      }
+    }
+  };
+
+  const handleCustomAmountChange = (val: string) => {
+    setTdsCustomAmount(val);
+    if (tdsEnabled && tdsMode === 'amount') {
+      syncPaidAmount(Math.max(0, +(val || 0)));
     }
   };
 
@@ -198,13 +238,20 @@ function PaidModal({ inv, cid, onClose, onDone }: any) {
   const bal     = Math.max(0, inv.grandTotal - cleared);
   const isFull  = cleared >= inv.grandTotal;
 
+  // Effective TDS rate for display/saving
+  const effectiveTdsRate = tdsMode === 'percent'
+    ? tdsRate
+    : inv.grandTotal > 0 ? +((tdsAmt / inv.grandTotal) * 100).toFixed(2) : 0;
+
   const save = async () => {
     if (!f.paidAmount || +f.paidAmount < 0) return toast('Enter valid amount', 'err');
     if (!f.paymentDate) return toast('Payment received date is required', 'err');
+    if (tdsEnabled && tdsMode === 'amount' && (!tdsCustomAmount || +tdsCustomAmount <= 0))
+      return toast('Enter a valid TDS amount', 'err');
     setSaving(true);
     try {
       const payload: any = { ...f, paidAmount: +f.paidAmount };
-      if (tdsEnabled && tdsAmt > 0) { payload.tdsAmount = tdsAmt; payload.tdsRate = tdsRate; }
+      if (tdsEnabled && tdsAmt > 0) { payload.tdsAmount = tdsAmt; payload.tdsRate = effectiveTdsRate; }
       await invoiceApi.markPaid(cid, inv.invoiceId, payload);
       const msg = isFull ? 'Invoice marked as Paid!' : 'Invoice marked as Partial!';
       toast(tdsEnabled ? `${msg} TDS ₹${tdsAmt.toLocaleString('en-IN')} recorded.` : msg);
@@ -251,33 +298,99 @@ function PaidModal({ inv, cid, onClose, onDone }: any) {
               )}
             </button>
 
-            {/* TDS rate selector */}
+            {/* TDS details */}
             {tdsEnabled && (
               <div className="bg-indigo-50 border border-indigo-100 rounded-xl px-4 py-3 flex flex-col gap-2.5">
-                <div className="text-xs font-semibold text-indigo-700 mb-0.5">Select TDS Rate</div>
-                <div className="grid grid-cols-3 gap-1.5">
-                  {TDS_RATES.map(r => (
-                    <button key={r.value} type="button"
-                      onClick={() => handleTdsRateChange(r.value)}
-                      className={`px-2 py-1.5 rounded-lg text-xs font-bold border transition-all ${
-                        tdsRate === r.value
-                          ? 'bg-indigo-600 text-white border-indigo-600'
-                          : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-300'
-                      }`}>
-                      {r.value}%
+
+                {/* Mode toggle: % vs Amount */}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-indigo-700 mr-1">Enter TDS as:</span>
+                  <div className="flex bg-white border border-indigo-200 rounded-lg p-0.5 gap-0.5">
+                    <button type="button" onClick={() => handleModeSwitch('percent')}
+                      className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${tdsMode === 'percent' ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:text-indigo-600'}`}>
+                      % Rate
                     </button>
-                  ))}
+                    <button type="button" onClick={() => handleModeSwitch('amount')}
+                      className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${tdsMode === 'amount' ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:text-indigo-600'}`}>
+                      ₹ Amount
+                    </button>
+                  </div>
                 </div>
-                <div className="text-xs text-indigo-500 mt-0.5">
-                  {TDS_RATES.find(r => r.value === tdsRate)?.label}
-                </div>
+
+                {/* Percent mode: preset rate buttons + custom % input */}
+                {tdsMode === 'percent' && (
+                  <>
+                    <div className="grid grid-cols-3 gap-1.5">
+                      {TDS_RATES.map(r => {
+                        const isActive = tdsCustomRate === '' && tdsRate === r.value;
+                        return (
+                          <button key={r.value} type="button"
+                            onClick={() => handleTdsRateChange(r.value)}
+                            className={`px-2 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                              isActive
+                                ? 'bg-indigo-600 text-white border-indigo-600'
+                                : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-300'
+                            }`}>
+                            {r.value}%
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {/* Custom % input */}
+                    <div className="flex items-center gap-2">
+                      <label className="text-xs text-indigo-600 font-semibold whitespace-nowrap">Custom %</label>
+                      <div className="relative flex-1">
+                        <input
+                          type="number" min="0" max="100" step="0.01"
+                          value={tdsCustomRate}
+                          onChange={e => handleCustomRateChange(e.target.value)}
+                          placeholder={tdsCustomRate === '' ? String(tdsRate) : ''}
+                          className={`w-full px-3 py-1.5 pr-8 border rounded-lg text-xs font-bold focus:ring-2 focus:ring-indigo-100 outline-none transition-all ${
+                            tdsCustomRate !== '' ? 'border-indigo-400 bg-indigo-50' : 'border-slate-200 bg-white'
+                          }`}
+                        />
+                        <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-bold">%</span>
+                      </div>
+                      {tdsCustomRate !== '' && (
+                        <button type="button" onClick={() => { setTdsCustomRate(''); handleTdsRateChange(tdsRate); }}
+                          className="text-slate-400 hover:text-slate-600 text-sm font-bold flex-shrink-0">✕</button>
+                      )}
+                    </div>
+                    <div className="text-xs text-indigo-500">
+                      {tdsCustomRate !== ''
+                        ? `Custom rate: ${tdsCustomRate}% → TDS = ${inr(tdsAmt)}`
+                        : TDS_RATES.find(r => r.value === tdsRate)?.label}
+                    </div>
+                  </>
+                )}
+
+                {/* Amount mode: direct input */}
+                {tdsMode === 'amount' && (
+                  <div>
+                    <label className="text-xs font-semibold text-indigo-700 mb-1 block">TDS Amount (₹)</label>
+                    <input
+                      type="number" min="0" max={inv.grandTotal}
+                      value={tdsCustomAmount}
+                      onChange={e => handleCustomAmountChange(e.target.value)}
+                      placeholder="Enter exact TDS amount deducted"
+                      className="w-full px-3 py-2 border border-indigo-200 bg-white rounded-lg text-sm font-bold focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all"
+                    />
+                    {tdsAmt > 0 && inv.grandTotal > 0 && (
+                      <div className="text-xs text-indigo-400 mt-1">
+                        = {((tdsAmt / inv.grandTotal) * 100).toFixed(2)}% of invoice total
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* TDS breakdown */}
                 <div className="bg-white rounded-lg px-3 py-2 border border-indigo-100 text-xs">
                   <div className="flex justify-between py-0.5 text-slate-600">
                     <span>Invoice Total</span><span className="font-semibold">{inr(inv.grandTotal)}</span>
                   </div>
                   <div className="flex justify-between py-0.5 text-red-500">
-                    <span>TDS @ {tdsRate}%</span><span className="font-semibold">- {inr(tdsAmt)}</span>
+                    <span>TDS {tdsMode === 'percent' ? `@ ${tdsRate}%` : '(entered)'}</span>
+                    <span className="font-semibold">- {inr(tdsAmt)}</span>
                   </div>
                   <div className="flex justify-between py-1 border-t border-slate-100 mt-0.5 text-emerald-700 font-bold">
                     <span>Amount to Receive</span><span>{inr(autoAmt)}</span>
@@ -345,8 +458,10 @@ function PaidModal({ inv, cid, onClose, onDone }: any) {
 }
 
 // ─── Edit Invoice modal ───────────────────────────────────────
-function EditModal({ inv, cid, onClose, onDone }: any) {
+function EditModal({ inv, cid, onClose, onDone, isSuperAdmin }: any) {
   const [f, setF] = useState({
+    invoiceNumber: inv.invoiceNumber || '',
+    status:        inv.status        || 'DRAFT',
     clientName:   inv.clientName   || '',
     clientEmail:  inv.clientEmail  || '',
     clientPhone:  inv.clientPhone  || '',
@@ -360,7 +475,14 @@ function EditModal({ inv, cid, onClose, onDone }: any) {
     items:        inv.items        || [BLANK()],
   });
   const [saving, setSaving] = useState(false);
+  const [numPreview, setNumPreview] = useState<{ nextNumber: string; recent: { invoiceNumber: string; createdAt: string }[] } | null>(null);
   const { toast, ToastContainer } = useToast();
+
+  // Load next-number preview for SUPER_ADMIN
+  useEffect(() => {
+    if (!isSuperAdmin) return;
+    invoiceApi.nextNumber(cid).then((d: any) => setNumPreview(d.data)).catch(() => {});
+  }, [isSuperAdmin, cid]);
 
   const updItem = (i: number, k: string, v: any) => setF(p => ({ ...p, items: p.items.map((it: any, idx: number) => idx === i ? { ...it, [k]: v } : it) }));
   const subtotal   = f.items.reduce((a: number, it: any) => a + it.quantity * it.unitPrice - (it.discount || 0), 0);
@@ -379,9 +501,16 @@ function EditModal({ inv, cid, onClose, onDone }: any) {
 
   const save = async () => {
     if (!f.clientName) return toast('Client name required', 'err');
+    if (isSuperAdmin && !f.invoiceNumber.trim()) return toast('Invoice number required', 'err');
     setSaving(true);
     try {
-      await invoiceApi.update(cid, inv.invoiceId, f);
+      const payload: any = { ...f };
+      if (!isSuperAdmin) {
+        // Non-admins cannot change invoiceNumber or status directly via this modal
+        delete payload.invoiceNumber;
+        delete payload.status;
+      }
+      await invoiceApi.update(cid, inv.invoiceId, payload);
       toast('Invoice updated!');
       setTimeout(() => { onDone(); onClose(); }, 700);
     } catch (e: any) { toast(e.message, 'err'); }
@@ -397,6 +526,46 @@ function EditModal({ inv, cid, onClose, onDone }: any) {
             <button onClick={onClose} className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 text-sm">✕</button>
           </div>
           <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-4">
+            {/* Admin controls — SUPER_ADMIN only */}
+            {isSuperAdmin && (
+              <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 flex flex-col gap-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs font-bold text-amber-700 uppercase tracking-wider">Admin Controls</span>
+                  <span className="text-[10px] bg-amber-200 text-amber-800 px-2 py-0.5 rounded-full font-semibold">Super Admin Only</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <Input label="Invoice Number" value={f.invoiceNumber} onChange={e => setF(p => ({ ...p, invoiceNumber: e.target.value }))} placeholder="INV/2024-0001" />
+                    {numPreview && (
+                      <div className="mt-1.5 flex flex-col gap-0.5">
+                        {numPreview.recent.length > 0 && (
+                          <div className="text-[11px] text-slate-500">
+                            <span className="font-semibold text-slate-600">Recent: </span>
+                            {numPreview.recent.map((r, i) => (
+                              <span key={i} className="font-mono text-slate-600">{r.invoiceNumber}{i < numPreview.recent.length - 1 ? ', ' : ''}</span>
+                            ))}
+                          </div>
+                        )}
+                        <div className="text-[11px] text-slate-500">
+                          <span className="font-semibold text-slate-600">Next auto: </span>
+                          <span className="font-mono text-indigo-600 cursor-pointer hover:underline" title="Click to use" onClick={() => setF(p => ({ ...p, invoiceNumber: numPreview.nextNumber }))}>{numPreview.nextNumber}</span>
+                          <span className="text-slate-400 ml-1">(click to use)</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <Sel label="Status" value={f.status} onChange={e => setF(p => ({ ...p, status: e.target.value }))}
+                    options={[
+                      { value: 'DRAFT',     label: 'Draft'     },
+                      { value: 'SENT',      label: 'Sent'      },
+                      { value: 'PAID',      label: 'Paid'      },
+                      { value: 'PARTIAL',   label: 'Partial'   },
+                      { value: 'OVERDUE',   label: 'Overdue'   },
+                      { value: 'CANCELLED', label: 'Cancelled' },
+                    ]} />
+                </div>
+              </div>
+            )}
             {/* Client */}
             <div>
               <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Client Details</div>
@@ -646,15 +815,16 @@ function DonutChart({ segs }: { segs: { label: string; value: number; color: str
 }
 
 // ─── Analytics View ───────────────────────────────────────────
-function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
+function AnalyticsView({ allInvoices, companies, cid }: { allInvoices: any[]; companies: any[]; cid: string }) {
   const [fyFilter, setFyFilter] = useState('ALL');
 
   const shortFmt = (n: number) => n >= 1e7 ? `₹${(n/1e7).toFixed(1)}Cr` : n >= 1e5 ? `₹${(n/1e5).toFixed(1)}L` : n >= 1e3 ? `₹${(n/1e3).toFixed(0)}K` : `₹${Math.round(n)}`;
   const fmtInr  = (n: number) => '₹' + (n||0).toLocaleString('en-IN', { minimumFractionDigits: 2 });
   const getFY   = (s: string) => { const d = new Date(s); const y = d.getFullYear(), m = d.getMonth(); return m >= 3 ? `FY ${y}-${String(y+1).slice(2)}` : `FY ${y-1}-${String(y).slice(2)}`; };
 
-  const activeInvs = allInvoices.filter(i => i.status !== 'CANCELLED');
-  const paidInvs   = allInvoices.filter(i => i.status === 'PAID');
+  const activeInvs    = allInvoices.filter(i => i.status !== 'CANCELLED');
+  const cancelledInvs = allInvoices.filter(i => i.status === 'CANCELLED');
+  const paidInvs      = activeInvs.filter(i => i.status === 'PAID');
 
   const totalRevenue  = activeInvs.reduce((a, i) => a + (i.grandTotal || 0), 0);
   const collected     = activeInvs.reduce((a, i) => a + (i.paidAmount || 0), 0);
@@ -717,6 +887,17 @@ function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
     { label: 'Draft',     value: SC.DRAFT     || 0, color: '#94a3b8' },
     { label: 'Cancelled', value: SC.CANCELLED || 0, color: '#e2e8f0' },
   ];
+
+  // Company-wise TDS (active invoices only)
+  const companyTdsMap: Record<string, { name: string; tdsAmount: number; tdsCount: number }> = {};
+  activeInvs.filter(i => (i.tdsAmount || 0) > 0).forEach(i => {
+    const key  = i._companyId || cid;
+    const name = i._companyName || companies.find((c: any) => c.companyId === key)?.name || 'Company';
+    if (!companyTdsMap[key]) companyTdsMap[key] = { name, tdsAmount: 0, tdsCount: 0 };
+    companyTdsMap[key].tdsAmount += i.tdsAmount || 0;
+    companyTdsMap[key].tdsCount  += 1;
+  });
+  const companyTdsRows = Object.values(companyTdsMap).sort((a, b) => b.tdsAmount - a.tdsAmount);
 
   // GST rate breakdown (filtered)
   const gstRateMap: Record<string, { taxable: number; tax: number }> = {};
@@ -797,7 +978,7 @@ function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
   @media print{body{padding:16px}@page{margin:1cm}}
 </style></head><body>
 <h1>Invoice Report</h1>
-<div class="sub">Generated ${new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'})} &nbsp;·&nbsp; ${allInvoices.length} invoices total${fyFilter !== 'ALL' ? ' &nbsp;·&nbsp; ' + fyFilter : ''}</div>
+<div class="sub">Generated ${new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'})} &nbsp;·&nbsp; ${activeInvs.length} active invoices${cancelledInvs.length > 0 ? ` (${cancelledInvs.length} cancelled excluded)` : ''}${fyFilter !== 'ALL' ? ' &nbsp;·&nbsp; ' + fyFilter : ''}</div>
 <div class="kpis">
   <div class="kpi"><div class="kpi-label">Total Revenue</div><div class="kpi-val" style="color:#3199d4">${fmtInr(totalRevenue)}</div></div>
   <div class="kpi"><div class="kpi-label">Cash Received</div><div class="kpi-val" style="color:#16a34a">${fmtInr(collected)}</div></div>
@@ -808,7 +989,7 @@ function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
   <thead><tr><th>Invoice #</th><th>Date</th><th>Client</th><th>Status</th><th style="text-align:right">Subtotal</th><th style="text-align:right">GST</th><th style="text-align:right">Grand Total</th><th style="text-align:right">Paid</th><th style="text-align:right">TDS</th><th style="text-align:right">Balance</th></tr></thead>
   <tbody>${tRows}</tbody>
   <tfoot><tr>
-    <td colspan="4">TOTAL (${allInvoices.length} invoices)</td>
+    <td colspan="4">TOTAL (${activeInvs.length} active invoices${cancelledInvs.length > 0 ? ` · ${cancelledInvs.length} cancelled excluded` : ''})</td>
     <td style="text-align:right">${fmtInr(totalSubtotal)}</td>
     <td style="text-align:right">${fmtInr(totalTax)}</td>
     <td style="text-align:right">${fmtInr(totalRevenue)}</td>
@@ -828,7 +1009,7 @@ function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <div className="text-lg font-bold text-slate-800">Invoice Analytics</div>
-          <div className="text-xs text-slate-400 mt-0.5">{allInvoices.length} total · {filteredInvs.length} in period · {paidInvs.length} paid</div>
+          <div className="text-xs text-slate-400 mt-0.5">{activeInvs.length} active · {filteredInvs.length} in period · {paidInvs.length} paid{cancelledInvs.length > 0 ? ` · ${cancelledInvs.length} cancelled (excluded from totals)` : ''}</div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <select value={fyFilter} onChange={e => setFyFilter(e.target.value)}
@@ -916,6 +1097,50 @@ function AnalyticsView({ allInvoices }: { allInvoices: any[] }) {
         </div>
         <MiniLineChart data={monthData} valueKey="grand" labelKey="label" color="#3199d4" height={160} />
       </Card>
+
+      {/* ── Company-wise TDS ── */}
+      {totalTds > 0 && (
+        <Card className="p-4">
+          <div className="font-semibold text-slate-800 text-sm mb-1">Company-wise TDS Summary</div>
+          <div className="text-[10px] text-slate-400 mb-4">TDS deducted by clients — cancelled invoices excluded</div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b border-slate-100">
+                  {['Company', 'Invoices with TDS', 'TDS Amount', '% of Total TDS'].map(h => (
+                    <th key={h} className="pb-2 text-left text-xs font-semibold text-slate-400">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {companyTdsRows.map((row, i) => (
+                  <tr key={i} className="border-b border-slate-50 last:border-none">
+                    <td className="py-2.5 font-semibold text-slate-700">{row.name}</td>
+                    <td className="py-2.5 text-slate-500">{row.tdsCount} invoice{row.tdsCount !== 1 ? 's' : ''}</td>
+                    <td className="py-2.5 text-purple-700 font-bold">{fmtInr(row.tdsAmount)}</td>
+                    <td className="py-2.5">
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 h-1.5 bg-slate-100 rounded-full max-w-24">
+                          <div className="h-1.5 bg-purple-400 rounded-full" style={{ width: `${totalTds > 0 ? (row.tdsAmount / totalTds) * 100 : 0}%` }} />
+                        </div>
+                        <span className="text-slate-500 whitespace-nowrap">{totalTds > 0 ? `${((row.tdsAmount / totalTds) * 100).toFixed(1)}%` : '—'}</span>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr className="bg-slate-50 border-t-2 border-slate-200">
+                  <td className="py-2.5 font-bold text-slate-700">Total</td>
+                  <td className="py-2.5 font-bold text-slate-800">{activeInvs.filter(i => (i.tdsAmount || 0) > 0).length} invoices</td>
+                  <td className="py-2.5 font-bold text-purple-700">{fmtInr(totalTds)}</td>
+                  <td className="py-2.5 font-bold text-slate-600">100%</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </Card>
+      )}
 
       {/* ── Client Chart + GST Breakdown ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1022,6 +1247,10 @@ function emptyForm() {
 
 // ─── MAIN PAGE ────────────────────────────────────────────────
 export default function InvoicesPage() {
+  const [isSuperAdmin] = useState<boolean>(() => {
+    try { return JSON.parse(localStorage.getItem('user') || '{}').role === 'SUPER_ADMIN'; } catch { return false; }
+  });
+
   const [companies,   setCompanies]   = useState<any[]>([]);
   const [cid,         setCid]         = useState('');
   const [coProfile,   setCoProfile]   = useState<any>({});
@@ -1030,6 +1259,7 @@ export default function InvoicesPage() {
   const [loadingMore,   setLoadingMore]   = useState(false);
   const [hasMore,       setHasMore]       = useState(false);
   const [tab,           setTab]           = useState('ALL');
+  const [showCancelled, setShowCancelled] = useState(false);
   const [previewInv,    setPreviewInv]    = useState<any>(null);
   const [paidInv,       setPaidInv]       = useState<any>(null);
   const [editInv,       setEditInv]       = useState<any>(null);
@@ -1041,8 +1271,10 @@ export default function InvoicesPage() {
   const [clientSearch,  setClientSearch]  = useState('');
   const [showClientDrop,setShowClientDrop]= useState(false);
   const [viewMode,      setViewMode]      = useState<'invoices' | 'analytics'>('invoices');
+  const [createCo,      setCreateCo]      = useState('');
   // client history
   const [clientFilter,  setClientFilter]  = useState<string | null>(null);
+  const [clientHistCid, setClientHistCid] = useState('');
   const [clientInvs,    setClientInvs]    = useState<any[]>([]);
   const [clientLoading, setClientLoading] = useState(false);
   const { toast, ToastContainer }         = useToast();
@@ -1052,13 +1284,14 @@ export default function InvoicesPage() {
   const loadingMoreRef = useRef(false);
   const PAGE_SIZE    = 15;
 
-  // Load companies
+  // Load companies (uses /companies/mine — works for all roles)
   const loadCos = useCallback(async () => {
     try {
-      const d   = await companyApi.list({ limit: '20' });
+      const d   = await companyApi.mine();
       const cos = d.companies || [];
       setCompanies(cos);
-      if (cos[0]) setCid(cos[0].companyId);
+      if (cos.length > 1) setCid('ALL');
+      else if (cos[0]) setCid(cos[0].companyId);
     } catch {}
   }, []);
   useEffect(() => { loadCos(); }, []);
@@ -1066,6 +1299,13 @@ export default function InvoicesPage() {
   // When company changes — load profile + invoices + clients
   useEffect(() => {
     if (!cid) return;
+    if (cid === 'ALL') {
+      // In all-companies mode — clear profile, load invoices from all companies
+      setCoProfile({});
+      setClients([]);
+      loadInvoices();
+      return;
+    }
     companyApi.getSettings(cid).then((d: any) => {
       setCoProfile(d);
       const bd = d.bankDetails || {};
@@ -1091,13 +1331,30 @@ export default function InvoicesPage() {
     setLoading(true);
     pageRef.current = 1;
     try {
-      const d = await invoiceApi.list(cid, { limit: String(PAGE_SIZE), page: '1' });
-      const fetched = d.invoices || [];
-      setAllInvoices(fetched);
-      const total = d.pagination?.total || fetched.length;
-      const more = total > PAGE_SIZE;
-      hasMoreRef.current = more;
-      setHasMore(more);
+      if (cid === 'ALL') {
+        // Fetch from all companies in parallel and merge
+        const results = await Promise.all(
+          companies.map((co: any) =>
+            invoiceApi.list(co.companyId, { limit: '500', page: '1' })
+              .then((d: any) => (d.invoices || []).map((inv: any) => ({ ...inv, _companyName: co.name, _companyId: co.companyId })))
+              .catch(() => [])
+          )
+        );
+        const merged = (results as any[][]).flat().sort((a: any, b: any) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        setAllInvoices(merged);
+        hasMoreRef.current = false;
+        setHasMore(false);
+      } else {
+        const d = await invoiceApi.list(cid, { limit: String(PAGE_SIZE), page: '1' });
+        const fetched = d.invoices || [];
+        setAllInvoices(fetched);
+        const total = d.pagination?.total || fetched.length;
+        const more = total > PAGE_SIZE;
+        hasMoreRef.current = more;
+        setHasMore(more);
+      }
     } catch (e: any) { toast(e.message, 'err'); }
     finally { setLoading(false); }
   };
@@ -1120,13 +1377,17 @@ export default function InvoicesPage() {
     finally { loadingMoreRef.current = false; setLoadingMore(false); }
   };
 
-  const openClientHistory = async (name: string) => {
+  const openClientHistory = async (name: string, invCompanyId?: string) => {
+    const targetCid = invCompanyId || (cid !== 'ALL' ? cid : '');
+    if (!targetCid) return;
     setClientFilter(name);
+    setClientHistCid(targetCid);
     setClientLoading(true);
     setClientInvs([]);
     try {
-      const d = await invoiceApi.list(cid, { limit: '200', page: '1', clientName: name });
-      setClientInvs(d.invoices || []);
+      const d = await invoiceApi.list(targetCid, { limit: '200', page: '1', clientName: name });
+      // Enrich with _companyId so modals work in ALL mode
+      setClientInvs((d.invoices || []).map((inv: any) => ({ ...inv, _companyId: targetCid })));
     } catch {}
     finally { setClientLoading(false); }
   };
@@ -1143,31 +1404,59 @@ export default function InvoicesPage() {
     return () => el.removeEventListener('scroll', onScroll);
   }, [viewMode, clientFilter, cid]);
 
-  // Tabs
+  // Tabs — cancelled always hidden unless toggled on
+  const visibleInvoices = showCancelled ? allInvoices : allInvoices.filter(i => i.status !== 'CANCELLED');
+  const cancelledCount  = allInvoices.filter(i => i.status === 'CANCELLED').length;
+
   const TABS = [
-    { key: 'ALL',       label: 'All',       fn: () => true },
-    { key: 'SENT',      label: 'Unpaid',    fn: (i: any) => i.status === 'SENT' },
-    { key: 'PAID',      label: 'Paid',      fn: (i: any) => i.status === 'PAID' },
-    { key: 'PARTIAL',   label: 'Partial',   fn: (i: any) => i.status === 'PARTIAL' },
-    { key: 'OVERDUE',   label: 'Overdue',   fn: (i: any) => i.status === 'OVERDUE' || (i.status === 'SENT' && new Date(i.dueDate) < new Date()) },
-    { key: 'DRAFT',     label: 'Draft',     fn: (i: any) => i.status === 'DRAFT' },
-    { key: 'CANCELLED', label: 'Cancelled', fn: (i: any) => i.status === 'CANCELLED' },
+    { key: 'ALL',     label: 'All',     fn: () => true },
+    { key: 'SENT',    label: 'Unpaid',  fn: (i: any) => i.status === 'SENT' },
+    { key: 'PAID',    label: 'Paid',    fn: (i: any) => i.status === 'PAID' },
+    { key: 'PARTIAL', label: 'Partial', fn: (i: any) => i.status === 'PARTIAL' },
+    { key: 'OVERDUE', label: 'Overdue', fn: (i: any) => i.status === 'OVERDUE' || (i.status === 'SENT' && new Date(i.dueDate) < new Date()) },
+    { key: 'DRAFT',   label: 'Draft',   fn: (i: any) => i.status === 'DRAFT' },
+    ...(showCancelled ? [{ key: 'CANCELLED', label: 'Cancelled', fn: (i: any) => i.status === 'CANCELLED' }] : []),
   ];
   const activeTab = TABS.find(t => t.key === tab) || TABS[0];
-  const invoices  = allInvoices.filter(activeTab.fn);
+  // if cancelled tab was active but now hidden, fall back to ALL
+  if (tab === 'CANCELLED' && !showCancelled) setTab('ALL');
+  const invoices  = visibleInvoices.filter(activeTab.fn);
 
-  // Totals breakdown (all non-cancelled invoices)
+  // Totals — exclude CANCELLED from all financial calculations
   const activeInvs    = allInvoices.filter(i => i.status !== 'CANCELLED');
-  const totalSubtotal = activeInvs.reduce((a, i) => a + (i.subtotal  || 0), 0);
-  const totalTax      = activeInvs.reduce((a, i) => a + (i.totalGst  || 0), 0);
-  const totalRevenue  = activeInvs.reduce((a, i) => a + (i.grandTotal|| 0), 0);
+  const totalSubtotal = activeInvs.reduce((a, i) => a + (i.subtotal   || 0), 0);
+  const totalTax      = activeInvs.reduce((a, i) => a + (i.totalGst   || 0), 0);
+  const totalRevenue  = activeInvs.reduce((a, i) => a + (i.grandTotal || 0), 0);
+  const totalTds      = activeInvs.reduce((a, i) => a + (i.tdsAmount  || 0), 0);
 
-  // Summary — exclude CANCELLED from all financial calculations
   const collected = activeInvs.reduce((a, i) => a + (i.paidAmount || 0), 0);
-  const pending   = activeInvs.filter(i => ['SENT','PARTIAL'].includes(i.status))
-    .reduce((a, i) => a + Math.max(0, (i.grandTotal || 0) - (i.paidAmount || 0)), 0);
-  const overdue   = activeInvs.filter(i => i.status === 'SENT' && new Date(i.dueDate) < new Date()).reduce((a, i) => a + (i.grandTotal || 0), 0);
-  const fmtL      = (n: number) => n >= 100000 ? `₹${(n / 100000).toFixed(1)}L` : inr(n);
+
+  // Pending = DRAFT full amount + SENT/PARTIAL remaining balance (after paid + TDS)
+  const pending = activeInvs
+    .filter(i => ['DRAFT', 'SENT', 'PARTIAL'].includes(i.status))
+    .reduce((a, i) => {
+      if (i.status === 'DRAFT') return a + (i.grandTotal || 0);
+      return a + Math.max(0, (i.grandTotal || 0) - (i.paidAmount || 0) - (i.tdsAmount || 0));
+    }, 0);
+
+  const overdue = activeInvs
+    .filter(i => i.status === 'SENT' && i.dueDate && new Date(i.dueDate) < new Date())
+    .reduce((a, i) => a + Math.max(0, (i.grandTotal || 0) - (i.paidAmount || 0) - (i.tdsAmount || 0)), 0);
+
+  const fmtL = (n: number) => n >= 100000 ? `₹${(n / 100000).toFixed(1)}L` : inr(n);
+
+  // TDS breakdown — company-wise and invoice-wise (active only)
+  const companyTdsMap: Record<string, { name: string; tdsAmount: number; count: number }> = {};
+  activeInvs.filter(i => (i.tdsAmount || 0) > 0).forEach(i => {
+    const key  = i._companyId || (cid !== 'ALL' ? cid : '');
+    const name = i._companyName || companies.find((c: any) => c.companyId === key)?.name || 'Company';
+    if (!companyTdsMap[key]) companyTdsMap[key] = { name, tdsAmount: 0, count: 0 };
+    companyTdsMap[key].tdsAmount += i.tdsAmount || 0;
+    companyTdsMap[key].count     += 1;
+  });
+  const companyTdsRows = Object.values(companyTdsMap).sort((a, b) => b.tdsAmount - a.tdsAmount);
+  const tdsInvoices    = activeInvs.filter(i => (i.tdsAmount || 0) > 0)
+    .sort((a, b) => (b.tdsAmount || 0) - (a.tdsAmount || 0));
 
   // Item helpers
   const updItem = (i: number, k: string, v: any) => setForm(f => ({ ...f, items: f.items.map((it: any, idx: number) => idx === i ? { ...it, [k]: v } : it) }));
@@ -1195,6 +1484,8 @@ export default function InvoicesPage() {
       paymentTerms: bd.paymentTerms || 'Net 30',
       bankDetails: { bankName: bd.bankName||'', accountNumber: bd.accountNumber||'', ifsc: bd.ifsc||'', accountName: bd.accountName||'', upiId: bd.upiId||'' }
     }));
+    // Set default billing company for the create modal
+    setCreateCo(cid !== 'ALL' ? cid : (companies[0]?.companyId || ''));
     setShowCreate(true);
   };
 
@@ -1216,10 +1507,12 @@ export default function InvoicesPage() {
   const create = async () => {
     if (!form.clientName)               return toast('Client name required', 'err');
     if (!form.items[0]?.description)    return toast('Add at least one item', 'err');
+    const targetCid = cid === 'ALL' ? createCo : cid;
+    if (!targetCid)                     return toast('Select a billing company', 'err');
     setSaving(true);
     try {
       const bd = form.bankDetails.bankName ? form.bankDetails : null;
-      await invoiceApi.create(cid, { ...form, bankDetails: bd });
+      await invoiceApi.create(targetCid, { ...form, bankDetails: bd });
       toast('Invoice created!');
       setShowCreate(false);
       loadInvoices();
@@ -1229,7 +1522,7 @@ export default function InvoicesPage() {
 
   return (
     <>
-      <Topbar title="Invoices" subtitle={`${allInvoices.length} invoices · ${fmtL(collected)} collected`}
+      <Topbar title="Invoices" subtitle={`${activeInvs.length} active invoices · ${fmtL(collected)} collected`}
         actions={<>
           <div className="flex bg-slate-100 p-0.5 rounded-lg gap-0.5">
             <button onClick={() => setViewMode('invoices')}
@@ -1243,6 +1536,7 @@ export default function InvoicesPage() {
           </div>
           <select value={cid} onChange={e => setCid(e.target.value)}
             className="border border-slate-200 rounded-lg px-3 py-1.5 text-xs outline-none focus:border-indigo-500 bg-white">
+            {companies.length > 1 && <option value="ALL">All Companies ({companies.length})</option>}
             {companies.map((c: any) => <option key={c.companyId} value={c.companyId}>{c.name}</option>)}
           </select>
           {viewMode === 'invoices' && <Btn variant="primary" size="sm" onClick={openCreate}>+ New Invoice</Btn>}
@@ -1250,24 +1544,26 @@ export default function InvoicesPage() {
       />
 
       {viewMode === 'analytics' ? (
-        <AnalyticsView allInvoices={allInvoices} />
+        <AnalyticsView allInvoices={allInvoices} companies={companies} cid={cid} />
       ) : (
         <div className="flex-1 min-h-0 overflow-y-auto" ref={scrollRef}>
         <div className="p-5 flex flex-col gap-4">
 
-          {/* Summary row 1 — status */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {/* Summary row 1 — status cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
             {[
-              { label: 'Collected',     value: fmtL(collected), color: 'text-emerald-600', border: 'border-emerald-200', icon: '₹' },
-              { label: 'Pending',       value: fmtL(pending),   color: 'text-blue-600',    border: 'border-blue-200',    icon: '⏳' },
-              { label: 'Overdue',       value: fmtL(overdue),   color: 'text-red-600',     border: 'border-red-200',     icon: '!' },
-              { label: 'Total Invoices',value: String(activeInvs.length),  color: 'text-slate-700', border: 'border-slate-200', icon: '#' },
+              { label: 'Collected',      value: fmtL(collected),            sub: `${activeInvs.filter(i=>i.status==='PAID').length} paid`,                                    color: 'text-emerald-600', border: 'border-emerald-200', icon: '₹'  },
+              { label: 'Pending',        value: fmtL(pending),              sub: `Draft + Sent + Partial`,                                                                    color: 'text-blue-600',    border: 'border-blue-200',    icon: '⏳' },
+              { label: 'Overdue',        value: fmtL(overdue),              sub: `${activeInvs.filter(i=>i.status==='SENT'&&i.dueDate&&new Date(i.dueDate)<new Date()).length} invoices`, color: 'text-red-600',     border: 'border-red-200',     icon: '!'  },
+              { label: 'TDS Deducted',   value: fmtL(totalTds),             sub: `${tdsInvoices.length} invoice${tdsInvoices.length!==1?'s':''}`,                             color: 'text-purple-600',  border: 'border-purple-200',  icon: 'T'  },
+              { label: 'Total Invoices', value: String(activeInvs.length),  sub: `excl. ${allInvoices.filter(i=>i.status==='CANCELLED').length} cancelled`,                   color: 'text-slate-700',   border: 'border-slate-200',   icon: '#'  },
             ].map((s, i) => (
               <div key={i} className={`bg-white border ${s.border} rounded-xl px-4 py-3 flex items-center gap-3`}>
                 <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-sm font-bold text-slate-500 flex-shrink-0">{s.icon}</div>
-                <div>
+                <div className="min-w-0">
                   <div className="text-xs text-slate-400 font-medium">{s.label}</div>
                   <div className={`text-lg font-bold ${s.color}`}>{s.value}</div>
+                  <div className="text-[10px] text-slate-400 mt-0.5 truncate">{s.sub}</div>
                 </div>
               </div>
             ))}
@@ -1284,35 +1580,150 @@ export default function InvoicesPage() {
               </div>
             </div>
             <div className="bg-white border border-indigo-100 rounded-xl px-5 py-4 flex flex-col gap-1">
-              <div className="text-xs text-indigo-400 font-semibold uppercase tracking-wider">Total GST Collected</div>
+              <div className="text-xs text-indigo-400 font-semibold uppercase tracking-wider">Total GST</div>
               <div className="text-2xl font-bold text-indigo-600">{fmtL(totalTax)}</div>
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-xs text-slate-400">Effective rate</span>
                 <span className="text-xs bg-indigo-50 text-indigo-500 px-1.5 py-0.5 rounded-full font-medium">{totalSubtotal > 0 ? ((totalTax / totalSubtotal) * 100).toFixed(1) : 0}%</span>
               </div>
             </div>
-            <div className="rounded-xl px-5 py-4 flex flex-col gap-1 text-white" style={{ background: 'linear-gradient(135deg,#3199d4,#1f293f)' }}>
+            <div className="rounded-xl px-5 py-4 flex flex-col gap-2 text-white" style={{ background: 'linear-gradient(135deg,#3199d4,#1f293f)' }}>
               <div className="text-xs font-semibold uppercase tracking-wider text-blue-200">Total Revenue</div>
               <div className="text-2xl font-bold">{fmtL(totalRevenue)}</div>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-xs text-blue-200">Grand Total incl. GST</span>
-                <span className="text-xs bg-white/20 text-white px-1.5 py-0.5 rounded-full font-medium">{fmtL(collected)} paid</span>
+              <div className="flex flex-col gap-1 mt-0.5 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-blue-200">Collected (Cash)</span>
+                  <span className="font-semibold text-emerald-300">{fmtL(collected)}</span>
+                </div>
+                {totalTds > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-blue-200">TDS Deducted</span>
+                    <span className="font-semibold text-purple-300">{fmtL(totalTds)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between border-t border-white/20 pt-1 mt-0.5">
+                  <span className="text-blue-200">Pending</span>
+                  <span className="font-semibold text-amber-300">{fmtL(pending)}</span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Tabs */}
-          <div className="flex gap-1 bg-slate-100 p-1 rounded-xl w-fit flex-wrap">
-            {TABS.map(t => {
-              const count = t.key === 'ALL' ? allInvoices.length : allInvoices.filter(t.fn).length;
-              return (
-                <button key={t.key} onClick={() => setTab(t.key)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${tab === t.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
-                  {t.label}
-                  {count > 0 && <span className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${tab === t.key ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-200 text-slate-500'}`}>{count}</span>}
-                </button>
-              );
-            })}
+          {/* TDS Section — company-wise + invoice-wise */}
+          {totalTds > 0 && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+              {/* Company-wise TDS */}
+              <Card className="p-0">
+                <div className="px-4 py-3 border-b border-slate-100">
+                  <div className="text-xs font-bold text-slate-900">Company-wise TDS</div>
+                  <div className="text-[10px] text-slate-400 mt-0.5">TDS deducted by clients · cancelled excluded</div>
+                </div>
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="border-b border-slate-50 bg-slate-50">
+                      <th className="text-left px-4 py-2 text-slate-400 font-semibold">Company</th>
+                      <th className="text-center px-3 py-2 text-slate-400 font-semibold">Invoices</th>
+                      <th className="text-right px-4 py-2 text-slate-400 font-semibold">TDS Amount</th>
+                      <th className="text-right px-4 py-2 text-slate-400 font-semibold">% Share</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {companyTdsRows.map((row, i) => (
+                      <tr key={i} className="border-b border-slate-50 last:border-none hover:bg-slate-50/50">
+                        <td className="px-4 py-2.5 font-semibold text-slate-700">{row.name}</td>
+                        <td className="px-3 py-2.5 text-center text-slate-500">{row.count}</td>
+                        <td className="px-4 py-2.5 text-right font-bold text-purple-700">{inr(row.tdsAmount)}</td>
+                        <td className="px-4 py-2.5 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <div className="w-12 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                              <div className="h-1.5 bg-purple-400 rounded-full" style={{ width: `${totalTds > 0 ? (row.tdsAmount / totalTds) * 100 : 0}%` }} />
+                            </div>
+                            <span className="text-slate-500 w-10 text-right">{totalTds > 0 ? `${((row.tdsAmount / totalTds) * 100).toFixed(1)}%` : '—'}</span>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="bg-purple-50 border-t-2 border-purple-100">
+                      <td className="px-4 py-2.5 font-bold text-slate-700">Total</td>
+                      <td className="px-3 py-2.5 text-center font-bold text-slate-700">{tdsInvoices.length}</td>
+                      <td className="px-4 py-2.5 text-right font-bold text-purple-800">{inr(totalTds)}</td>
+                      <td className="px-4 py-2.5 text-right font-bold text-slate-600">100%</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </Card>
+
+              {/* Invoice-wise TDS */}
+              <Card className="p-0">
+                <div className="px-4 py-3 border-b border-slate-100">
+                  <div className="text-xs font-bold text-slate-900">Invoice-wise TDS</div>
+                  <div className="text-[10px] text-slate-400 mt-0.5">{tdsInvoices.length} invoice{tdsInvoices.length !== 1 ? 's' : ''} with TDS deduction</div>
+                </div>
+                <div className="overflow-x-auto max-h-64 overflow-y-auto">
+                  <table className="w-full text-xs">
+                    <thead className="sticky top-0 bg-white z-10">
+                      <tr className="border-b border-slate-50 bg-slate-50">
+                        <th className="text-left px-4 py-2 text-slate-400 font-semibold">Invoice</th>
+                        {cid === 'ALL' && <th className="text-left px-3 py-2 text-slate-400 font-semibold">Company</th>}
+                        <th className="text-left px-3 py-2 text-slate-400 font-semibold">Client</th>
+                        <th className="text-right px-3 py-2 text-slate-400 font-semibold">Invoice Total</th>
+                        <th className="text-right px-4 py-2 text-slate-400 font-semibold">TDS</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tdsInvoices.map((inv: any) => (
+                        <tr key={inv.invoiceId} className="border-b border-slate-50 last:border-none hover:bg-slate-50/50">
+                          <td className="px-4 py-2.5">
+                            <button onClick={() => setPreviewInv(inv)} className="font-mono font-bold text-indigo-600 hover:underline text-[11px]">{inv.invoiceNumber}</button>
+                            <div className="text-[10px] text-slate-400">{inr(inv.grandTotal)}</div>
+                          </td>
+                          {cid === 'ALL' && (
+                            <td className="px-3 py-2.5">
+                              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-sky-50 text-sky-700">{inv._companyName}</span>
+                            </td>
+                          )}
+                          <td className="px-3 py-2.5 text-slate-600 max-w-[120px] truncate">{inv.clientName}</td>
+                          <td className="px-3 py-2.5 text-right text-slate-700 font-medium">{inr(inv.grandTotal)}</td>
+                          <td className="px-4 py-2.5 text-right">
+                            <div className="font-bold text-purple-700">{inr(inv.tdsAmount)}</div>
+                            <div className="text-[10px] text-slate-400">{inv.tdsRate}%</div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </Card>
+
+            </div>
+          )}
+
+          {/* Tabs + cancelled toggle */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex gap-1 bg-slate-100 p-1 rounded-xl flex-wrap">
+              {TABS.map(t => {
+                const count = t.key === 'ALL' ? visibleInvoices.length : visibleInvoices.filter(t.fn).length;
+                return (
+                  <button key={t.key} onClick={() => setTab(t.key)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${tab === t.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
+                    {t.label}
+                    {count > 0 && <span className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${tab === t.key ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-200 text-slate-500'}`}>{count}</span>}
+                  </button>
+                );
+              })}
+            </div>
+            {/* Cancelled toggle */}
+            {cancelledCount > 0 && (
+              <button onClick={() => { setShowCancelled(p => !p); if (tab === 'CANCELLED') setTab('ALL'); }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all ${showCancelled ? 'bg-slate-200 border-slate-300 text-slate-700' : 'bg-white border-slate-200 text-slate-400 hover:border-slate-300 hover:text-slate-600'}`}>
+                🚫 Cancelled
+                <span className="px-1.5 py-0.5 rounded-full bg-slate-300 text-slate-600 text-[10px] font-bold">{cancelledCount}</span>
+                <span className="text-[10px] opacity-70">{showCancelled ? 'Hide' : 'Show'}</span>
+              </button>
+            )}
           </div>
 
           {/* Table */}
@@ -1338,7 +1749,7 @@ export default function InvoicesPage() {
                 <table className="w-full text-xs border-collapse">
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-100">
-                      {['Invoice #', 'Bill To', 'Amount', 'Status', 'Due Date', 'Payment', 'Actions'].map(h => (
+                      {(cid === 'ALL' ? ['Company', 'Invoice #', 'Bill To', 'Amount', 'Status', 'Due Date', 'Payment', 'Actions'] : ['Invoice #', 'Bill To', 'Amount', 'Status', 'Due Date', 'Payment', 'Actions']).map(h => (
                         <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wide whitespace-nowrap">{h}</th>
                       ))}
                     </tr>
@@ -1348,8 +1759,20 @@ export default function InvoicesPage() {
                       const isOverdue = inv.status === 'SENT' && inv.dueDate && new Date(inv.dueDate) < new Date();
                       const displayS  = isOverdue ? 'OVERDUE' : inv.status;
                       const balance   = (inv.grandTotal || 0) - (inv.paidAmount || 0);
+                      const invCid    = inv._companyId || cid;
+                      const ROW_BG: Record<string,string> = {
+                        PAID: 'rgba(22,163,74,0.05)', OVERDUE: 'rgba(220,38,38,0.05)',
+                        CANCELLED: 'rgba(148,163,184,0.07)', PARTIAL: 'rgba(217,119,6,0.05)',
+                        SENT: 'rgba(37,99,235,0.04)', DRAFT: 'transparent',
+                      };
                       return (
-                        <tr key={inv.invoiceId} className="border-b border-slate-50 hover:bg-indigo-50/20 transition-colors group">
+                        <tr key={inv.invoiceId} className="border-b border-slate-100 hover:brightness-[0.97] transition-colors group" style={{ background: ROW_BG[displayS] || 'transparent' }}>
+                          {/* Company (only in ALL mode) */}
+                          {cid === 'ALL' && (
+                            <td className="px-4 py-3">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-sky-700 border border-sky-100 whitespace-nowrap">{inv._companyName}</span>
+                            </td>
+                          )}
                           {/* Invoice # */}
                           <td className="px-4 py-3">
                             <button onClick={() => setPreviewInv(inv)} className="font-mono font-bold text-indigo-600 hover:underline">{inv.invoiceNumber}</button>
@@ -1357,7 +1780,7 @@ export default function InvoicesPage() {
                           </td>
                           {/* Bill To */}
                           <td className="px-4 py-3" style={{ maxWidth: 180 }}>
-                            <button onClick={() => openClientHistory(inv.clientName)} className="font-semibold text-slate-800 hover:text-indigo-600 truncate block text-left w-full transition-colors" title="View client history">{inv.clientName}</button>
+                            <button onClick={() => openClientHistory(inv.clientName, invCid)} className="font-semibold text-slate-800 hover:text-indigo-600 truncate block text-left w-full transition-colors" title="View client history">{inv.clientName}</button>
                             {inv.clientGst   && <div className="text-xs text-slate-400 font-mono">GST: {inv.clientGst}</div>}
                             {inv.clientEmail && <div className="text-xs text-indigo-400 truncate">{inv.clientEmail}</div>}
                             {inv.clientPhone && <div className="text-xs text-slate-400">{inv.clientPhone}</div>}
@@ -1419,7 +1842,7 @@ export default function InvoicesPage() {
                                   className="px-2.5 py-1.5 text-xs bg-emerald-50 text-emerald-600 rounded-lg font-semibold hover:bg-emerald-100 transition-colors whitespace-nowrap">Paid</button>
                               )}
 
-                              {inv.status !== 'CANCELLED' && (
+                              {(isSuperAdmin || inv.status !== 'CANCELLED') && (
                                 <button onClick={() => setEditInv(inv)} title="Edit"
                                   className="px-2.5 py-1.5 text-xs bg-slate-50 text-slate-600 rounded-lg font-semibold hover:bg-slate-100 transition-colors">Edit</button>
                               )}
@@ -1490,32 +1913,79 @@ export default function InvoicesPage() {
               </div>
             ) : (
               <>
-                {/* Client stats */}
                 {clientInvs.length > 0 && (() => {
-                  const total   = clientInvs.reduce((a, i) => a + (i.grandTotal || 0), 0);
-                  const paid    = clientInvs.filter(i => i.status === 'PAID').reduce((a, i) => a + (i.grandTotal || 0), 0);
-                  const pending = clientInvs.filter(i => ['SENT','PARTIAL'].includes(i.status)).reduce((a, i) => a + (i.grandTotal || 0), 0);
-                  const sub     = clientInvs.reduce((a, i) => a + (i.subtotal || 0), 0);
-                  const gst     = clientInvs.reduce((a, i) => a + (i.totalGst || 0), 0);
+                  // Exclude cancelled from all calculations
+                  const activeCI   = clientInvs.filter(i => i.status !== 'CANCELLED');
+                  const cancelledCI = clientInvs.filter(i => i.status === 'CANCELLED');
+                  const total      = activeCI.reduce((a, i) => a + (i.grandTotal || 0), 0);
+                  const collected  = activeCI.reduce((a, i) => a + (i.paidAmount  || 0), 0);
+                  const tdsTotal   = activeCI.reduce((a, i) => a + (i.tdsAmount   || 0), 0);
+                  const sub        = activeCI.reduce((a, i) => a + (i.subtotal    || 0), 0);
+                  const gst        = activeCI.reduce((a, i) => a + (i.totalGst    || 0), 0);
+                  const pending    = activeCI
+                    .filter(i => ['DRAFT','SENT','PARTIAL'].includes(i.status))
+                    .reduce((a, i) => {
+                      if (i.status === 'DRAFT') return a + (i.grandTotal || 0);
+                      return a + Math.max(0, (i.grandTotal || 0) - (i.paidAmount || 0) - (i.tdsAmount || 0));
+                    }, 0);
+
+                  // Company-wise TDS
+                  const coTdsMap: Record<string, { name: string; tdsAmount: number; count: number }> = {};
+                  activeCI.filter(i => (i.tdsAmount || 0) > 0).forEach(i => {
+                    const key  = i._companyId || clientHistCid;
+                    const name = i._companyName || companies.find((c: any) => c.companyId === key)?.name || 'Company';
+                    if (!coTdsMap[key]) coTdsMap[key] = { name, tdsAmount: 0, count: 0 };
+                    coTdsMap[key].tdsAmount += i.tdsAmount || 0;
+                    coTdsMap[key].count     += 1;
+                  });
+                  const coTdsRows = Object.values(coTdsMap).sort((a, b) => b.tdsAmount - a.tdsAmount);
+
                   return (
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 px-6 py-4 border-b border-slate-50 flex-shrink-0">
-                      {[
-                        { label: 'Total Revenue', value: inr(total),   color: 'text-slate-800' },
-                        { label: 'Collected',      value: inr(paid),    color: 'text-emerald-600' },
-                        { label: 'Pending',        value: inr(pending), color: 'text-amber-600' },
-                        { label: 'Total GST',      value: inr(gst),     color: 'text-indigo-600' },
-                      ].map(s => (
-                        <div key={s.label} className="bg-slate-50 rounded-xl px-3 py-2.5">
-                          <div className="text-xs text-slate-400 mb-0.5">{s.label}</div>
-                          <div className={`text-sm font-bold ${s.color}`}>{s.value}</div>
-                        </div>
-                      ))}
-                      <div className="col-span-2 sm:col-span-4 flex items-center gap-4 text-xs text-slate-400 pt-1">
-                        <span>{clientInvs.length} invoices</span>
-                        <span>Subtotal {inr(sub)}</span>
-                        <span>GST {inr(gst)}</span>
+                    <>
+                      {/* Stats cards */}
+                      <div className="grid grid-cols-3 gap-2 px-6 py-4 border-b border-slate-50 flex-shrink-0">
+                        {[
+                          { label: 'Total Revenue', value: inr(total),     color: 'text-slate-800',    note: `${activeCI.length} invoices` },
+                          { label: 'Collected',      value: inr(collected), color: 'text-emerald-600',  note: `${activeCI.filter(i=>i.status==='PAID').length} paid` },
+                          { label: 'Pending',        value: inr(pending),   color: 'text-amber-600',    note: 'Draft + Sent + Partial' },
+                          { label: 'Total GST',      value: inr(gst),       color: 'text-indigo-600',   note: `Sub ${inr(sub)}` },
+                          { label: 'TDS Deducted',   value: inr(tdsTotal),  color: 'text-purple-600',   note: `${activeCI.filter(i=>(i.tdsAmount||0)>0).length} invoices` },
+                          { label: 'Cancelled',      value: String(cancelledCI.length), color: 'text-slate-400', note: 'excluded from totals' },
+                        ].map(s => (
+                          <div key={s.label} className="bg-slate-50 rounded-xl px-3 py-2.5">
+                            <div className="text-[10px] text-slate-400 mb-0.5">{s.label}</div>
+                            <div className={`text-sm font-bold ${s.color}`}>{s.value}</div>
+                            <div className="text-[10px] text-slate-400 mt-0.5">{s.note}</div>
+                          </div>
+                        ))}
                       </div>
-                    </div>
+
+                      {/* Company-wise TDS (only when TDS exists) */}
+                      {tdsTotal > 0 && (
+                        <div className="px-6 py-3 border-b border-slate-50 flex-shrink-0">
+                          <div className="text-xs font-bold text-slate-700 mb-2">Company-wise TDS</div>
+                          <div className="flex flex-col gap-1.5">
+                            {coTdsRows.map((row, i) => (
+                              <div key={i} className="flex items-center gap-3 text-xs">
+                                <span className="font-medium text-slate-600 flex-1 truncate">{row.name}</span>
+                                <span className="text-slate-400">{row.count} inv.</span>
+                                <span className="font-bold text-purple-700 w-24 text-right">{inr(row.tdsAmount)}</span>
+                                <div className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden flex-shrink-0">
+                                  <div className="h-1.5 bg-purple-400 rounded-full" style={{ width: `${tdsTotal > 0 ? (row.tdsAmount / tdsTotal) * 100 : 0}%` }} />
+                                </div>
+                                <span className="text-slate-400 w-10 text-right">{tdsTotal > 0 ? `${((row.tdsAmount / tdsTotal) * 100).toFixed(0)}%` : '—'}</span>
+                              </div>
+                            ))}
+                            <div className="flex items-center gap-3 text-xs border-t border-slate-100 pt-1.5 mt-0.5">
+                              <span className="font-bold text-slate-700 flex-1">Total TDS</span>
+                              <span className="font-bold text-purple-800 w-24 text-right">{inr(tdsTotal)}</span>
+                              <div className="w-16 flex-shrink-0" />
+                              <span className="w-10" />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </>
                   );
                 })()}
 
@@ -1527,45 +1997,83 @@ export default function InvoicesPage() {
                     <table className="w-full text-xs border-collapse">
                       <thead className="sticky top-0 bg-slate-50 z-10">
                         <tr className="border-b border-slate-100">
-                          {['Invoice #','Date','Amount','Status','Due Date',''].map(h => (
-                            <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wide whitespace-nowrap">{h}</th>
+                          {['Invoice #', 'Date', 'Amount', 'TDS', 'Status', 'Due Date', cid === 'ALL' ? 'Company' : '', ''].filter(Boolean).map(h => (
+                            <th key={h} className="text-left px-3 py-2.5 text-xs font-semibold text-slate-400 uppercase tracking-wide whitespace-nowrap">{h}</th>
                           ))}
                         </tr>
                       </thead>
                       <tbody>
                         {clientInvs.map((inv: any) => {
-                          const isOverdue = inv.status === 'SENT' && inv.dueDate && new Date(inv.dueDate) < new Date();
-                          const displayS  = isOverdue ? 'OVERDUE' : inv.status;
+                          const isCancelled = inv.status === 'CANCELLED';
+                          const isOverdue   = inv.status === 'SENT' && inv.dueDate && new Date(inv.dueDate) < new Date();
+                          const displayS    = isOverdue ? 'OVERDUE' : inv.status;
                           return (
-                            <tr key={inv.invoiceId} className="border-b border-slate-50 hover:bg-indigo-50/20 transition-colors">
-                              <td className="px-4 py-3">
-                                <button onClick={() => { setClientFilter(null); setTimeout(() => setPreviewInv(inv), 50); }} className="font-mono font-bold text-indigo-600 hover:underline">{inv.invoiceNumber}</button>
+                            <tr key={inv.invoiceId} className={`border-b border-slate-50 transition-colors ${isCancelled ? 'opacity-40 bg-slate-50/60' : 'hover:bg-indigo-50/20'}`}>
+                              <td className="px-3 py-2.5">
+                                <button onClick={() => { setClientFilter(null); setTimeout(() => setPreviewInv(inv), 50); }}
+                                  className={`font-mono font-bold hover:underline text-[11px] ${isCancelled ? 'text-slate-400 line-through' : 'text-indigo-600'}`}>
+                                  {inv.invoiceNumber}
+                                </button>
                               </td>
-                              <td className="px-4 py-3 text-slate-500">{dateStr(inv.invoiceDate || inv.createdAt)}</td>
-                              <td className="px-4 py-3">
-                                <div className="font-bold text-slate-900">{inr(inv.grandTotal)}</div>
-                                {inv.totalGst > 0 && <div className="text-xs text-indigo-400">+GST {inr(inv.totalGst)}</div>}
+                              <td className="px-3 py-2.5 text-slate-500 whitespace-nowrap">{dateStr(inv.invoiceDate || inv.createdAt)}</td>
+                              <td className="px-3 py-2.5">
+                                <div className={`font-bold ${isCancelled ? 'text-slate-400 line-through' : 'text-slate-900'}`}>{inr(inv.grandTotal)}</div>
+                                {inv.totalGst > 0 && !isCancelled && <div className="text-[10px] text-indigo-400">+GST {inr(inv.totalGst)}</div>}
+                                {inv.paidAmount > 0 && !isCancelled && <div className="text-[10px] text-emerald-500">Paid {inr(inv.paidAmount)}</div>}
                               </td>
-                              <td className="px-4 py-3"><Badge s={displayS} /></td>
-                              <td className="px-4 py-3">
+                              <td className="px-3 py-2.5">
+                                {(inv.tdsAmount || 0) > 0 && !isCancelled ? (
+                                  <div>
+                                    <div className="font-semibold text-purple-700">{inr(inv.tdsAmount)}</div>
+                                    <div className="text-[10px] text-slate-400">{inv.tdsRate}%</div>
+                                  </div>
+                                ) : <span className="text-slate-300">—</span>}
+                              </td>
+                              <td className="px-3 py-2.5"><Badge s={displayS} /></td>
+                              <td className="px-3 py-2.5">
                                 <div className={`text-xs ${isOverdue ? 'text-red-600 font-bold' : 'text-slate-500'}`}>{dateStr(inv.dueDate)}</div>
                               </td>
-                              <td className="px-4 py-3">
-                                <div className="flex gap-1.5">
-                                  {inv.status !== 'DRAFT' && (
-                                    <button onClick={() => { setClientFilter(null); setTimeout(() => setPreviewInv(inv), 50); }}
-                                      className="px-2 py-1 text-xs bg-indigo-50 text-indigo-600 rounded-lg font-semibold hover:bg-indigo-100 transition-colors">PDF</button>
-                                  )}
-                                  {!['PAID','CANCELLED'].includes(inv.status) && (
-                                    <button onClick={() => { setClientFilter(null); setTimeout(() => setPaidInv(inv), 50); }}
-                                      className="px-2 py-1 text-xs bg-emerald-50 text-emerald-600 rounded-lg font-semibold hover:bg-emerald-100 transition-colors">Paid</button>
-                                  )}
-                                </div>
+                              {cid === 'ALL' && (
+                                <td className="px-3 py-2.5">
+                                  <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-sky-50 text-sky-700 whitespace-nowrap">{inv._companyName}</span>
+                                </td>
+                              )}
+                              <td className="px-3 py-2.5">
+                                {!isCancelled && (
+                                  <div className="flex gap-1">
+                                    {inv.status !== 'DRAFT' && (
+                                      <button onClick={() => { setClientFilter(null); setTimeout(() => setPreviewInv(inv), 50); }}
+                                        className="px-2 py-1 text-[10px] bg-indigo-50 text-indigo-600 rounded-lg font-semibold hover:bg-indigo-100">PDF</button>
+                                    )}
+                                    {!['PAID','CANCELLED'].includes(inv.status) && (
+                                      <button onClick={() => { setClientFilter(null); setTimeout(() => setPaidInv(inv), 50); }}
+                                        className="px-2 py-1 text-[10px] bg-emerald-50 text-emerald-600 rounded-lg font-semibold hover:bg-emerald-100">Paid</button>
+                                    )}
+                                  </div>
+                                )}
                               </td>
                             </tr>
                           );
                         })}
                       </tbody>
+                      {/* Footer totals — active only */}
+                      {clientInvs.filter(i => i.status !== 'CANCELLED').length > 0 && (() => {
+                        const activeCI = clientInvs.filter(i => i.status !== 'CANCELLED');
+                        const footTotal = activeCI.reduce((a, i) => a + (i.grandTotal || 0), 0);
+                        const footTds   = activeCI.reduce((a, i) => a + (i.tdsAmount  || 0), 0);
+                        const footPaid  = activeCI.reduce((a, i) => a + (i.paidAmount || 0), 0);
+                        return (
+                          <tfoot>
+                            <tr className="bg-slate-50 border-t-2 border-slate-200 font-semibold text-xs">
+                              <td className="px-3 py-2.5 text-slate-600">Total ({activeCI.length})</td>
+                              <td className="px-3 py-2.5 text-slate-400">excl. cancelled</td>
+                              <td className="px-3 py-2.5 font-bold text-slate-800">{inr(footTotal)}</td>
+                              <td className="px-3 py-2.5 font-bold text-purple-700">{footTds > 0 ? inr(footTds) : '—'}</td>
+                              <td colSpan={cid === 'ALL' ? 4 : 3} className="px-3 py-2.5 text-emerald-700">{inr(footPaid)} paid</td>
+                            </tr>
+                          </tfoot>
+                        );
+                      })()}
                     </table>
                   )}
                 </div>
@@ -1576,18 +2084,27 @@ export default function InvoicesPage() {
       )}
 
       {/* ── Modals ── */}
-      {previewInv && <PdfModal    inv={previewInv} cid={cid} onClose={() => setPreviewInv(null)} />}
-      {paidInv    && <PaidModal   inv={paidInv}    cid={cid} onClose={() => setPaidInv(null)}   onDone={loadInvoices} />}
-      {editInv    && <EditModal   inv={editInv}    cid={cid} onClose={() => setEditInv(null)}   onDone={loadInvoices} />}
-      {cancelInv  && <CancelModal inv={cancelInv}  cid={cid} onClose={() => setCancelInv(null)} onDone={loadInvoices} />}
+      {previewInv && <PdfModal    inv={previewInv} cid={previewInv._companyId || cid} onClose={() => setPreviewInv(null)} />}
+      {paidInv    && <PaidModal   inv={paidInv}    cid={paidInv._companyId    || cid} onClose={() => setPaidInv(null)}   onDone={loadInvoices} />}
+      {editInv    && <EditModal   inv={editInv}    cid={editInv._companyId    || cid} onClose={() => setEditInv(null)}   onDone={loadInvoices} isSuperAdmin={isSuperAdmin} />}
+      {cancelInv  && <CancelModal inv={cancelInv}  cid={cancelInv._companyId  || cid} onClose={() => setCancelInv(null)} onDone={loadInvoices} />}
 
       {/* ── Create Invoice ── */}
       <Modal open={showCreate} onClose={() => setShowCreate(false)} title="Create New Invoice" size="xl"
         footer={<><Btn variant="secondary" onClick={() => setShowCreate(false)}>Cancel</Btn><Btn variant="primary" loading={saving} onClick={create}>Create Invoice</Btn></>}>
         <div className="flex flex-col gap-4">
 
-          {/* Company profile preview (auto-filled) */}
-          {coProfile?.name && (
+          {/* Billing Company selector (ALL mode) or profile preview (single mode) */}
+          {cid === 'ALL' ? (
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-slate-600">Billing Company *</label>
+              <select value={createCo} onChange={e => setCreateCo(e.target.value)}
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400 bg-white">
+                <option value="">— Select company to invoice from —</option>
+                {companies.map((c: any) => <option key={c.companyId} value={c.companyId}>{c.name}</option>)}
+              </select>
+            </div>
+          ) : coProfile?.name && (
             <div className="flex items-center gap-3 bg-indigo-50 border border-indigo-100 rounded-xl px-4 py-3">
               {coProfile.logo
                 ? <img src={coProfile.logo} alt="" className="h-10 w-10 rounded-lg object-contain flex-shrink-0 bg-white p-1 border border-slate-200" />

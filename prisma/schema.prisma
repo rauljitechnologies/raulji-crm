@@ -45,6 +45,8 @@ model Company {
   users               User[]
   webhooks            Webhook[]
   members             UserCompany[]
+  expenses        Expense[]
+  bankStatements  BankStatement[]
 
   @@map("companies")
 }
@@ -66,11 +68,12 @@ model User {
   inviteExpiry  DateTime?      @map("invite_expiry")
   createdAt     DateTime       @default(now()) @map("created_at")
   updatedAt     DateTime       @updatedAt @map("updated_at")
-  activities    Activity[]
-  assignedLeads Lead[]         @relation("AssignedLeads")
-  refreshTokens RefreshToken[]
-  company       Company?       @relation(fields: [companyId], references: [companyId])
-  companies     UserCompany[]
+  activities       Activity[]
+  assignedLeads    Lead[]         @relation("AssignedLeads")
+  refreshTokens    RefreshToken[]
+  company          Company?       @relation(fields: [companyId], references: [companyId])
+  companies        UserCompany[]
+  createdInvoices  Invoice[]      @relation("CreatedInvoices")
 
   @@map("users")
 }
@@ -115,6 +118,7 @@ model Lead {
   assignedToId   String?         @map("assigned_to_id")
   tags           String[]        @default([])
   notes          String?
+  message        String?
   customFields   Json?           @map("custom_fields")
   lastActivityAt DateTime?       @map("last_activity_at")
   nextFollowUpAt DateTime?       @map("next_follow_up_at")
@@ -244,10 +248,12 @@ model Invoice {
   updatedAt     DateTime  @updatedAt @map("updated_at")
   status        String    @default("DRAFT")
   invoiceDate   DateTime  @default(now()) @map("invoice_date")
-  tdsAmount     Float?    @map("tds_amount")
-  tdsRate       Float?    @map("tds_rate")
-  company       Company   @relation(fields: [companyId], references: [companyId])
-  lead          Lead?     @relation(fields: [leadId], references: [leadId])
+  tdsAmount        Float?    @map("tds_amount")
+  tdsRate          Float?    @map("tds_rate")
+  createdByUserId  String?   @map("created_by_user_id")
+  company          Company   @relation(fields: [companyId], references: [companyId])
+  lead             Lead?     @relation(fields: [leadId], references: [leadId])
+  createdByUser    User?     @relation("CreatedInvoices", fields: [createdByUserId], references: [userId])
 
   @@map("invoices")
 }
@@ -631,4 +637,62 @@ enum Role {
   SALES_MANAGER
   SALES_REP
   VIEWER
+}
+
+model Expense {
+  expenseId   String   @id @default(cuid()) @map("expense_id")
+  companyId   String   @map("company_id")
+  date        DateTime
+  category    String   // RENT, SALARY, SOFTWARE, TRAVEL, VENDOR, UTILITIES, TAX, MARKETING, OTHER
+  description String
+  amount      Float
+  gstAmount   Float    @default(0) @map("gst_amount")
+  gstPercent  Float?   @map("gst_percent")
+  payMode     String   @default("BANK") @map("pay_mode") // BANK, CASH, UPI, CARD, CHEQUE
+  reference   String?  // cheque/txn ref
+  notes       String?
+  status      String   @default("PAID")  // PAID, PENDING, CANCELLED
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  company     Company  @relation(fields: [companyId], references: [companyId])
+  bankTxn     BankTransaction? @relation("ExpenseTxn")
+
+  @@index([companyId, date])
+  @@map("expenses")
+}
+
+model BankStatement {
+  statementId  String            @id @default(cuid()) @map("statement_id")
+  companyId    String            @map("company_id")
+  bankName     String            @map("bank_name")
+  accountLast4 String?           @map("account_last4")
+  fromDate     DateTime          @map("from_date")
+  toDate       DateTime          @map("to_date")
+  uploadedAt   DateTime          @default(now()) @map("uploaded_at")
+  rowCount     Int               @default(0) @map("row_count")
+  company      Company           @relation(fields: [companyId], references: [companyId])
+  transactions BankTransaction[]
+
+  @@index([companyId])
+  @@map("bank_statements")
+}
+
+model BankTransaction {
+  txnId       String        @id @default(cuid()) @map("txn_id")
+  statementId String        @map("statement_id")
+  date        DateTime
+  description String
+  debit       Float         @default(0)
+  credit      Float         @default(0)
+  balance     Float?
+  type        String        // DEBIT / CREDIT
+  status      String        @default("UNMATCHED") // UNMATCHED / MATCHED / IGNORED
+  expenseId   String?       @unique @map("expense_id")
+  invoiceId   String?       @map("invoice_id")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  statement   BankStatement @relation(fields: [statementId], references: [statementId], onDelete: Cascade)
+  expense     Expense?      @relation("ExpenseTxn", fields: [expenseId], references: [expenseId])
+
+  @@index([statementId])
+  @@map("bank_transactions")
 }

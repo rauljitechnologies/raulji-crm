@@ -19,6 +19,7 @@ const comm      = require('../controllers/communicationController');
 const geo       = require('../controllers/geoController');
 const backup    = require('../controllers/backupController');
 const seo       = require('../controllers/seoController');
+const expense   = require('../controllers/expenseController');
 
 // Shorthand: authenticate + verify company ownership
 const authCo = [authenticate, requireCompanyAccess];
@@ -91,6 +92,7 @@ router.get(   '/companies/:companyId/quotations/:id/view',    ...authCo, quotati
 // ── Invoices ──────────────────────────────────────────────────────────────────
 router.get(   '/companies/:companyId/invoices',               ...authCo, invoice.getInvoices);
 router.post(  '/companies/:companyId/invoices',               ...authCo, invoice.createInvoice);
+router.get(   '/companies/:companyId/invoices/next-number',   ...authCo, requireRole(['SUPER_ADMIN']), invoice.getNextNumber);
 router.get(   '/companies/:companyId/invoices/:id',           ...authCo, invoice.getInvoice);
 router.put(   '/companies/:companyId/invoices/:id',           ...authCo, invoice.updateInvoice);
 router.delete('/companies/:companyId/invoices/:id',           ...authCo, invoice.removeInvoice);
@@ -197,5 +199,18 @@ router.get(   '/companies/:companyId/seo/keywords',                ...authCo, se
 router.post(  '/companies/:companyId/seo/keywords',                ...authCo, seo.addKeyword);
 router.delete('/companies/:companyId/seo/keywords/:keywordId',     ...authCo, seo.removeKeyword);
 router.post(  '/companies/:companyId/seo/url-check',               ...authCo, seo.checkUrlEndpoint);
+
+// ── Expenses ──────────────────────────────────────────────────────────────────
+router.get(   '/companies/:companyId/expenses',                          ...authCo, expense.listExpenses);
+router.post(  '/companies/:companyId/expenses',                          ...authCo, expense.createExpense);
+router.put(   '/companies/:companyId/expenses/:id',                      ...authCo, expense.updateExpense);
+router.delete('/companies/:companyId/expenses/:id',                      ...authCo, expense.deleteExpense);
+router.get(   '/companies/:companyId/bank-statements',                   ...authCo, expense.listStatements);
+router.post(  '/companies/:companyId/bank-statements',                   ...authCo, expense.importStatement);
+router.delete('/companies/:companyId/bank-statements/:statementId',      ...authCo, expense.deleteStatement);
+router.get(   '/companies/:companyId/bank-statements/:statementId/txns', ...authCo, expense.listTransactions);
+router.get(   '/companies/:companyId/bank-transactions',                 ...authCo, expense.listAllTransactions);
+router.post(  '/companies/:companyId/reconcile',                         ...authCo, expense.reconcile);
+router.post(  '/companies/:companyId/reconcile/auto',                    ...authCo, expense.autoReconcile);
 
 module.exports = router;

@@ -101,12 +101,14 @@ export default function ApiDocsPage() {
   const [apiKey,      setApiKey]      = useState('');
   const [showKey,     setShowKey]     = useState(false);
   const [regen,       setRegen]       = useState(false);
+  const [newlyGenKey, setNewlyGenKey] = useState('');
+  const [keyCopied,   setKeyCopied]   = useState(false);
   const [activeTab,   setActiveTab]   = useState<'overview'|'leads'|'auth'|'all'>('overview');
   const { toast, ToastContainer }     = useToast();
 
   const loadCos = useCallback(async () => {
     try {
-      const d = await companyApi.list({ limit: '20' });
+      const d = await companyApi.mine();
       const cos = d.companies || [];
       setCompanies(cos);
       if (cos[0]) { setCid(cos[0].companyId); setApiKey(cos[0].apiKey || ''); }
@@ -129,10 +131,21 @@ export default function ApiDocsPage() {
     try {
       const d = await companyApi.regenerateKey(cid);
       setApiKey(d.apiKey);
-      toast('API key regenerated! Update all integrations.', 'ok');
-      setShowKey(true);
+      setNewlyGenKey(d.apiKey);
+      setKeyCopied(false);
+      setShowKey(false);
     } catch (e: any) { toast(e.message, 'err'); }
     finally { setRegen(false); }
+  };
+
+  const copyNewKey = () => {
+    navigator.clipboard.writeText(newlyGenKey);
+    setKeyCopied(true);
+  };
+
+  const dismissNewKey = () => {
+    setNewlyGenKey('');
+    setKeyCopied(false);
   };
 
   const copyKey = () => {
@@ -353,6 +366,46 @@ const leads = await leadsRes.json();`;
 
   return (
     <>
+      {/* ── One-time API Key Modal ── */}
+      {newlyGenKey && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6 flex flex-col gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-xl flex-shrink-0">🔑</div>
+              <div>
+                <div className="text-base font-bold text-slate-800">New API Key Generated</div>
+                <div className="text-xs text-red-600 font-semibold mt-0.5">Copy it now — this key will NOT be shown again.</div>
+              </div>
+            </div>
+
+            <div className="bg-slate-900 rounded-xl px-4 py-3 font-mono text-sm text-emerald-300 break-all select-all leading-relaxed">
+              {newlyGenKey}
+            </div>
+
+            <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-xs text-amber-700 leading-relaxed">
+              Store this key securely (e.g. environment variable). After closing this dialog, you will only see a masked version.
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={copyNewKey}
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${keyCopied ? 'bg-emerald-500 text-white' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}`}
+              >
+                {keyCopied ? '✓ Copied!' : '⧉ Copy API Key'}
+              </button>
+              <button
+                onClick={dismissNewKey}
+                disabled={!keyCopied}
+                title={!keyCopied ? 'Copy the key first before closing' : ''}
+                className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all border ${keyCopied ? 'border-slate-300 text-slate-700 hover:bg-slate-50' : 'border-slate-200 text-slate-300 cursor-not-allowed'}`}
+              >
+                Done, Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Topbar title="API & Webhooks" subtitle="Integrate your website and external tools with Raulji CRM"
         actions={<>
           {companies.length > 1 && (

@@ -24,6 +24,7 @@ export default function CampaignsPage() {
   const [showCreate,setShowCreate]= useState(false);
   const [saving,    setSaving]    = useState(false);
   const [form,      setForm]      = useState<any>({ ...BLANK });
+  const [selectedCompanyIds, setSelectedCompanyIds] = useState<string[]>([]);
   const [detail,    setDetail]    = useState<any>(null);
   const [audience,  setAudience]  = useState<any>(null);
   const [previewing,setPreviewing]= useState(false);
@@ -31,7 +32,12 @@ export default function CampaignsPage() {
   const { toast, ToastContainer } = useToast();
 
   const loadCos = async () => {
-    try { const d = await companyApi.list({ limit:'20' }); const cos = d.companies||[]; setCompanies(cos); if (cos[0]) setCompanyId(cos[0].companyId); } catch {}
+    try {
+      const d = await companyApi.mine();
+      const cos = d.companies||[];
+      setCompanies(cos);
+      if (cos[0]) { setCompanyId(cos[0].companyId); setSelectedCompanyIds([cos[0].companyId]); }
+    } catch {}
   };
   useEffect(() => { loadCos(); }, []);
 
@@ -49,18 +55,26 @@ export default function CampaignsPage() {
 
   const save = async () => {
     if (!form.name) return toast('Campaign name required','err');
+    if (selectedCompanyIds.length === 0) return toast('Select at least one company','err');
     setSaving(true);
     try {
-      await campaignApi.create(companyId, {
+      const payload = {
         ...form,
         filters: { country: form.filters.country, status: form.filters.status, service: form.filters.service, source: form.filters.source }
-      });
-      toast('Campaign created!');
+      };
+      await Promise.all(selectedCompanyIds.map(cid => campaignApi.create(cid, payload)));
+      toast(selectedCompanyIds.length > 1 ? `Campaign created for ${selectedCompanyIds.length} companies!` : 'Campaign created!');
       setShowCreate(false);
       setForm({ ...BLANK });
       load();
     } catch(e:any){ toast(e.message,'err'); }
     finally { setSaving(false); }
+  };
+
+  const toggleCompanySelect = (cid: string) => {
+    setSelectedCompanyIds(prev =>
+      prev.includes(cid) ? prev.filter(x => x !== cid) : [...prev, cid]
+    );
   };
 
   const previewAudience = async (campaignId: string) => {
@@ -98,7 +112,7 @@ export default function CampaignsPage() {
             className="border border-slate-200 rounded-lg px-3 py-1.5 text-xs outline-none focus:border-indigo-500">
             {companies.map((c:any)=><option key={c.companyId} value={c.companyId}>{c.name}</option>)}
           </select>
-          <Btn variant="primary" size="sm" onClick={()=>setShowCreate(true)}>+ New Campaign</Btn>
+          <Btn variant="primary" size="sm" onClick={()=>{ setSelectedCompanyIds(companyId ? [companyId] : []); setShowCreate(true); }}>+ New Campaign</Btn>
         </>}
       />
 
@@ -178,9 +192,32 @@ export default function CampaignsPage() {
       </div>
 
       {/* Create Campaign Modal */}
-      <Modal open={showCreate} onClose={()=>{ setShowCreate(false); setForm({ ...BLANK }); }} title="New Campaign"
+      <Modal open={showCreate} onClose={()=>{ setShowCreate(false); setForm({ ...BLANK }); setSelectedCompanyIds(companyId ? [companyId] : []); }} title="New Campaign"
         footer={<><Btn variant="secondary" onClick={()=>setShowCreate(false)}>Cancel</Btn><Btn variant="primary" loading={saving} onClick={save}>Create Campaign</Btn></>}>
         <div className="flex flex-col gap-4">
+          {/* Multi-company selector */}
+          {companies.length > 1 && (
+            <div className="border border-slate-200 rounded-xl p-3 flex flex-col gap-2">
+              <div className="text-xs font-bold text-slate-700">Assign to Companies</div>
+              <div className="text-[10px] text-slate-400 mb-1">Campaign will be created for each selected company</div>
+              <div className="flex flex-col gap-1.5 max-h-36 overflow-y-auto">
+                {companies.map((c:any) => (
+                  <label key={c.companyId} className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 rounded-lg px-2 py-1.5">
+                    <input
+                      type="checkbox"
+                      checked={selectedCompanyIds.includes(c.companyId)}
+                      onChange={() => toggleCompanySelect(c.companyId)}
+                      className="accent-indigo-500 w-3.5 h-3.5"
+                    />
+                    <span className="text-xs text-slate-700">{c.name}</span>
+                  </label>
+                ))}
+              </div>
+              {selectedCompanyIds.length > 0 && (
+                <div className="text-[10px] text-indigo-600 font-semibold mt-1">{selectedCompanyIds.length} {selectedCompanyIds.length === 1 ? 'company' : 'companies'} selected</div>
+              )}
+            </div>
+          )}
           <Input label="Campaign Name *" value={form.name} onChange={(e:any)=>setForm((f:any)=>({...f,name:e.target.value}))} placeholder="Summer SEO Outreach" />
           <Input label="Description" value={form.description} onChange={(e:any)=>setForm((f:any)=>({...f,description:e.target.value}))} placeholder="Optional" />
 

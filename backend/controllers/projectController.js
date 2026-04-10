@@ -14,7 +14,7 @@ async function hasAccess(projectId, companyId) {
   if (!project) return { project: null, isOwner: false };
   if (project.companyId === companyId) return { project, isOwner: true };
   const assignment = await prisma.projectAssignment.findUnique({
-    where: { projectId_companyId: { projectId, companyId } },
+    where: { projectId_company_id: { projectId, company_id: companyId } },
   });
   return { project, isOwner: false, hasAssignment: !!assignment };
 }
@@ -40,7 +40,7 @@ async function listProjects(req, res) {
 
     // Get assigned projects (via ProjectAssignment)
     const assignments = await prisma.projectAssignment.findMany({
-      where: { companyId },
+      where: { company_id: companyId },
       include: {
         project: {
           include: {
@@ -228,12 +228,12 @@ async function assignCompany(req, res) {
 
     // Check duplicate
     const dupCheck = await prisma.projectAssignment.findUnique({
-      where: { projectId_companyId: { projectId, companyId: assignedCompanyId } },
+      where: { projectId_company_id: { projectId, company_id: assignedCompanyId } },
     });
     if (dupCheck) return res.status(409).json({ success: false, error: { message: 'This company is already assigned to the project' } });
 
     const assignment = await prisma.projectAssignment.create({
-      data: { projectId, companyId: assignedCompanyId, role: role || 'MEMBER' },
+      data: { projectId, company_id: assignedCompanyId, role: role || 'MEMBER' },
     });
 
     await addHistoryEntry(projectId, {
@@ -261,18 +261,18 @@ async function removeAssignment(req, res) {
     if (existing.companyId !== companyId) return res.status(403).json({ success: false, error: { message: 'Only the owner company can manage assignments' } });
 
     const assignment = await prisma.projectAssignment.findUnique({
-      where: { projectId_companyId: { projectId, companyId: assignedCompanyId } },
-      include: { company: { select: { name: true } } },
+      where: { projectId_company_id: { projectId, company_id: assignedCompanyId } },
+      include: { companies: { select: { name: true } } },
     });
     if (!assignment) return res.status(404).json({ success: false, error: { message: 'Assignment not found' } });
 
     await prisma.projectAssignment.delete({
-      where: { projectId_companyId: { projectId, companyId: assignedCompanyId } },
+      where: { projectId_company_id: { projectId, company_id: assignedCompanyId } },
     });
 
     await addHistoryEntry(projectId, {
       action: 'COMPANY_UNASSIGNED',
-      description: `Company "${assignment.company?.name || assignedCompanyId}" removed from project`,
+      description: `Company "${assignment.companies?.name || assignedCompanyId}" removed from project`,
       userId: req.user?.userId,
       userName: req.user?.name,
       metadata: { removedCompanyId: assignedCompanyId },

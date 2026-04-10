@@ -34,8 +34,9 @@ function buildHtml(data, type) {
   const isInv   = type === 'invoice';
   const docNum  = isInv ? data.invoiceNumber  : data.quotationNumber;
   const docLbl  = isInv ? 'INVOICE'           : 'QUOTATION';
-  const co      = data.company    || {};
-  const addr    = co.address      || {};
+  const co          = data.company    || {};
+  const addr        = co.address      || {};
+  const udyamNumber = (co.settings?.udyamNumber || '').trim();
   const coBank  = isInv ? (data.bankDetails || co.bankDetails || {}) : {};
   const sClr    = STATUS_CLR[data.status] || '#94a3b8';
 
@@ -259,8 +260,9 @@ function buildHtml(data, type) {
       <!-- Company -->
       <table cellpadding="0" cellspacing="0" style="margin-top:12px">
         <tr><td style="font-size:17px;font-weight:800;color:#0f172a;padding-bottom:3px">${co.name || ''}</td></tr>
-        ${co.gst     ? `<tr><td style="font-size:11px;color:#64748b;padding-bottom:2px">GSTIN: <b>${co.gst}</b>${coStateName ? ' <span style="color:#3199d4">(' + coStateName + ')</span>' : ''}</td></tr>` : ''}
-        ${coAddrLine ? `<tr><td style="font-size:11px;color:#64748b;padding-bottom:2px;max-width:220px">${coAddrLine}</td></tr>` : ''}
+        ${co.gst      ? `<tr><td style="font-size:11px;color:#64748b;padding-bottom:2px">GSTIN: <b>${co.gst}</b>${coStateName ? ' <span style="color:#3199d4">(' + coStateName + ')</span>' : ''}</td></tr>` : ''}
+        ${udyamNumber ? `<tr><td style="font-size:11px;color:#64748b;padding-bottom:2px">Udyam Reg: <b style="color:#16a34a">${udyamNumber}</b></td></tr>` : ''}
+        ${coAddrLine  ? `<tr><td style="font-size:11px;color:#64748b;padding-bottom:2px;max-width:220px">${coAddrLine}</td></tr>` : ''}
         ${co.phone   ? `<tr><td style="font-size:11px;color:#64748b;padding-bottom:2px">Tel: ${co.phone}</td></tr>` : ''}
         ${co.email   ? `<tr><td style="font-size:11px;color:#3199d4;padding-bottom:1px">${co.email}</td></tr>` : ''}
         ${co.website ? `<tr><td style="font-size:11px;color:#3199d4">${co.website}</td></tr>` : ''}
@@ -315,8 +317,9 @@ function buildHtml(data, type) {
     <td style="width:47%;vertical-align:top;background:#e8f4fb;border-radius:12px;padding:16px 18px;border-left:4px solid #3199d4">
       <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#3199d4;margin-bottom:10px">FROM</div>
       <div style="font-size:14px;font-weight:800;color:#0f172a;margin-bottom:4px">${co.name || ''}</div>
-      ${co.gst    ? `<div style="font-size:11px;color:#64748b;margin-bottom:3px">GSTIN: ${co.gst}</div>` : ''}
-      ${co.phone  ? `<div style="font-size:11px;color:#64748b;margin-bottom:2px">${co.phone}</div>` : ''}
+      ${co.gst      ? `<div style="font-size:11px;color:#64748b;margin-bottom:3px">GSTIN: ${co.gst}</div>` : ''}
+      ${udyamNumber ? `<div style="font-size:11px;color:#16a34a;font-weight:600;margin-bottom:3px">Udyam: ${udyamNumber}</div>` : ''}
+      ${co.phone    ? `<div style="font-size:11px;color:#64748b;margin-bottom:2px">${co.phone}</div>` : ''}
       ${co.email  ? `<div style="font-size:11px;color:#3199d4;margin-bottom:2px">${co.email}</div>` : ''}
       ${coAddrLine? `<div style="font-size:11px;color:#64748b;line-height:1.5">${coAddrLine}</div>` : ''}
     </td>
@@ -410,7 +413,7 @@ async function generatePdf(html, filename) {
   }
 }
 
-const CO_SELECT = { name:true, logo:true, gst:true, phone:true, email:true, website:true, address:true, bankDetails:true };
+const CO_SELECT = { name:true, logo:true, gst:true, phone:true, email:true, website:true, address:true, bankDetails:true, settings:true };
 
 exports.generateQuotationPdf = async (quotationId) => {
   const qt = await prisma.quotation.findUnique({ where: { quotationId }, include: { company: { select: CO_SELECT } } });

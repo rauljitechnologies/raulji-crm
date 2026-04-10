@@ -8,7 +8,7 @@ import { SERVICE_OPTIONS, SERVICE_COLOR } from '@/lib/services';
 const STATUSES = [{value:'',label:'All Status'},{value:'NEW',label:'New'},{value:'CONTACTED',label:'Contacted'},{value:'QUALIFIED',label:'Qualified'},{value:'PROPOSAL_SENT',label:'Proposal'},{value:'NEGOTIATION',label:'Negotiation'},{value:'WON',label:'Won'},{value:'LOST',label:'Lost'}];
 const SOURCES  = [{value:'',label:'All Sources'},{value:'FACEBOOK',label:'Facebook'},{value:'GOOGLE',label:'Google'},{value:'WHATSAPP',label:'WhatsApp'},{value:'REFERRAL',label:'Referral'},{value:'ORGANIC',label:'Organic'},{value:'WEBSITE_FORM',label:'Website Form'},{value:'MANUAL',label:'Manual'}];
 
-const BLANK_FORM = { name:'',email:'',phone:'',city:'',state:'',country:'India',service:'',source:'MANUAL',status:'NEW',priority:'MEDIUM',dealValue:'',notes:'' };
+const BLANK_FORM = { name:'',email:'',phone:'',city:'',state:'',country:'India',service:'',source:'MANUAL',status:'NEW',priority:'MEDIUM',dealValue:'',message:'',notes:'' };
 
 export default function LeadsPage() {
   const [companies,  setCompanies]  = useState<any[]>([]);
@@ -30,7 +30,7 @@ export default function LeadsPage() {
   const { toast, ToastContainer } = useToast();
 
   const loadCompanies = async () => {
-    try { const d = await companyApi.list({ limit:'20' }); const cos = d.companies||[]; setCompanies(cos); if (cos[0]) setCompanyId(cos[0].companyId); } catch {}
+    try { const d = await companyApi.mine(); const cos = d.companies||[]; setCompanies(cos); if (cos[0]) setCompanyId(cos[0].companyId); } catch {}
   };
   const loadCountries = async () => {
     try { const d = await geoApi.countries(); setCountries(d.countries||[]); } catch {}
@@ -117,16 +117,16 @@ export default function LeadsPage() {
 
         <Card className="p-0">
           <div className="overflow-x-auto">
-            <table className="w-full text-xs border-collapse" style={{ tableLayout:'fixed', minWidth:800 }}>
-              <colgroup><col width="180"/><col width="90"/><col width="130"/><col width="100"/><col width="80"/><col width="70"/><col width="100"/><col width="90"/></colgroup>
+            <table className="w-full text-xs border-collapse" style={{ tableLayout:'fixed', minWidth:960 }}>
+              <colgroup><col width="180"/><col width="90"/><col width="130"/><col width="100"/><col width="80"/><col width="160"/><col width="70"/><col width="100"/><col width="90"/></colgroup>
               <thead><tr className="bg-slate-50 border-b border-slate-100">
-                {['Name / Location','Phone','Service','Source','Status','Score','Assigned','Created'].map(h => (
+                {['Name / Location','Phone','Service','Source','Status','Message','Score','Assigned','Created'].map(h => (
                   <th key={h} className="text-left px-3 py-2.5 text-xs font-semibold text-slate-400 uppercase tracking-wide">{h}</th>
                 ))}
               </tr></thead>
               <tbody>
-                {loading ? <tr><td colSpan={8} className="text-center py-12 text-slate-400">Loading...</td></tr>
-                : leads.length === 0 ? <tr><td colSpan={8} className="text-center py-12 text-slate-400">No leads found.</td></tr>
+                {loading ? <tr><td colSpan={9} className="text-center py-12 text-slate-400">Loading...</td></tr>
+                : leads.length === 0 ? <tr><td colSpan={9} className="text-center py-12 text-slate-400">No leads found.</td></tr>
                 : leads.map((l:any) => (
                   <tr key={l.leadId} className="border-b border-slate-50 hover:bg-slate-50">
                     <td className="px-3 py-2.5">
@@ -144,6 +144,9 @@ export default function LeadsPage() {
                     </td>
                     <td className="px-3 py-2.5 text-slate-500 capitalize">{l.source?.toLowerCase()}</td>
                     <td className="px-3 py-2.5"><Badge status={l.status?.toLowerCase()} label={l.status} /></td>
+                    <td className="px-3 py-2.5 text-slate-500">
+                      {l.message ? <span className="truncate block max-w-[148px]" title={l.message}>{l.message}</span> : <span className="text-slate-300">—</span>}
+                    </td>
                     <td className="px-3 py-2.5"><ScoreBar score={l.aiScore} /></td>
                     <td className="px-3 py-2.5 text-slate-500">{l.assignedTo?.name?.split(' ')[0]||'—'}</td>
                     <td className="px-3 py-2.5 text-slate-400">{new Date(l.createdAt).toLocaleDateString('en-IN')}</td>
@@ -211,6 +214,10 @@ export default function LeadsPage() {
             <Sel label="Priority" value={form.priority} onChange={(e:any)=>setForm((f:any)=>({...f,priority:e.target.value}))} options={[{value:'LOW',label:'Low'},{value:'MEDIUM',label:'Medium'},{value:'HIGH',label:'High'},{value:'URGENT',label:'Urgent'}]} />
           </div>
           <Input label="Deal Value (₹)" type="number" value={form.dealValue} onChange={(e:any)=>setForm((f:any)=>({...f,dealValue:e.target.value}))} placeholder="50000" />
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-medium text-slate-600">Message</label>
+            <textarea rows={2} className="border border-slate-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-indigo-500 resize-none" value={form.message} onChange={(e:any)=>setForm((f:any)=>({...f,message:e.target.value}))} placeholder="Lead's message or inquiry..." />
+          </div>
           <div className="flex flex-col gap-1">
             <label className="text-xs font-medium text-slate-600">Notes</label>
             <textarea rows={2} className="border border-slate-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-indigo-500 resize-none" value={form.notes} onChange={(e:any)=>setForm((f:any)=>({...f,notes:e.target.value}))} placeholder="Any notes..." />

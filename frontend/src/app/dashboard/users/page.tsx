@@ -18,7 +18,7 @@ const ROLES = [
   { value:'VIEWER',        label:'Viewer' },
 ];
 
-type PermKey = 'dashboard'|'companies'|'leads'|'pipeline'|'deals'|'clients'|'quotations'|'invoices'|'analytics'|'ai'|'users'|'settings'|'api'|'whatsapp'|'campaigns'|'automation'|'templates';
+type PermKey = 'dashboard'|'companies'|'leads'|'pipeline'|'deals'|'clients'|'quotations'|'invoices'|'analytics'|'users'|'settings'|'api'|'whatsapp'|'campaigns'|'templates';
 
 const ALL_PERMS: { key: PermKey; label: string; section: string }[] = [
   { key:'dashboard',  label:'Dashboard',      section:'Main' },
@@ -31,21 +31,19 @@ const ALL_PERMS: { key: PermKey; label: string; section: string }[] = [
   { key:'invoices',   label:'Invoices',       section:'Finance' },
   { key:'whatsapp',   label:'WhatsApp Hub',   section:'Automation' },
   { key:'campaigns',  label:'Campaigns',      section:'Automation' },
-  { key:'automation', label:'Automation',     section:'Automation' },
   { key:'templates',  label:'Templates',      section:'Automation' },
   { key:'analytics',  label:'Analytics',      section:'Insights' },
-  { key:'ai',         label:'AI Insights',    section:'Insights' },
   { key:'users',      label:'Users & Roles',  section:'System' },
   { key:'settings',   label:'Settings',       section:'System' },
   { key:'api',        label:'API & Webhooks', section:'System' },
 ];
 
 const ROLE_DEFAULTS: Record<string, Record<PermKey, boolean>> = {
-  SUPER_ADMIN:   { dashboard:true,companies:true,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,analytics:true,ai:true,users:true,settings:true,api:true,whatsapp:true,campaigns:true,automation:true,templates:true },
-  ADMIN:         { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,analytics:true,ai:true,users:true,settings:true,api:true,whatsapp:true,campaigns:true,automation:true,templates:true },
-  SALES_MANAGER: { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,analytics:true,ai:true,users:false,settings:false,api:false,whatsapp:true,campaigns:true,automation:false,templates:true },
-  SALES_REP:     { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:false,analytics:false,ai:false,users:false,settings:false,api:false,whatsapp:true,campaigns:false,automation:false,templates:false },
-  VIEWER:        { dashboard:true,companies:false,leads:true,pipeline:false,deals:false,clients:false,quotations:false,invoices:false,analytics:true,ai:false,users:false,settings:false,api:false,whatsapp:false,campaigns:false,automation:false,templates:false },
+  SUPER_ADMIN:   { dashboard:true,companies:true,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,analytics:true,users:true,settings:true,api:true,whatsapp:true,campaigns:true,templates:true },
+  ADMIN:         { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,analytics:true,users:true,settings:true,api:true,whatsapp:true,campaigns:true,templates:true },
+  SALES_MANAGER: { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,analytics:true,users:false,settings:false,api:false,whatsapp:true,campaigns:true,templates:true },
+  SALES_REP:     { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:false,analytics:false,users:false,settings:false,api:false,whatsapp:true,campaigns:false,templates:false },
+  VIEWER:        { dashboard:true,companies:false,leads:true,pipeline:false,deals:false,clients:false,quotations:false,invoices:false,analytics:true,users:false,settings:false,api:false,whatsapp:false,campaigns:false,templates:false },
 };
 
 function effectivePerms(user: any): Record<PermKey, boolean> {
@@ -81,10 +79,11 @@ export default function UsersPage() {
   const [form, setForm] = useState({ name:'', email:'', role:'SALES_REP', password:'' });
 
   // Assign company modal
-  const [assignUser,    setAssignUser]    = useState<any>(null);
-  const [assignCoId,    setAssignCoId]    = useState('');
-  const [assignRole,    setAssignRole]    = useState('SALES_REP');
-  const [assignSaving,  setAssignSaving]  = useState(false);
+  const [assignUser,        setAssignUser]        = useState<any>(null);
+  const [assignSelectedIds, setAssignSelectedIds] = useState<string[]>([]);
+  const [assignOriginalIds, setAssignOriginalIds] = useState<string[]>([]);
+  const [assignRole,        setAssignRole]        = useState('SALES_REP');
+  const [assignSaving,      setAssignSaving]      = useState(false);
 
   // Permission editor
   const [permUser,  setPermUser]  = useState<any>(null);
@@ -159,17 +158,32 @@ export default function UsersPage() {
   };
 
   const openAssign = (u: any) => {
+    const current = (u.companies || []).map((uc: any) => uc.companyId);
     setAssignUser(u);
-    setAssignCoId(u.companyId || (companies[0]?.companyId ?? ''));
+    setAssignSelectedIds(current);
+    setAssignOriginalIds(current);
     setAssignRole(u.role === 'SUPER_ADMIN' ? 'ADMIN' : (u.role || 'SALES_REP'));
   };
 
+  const toggleAssignCompany = (cid: string) => {
+    setAssignSelectedIds(prev =>
+      prev.includes(cid) ? prev.filter(x => x !== cid) : [...prev, cid]
+    );
+  };
+
   const saveAssign = async () => {
-    if (!assignCoId) return toast('Select a company', 'err');
+    if (assignSelectedIds.length === 0) return toast('Select at least one company', 'err');
     setAssignSaving(true);
     try {
-      await userApi.assignCompany(assignUser.userId, { companyId: assignCoId, role: assignRole });
-      toast('Company assigned!');
+      const toAdd    = assignSelectedIds.filter(id => !assignOriginalIds.includes(id));
+      const toRemove = assignOriginalIds.filter(id => !assignSelectedIds.includes(id));
+      await Promise.all([
+        ...toAdd.map(cid    => userApi.assignCompany(assignUser.userId, { companyId: cid, role: assignRole })),
+        ...toRemove.map(cid => userApi.removeFromCompany(assignUser.userId, cid)),
+      ]);
+      const added = toAdd.length, removed = toRemove.length;
+      const msg = [added && `${added} added`, removed && `${removed} removed`].filter(Boolean).join(', ');
+      toast(msg ? `Companies updated: ${msg}` : 'No changes made.');
       setAssignUser(null);
       load();
     } catch(e: any) { toast(e.message, 'err'); }
@@ -480,22 +494,39 @@ export default function UsersPage() {
           <div className="flex flex-col gap-4">
             <div className="bg-slate-50 rounded-lg px-3 py-2 text-xs text-slate-500">
               <span className="font-semibold text-slate-700">{assignUser.email}</span>
-              {assignUser.company?.name && (
-                <span className="ml-2 text-slate-400">· currently at <span className="font-medium text-slate-600">{assignUser.company.name}</span></span>
-              )}
             </div>
             <div>
-              <label className="text-xs font-semibold text-slate-600 mb-1 block">Company *</label>
-              <select value={assignCoId} onChange={e => setAssignCoId(e.target.value)}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-indigo-400">
-                <option value="">— Select company —</option>
-                {companies.map((c: any) => (
-                  <option key={c.companyId} value={c.companyId}>{c.name}</option>
-                ))}
-              </select>
+              <label className="text-xs font-semibold text-slate-600 mb-1 block">Companies *</label>
+              <div className="border border-slate-200 rounded-xl overflow-hidden">
+                <div className="flex flex-col divide-y divide-slate-100 max-h-52 overflow-y-auto">
+                  {companies.map((c: any) => {
+                    const checked = assignSelectedIds.includes(c.companyId);
+                    const wasOriginal = assignOriginalIds.includes(c.companyId);
+                    return (
+                      <label key={c.companyId} className={`flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-colors ${checked ? 'bg-indigo-50/60' : 'hover:bg-slate-50'}`}>
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => toggleAssignCompany(c.companyId)}
+                          className="accent-indigo-500 w-3.5 h-3.5 flex-shrink-0"
+                        />
+                        <span className="text-xs text-slate-700 flex-1">{c.name}</span>
+                        {wasOriginal && (
+                          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-sky-50 text-sky-600">current</span>
+                        )}
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="text-[10px] text-slate-400 mt-1">
+                {assignSelectedIds.length === 0
+                  ? 'No companies selected'
+                  : `${assignSelectedIds.length} ${assignSelectedIds.length === 1 ? 'company' : 'companies'} selected`}
+              </div>
             </div>
             <div>
-              <label className="text-xs font-semibold text-slate-600 mb-1 block">Role</label>
+              <label className="text-xs font-semibold text-slate-600 mb-1 block">Role (for newly assigned companies)</label>
               <select value={assignRole} onChange={e => setAssignRole(e.target.value)}
                 className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-indigo-400">
                 {ROLES.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
