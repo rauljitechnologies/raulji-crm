@@ -19,8 +19,8 @@ export function Topbar({ title, subtitle, actions }: { title: string; subtitle?:
 export function Card({ children, className = '', style }: { children: React.ReactNode; className?: string; style?: React.CSSProperties }) {
   const hasCustomPadding = /\bp-\d/.test(className);
   return (
-    <div className={`rounded-xl ${hasCustomPadding ? '' : 'p-4'} ${className}`}
-      style={{ background: '#ffffff', border: '1px solid #e2eaf2', boxShadow: '0 1px 3px rgba(25,43,63,0.05)', ...style }}>
+    <div className={`lux-card rounded-xl ${hasCustomPadding ? '' : 'p-4'} ${className}`}
+      style={{ background: '#ffffff', border: '1px solid #e2eaf2', ...style }}>
       {children}
     </div>
   );
@@ -33,9 +33,9 @@ interface BtnProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 export function Btn({ variant = 'secondary', size = 'md', loading, children, className = '', style, ...props }: BtnProps) {
   const styles: Record<BtnVariant, React.CSSProperties> = {
-    primary:   { background: '#3199d4', color: '#ffffff', border: '1px solid #3199d4' },
+    primary:   { background: 'linear-gradient(135deg, #3aa5df 0%, #2689c0 100%)', color: '#ffffff', border: '1px solid #2b8ec4' },
     secondary: { background: '#ffffff', color: '#192b3f', border: '1px solid #d4e1ec' },
-    danger:    { background: '#ef4444', color: '#ffffff', border: '1px solid #ef4444' },
+    danger:    { background: 'linear-gradient(135deg, #f05252 0%, #dc2626 100%)', color: '#ffffff', border: '1px solid #dc2626' },
     ghost:     { background: 'transparent', color: '#64748b', border: '1px solid transparent' },
   };
   const sz = size === 'sm'
@@ -45,7 +45,7 @@ export function Btn({ variant = 'secondary', size = 'md', loading, children, cla
     <button
       {...props}
       disabled={loading || props.disabled}
-      className={`inline-flex items-center gap-1.5 font-semibold rounded-lg transition-all disabled:opacity-50 cursor-pointer hover:opacity-90 ${className}`}
+      className={`lux-btn ${variant === 'primary' ? 'lux-btn-primary' : ''} inline-flex items-center gap-1.5 font-semibold rounded-lg disabled:opacity-50 cursor-pointer ${className}`}
       style={{ ...styles[variant], ...sz, ...style, fontFamily: 'inherit' }}>
       {loading && (
         <svg className="animate-spin w-3 h-3" viewBox="0 0 24 24" fill="none">
@@ -137,8 +137,8 @@ export function Modal({ open, onClose, title, children, footer, size = 'md' }: {
   if (!open) return null;
   const w = { sm: 440, md: 560, lg: 720, xl: 1040 }[size];
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(25,43,63,0.45)', backdropFilter: 'blur(4px)' }} onClick={onClose}>
-      <div className="rounded-2xl w-full max-h-[90vh] flex flex-col overflow-hidden" style={{ maxWidth: w, background: '#ffffff', boxShadow: '0 20px 60px -10px rgba(25,43,63,0.25)', border: '1px solid #e2eaf2' }} onClick={e => e.stopPropagation()}>
+    <div className="lux-modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(25,43,63,0.45)', backdropFilter: 'blur(4px)' }} onClick={onClose}>
+      <div className="lux-modal-panel rounded-2xl w-full max-h-[90vh] flex flex-col overflow-hidden" style={{ maxWidth: w, background: '#ffffff', boxShadow: '0 30px 80px -12px rgba(25,43,63,0.35)', border: '1px solid #e2eaf2' }} onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid #f0f5fa' }}>
           <h2 style={{ fontSize: 14.5, fontWeight: 700, color: '#192b3f' }}>{title}</h2>
@@ -178,7 +178,7 @@ const BADGE_STYLES: Record<string, React.CSSProperties> = {
 export function Badge({ status, label }: { status: string; label?: string }) {
   const s = BADGE_STYLES[status?.toLowerCase()] || { background: '#f0f5fa', color: '#64748b' };
   return (
-    <span style={{ ...s, display: 'inline-flex', padding: '2px 8px', borderRadius: 9999, fontSize: 11, fontWeight: 600, letterSpacing: '0.01em' }}>
+    <span style={{ ...s, display: 'inline-flex', padding: '2px 9px', borderRadius: 9999, fontSize: 11, fontWeight: 600, letterSpacing: '0.01em', boxShadow: 'inset 0 0 0 1px rgba(25,43,63,0.05)' }}>
       {label || status}
     </span>
   );
@@ -203,8 +203,8 @@ export function KpiCard({ label, value, change, up, color = '#3199d4' }: { label
   const bars = [30, 45, 35, 60, 48, 72, 55, 80, 65, 88, 72, 95];
   const max  = Math.max(...bars);
   return (
-    <div className="rounded-xl p-4 flex flex-col gap-1 transition-all"
-      style={{ background: '#ffffff', border: '1px solid #e2eaf2', boxShadow: '0 1px 3px rgba(25,43,63,0.05)' }}>
+    <div className="lux-card rounded-xl p-4 flex flex-col gap-1"
+      style={{ background: '#ffffff', border: '1px solid #e2eaf2' }}>
       <div style={{ fontSize: 11.5, fontWeight: 600, color: '#7a9baf', letterSpacing: '0.03em', textTransform: 'uppercase' }}>{label}</div>
       <div style={{ fontSize: 24, fontWeight: 800, color: '#192b3f', lineHeight: 1.1, letterSpacing: '-0.02em' }}>{value}</div>
       {change && (
@@ -234,12 +234,14 @@ export function useToast() {
   const ToastContainer = () => (
     <div style={{ position: 'fixed', bottom: 20, right: 20, display: 'flex', flexDirection: 'column', gap: 8, zIndex: 9999 }}>
       {toasts.map(t => (
-        <div key={t.id} style={{
+        <div key={t.id} className="animate-slide-in-right" style={{
           display: 'flex', alignItems: 'center', gap: 8,
-          padding: '10px 16px', borderRadius: 10,
-          background: t.type === 'ok' ? '#10b981' : '#ef4444',
+          padding: '11px 16px', borderRadius: 12,
+          background: t.type === 'ok'
+            ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+            : 'linear-gradient(135deg, #f05252 0%, #dc2626 100%)',
           color: '#ffffff', fontSize: 12.5, fontWeight: 600,
-          boxShadow: '0 4px 16px rgba(0,0,0,0.15)', minWidth: 200,
+          boxShadow: '0 10px 30px -8px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.2)', minWidth: 200,
         }}>
           {t.type === 'ok' ? '✓' : '✕'} {t.msg}
         </div>

@@ -20,6 +20,7 @@ const geo       = require('../controllers/geoController');
 const backup    = require('../controllers/backupController');
 const seo       = require('../controllers/seoController');
 const expense   = require('../controllers/expenseController');
+const finance   = require('../controllers/financeController');
 
 // Shorthand: authenticate + verify company ownership
 const authCo = [authenticate, requireCompanyAccess];
@@ -216,5 +217,12 @@ router.get(   '/companies/:companyId/bank-statements/:statementId/txns', ...auth
 router.get(   '/companies/:companyId/bank-transactions',                 ...authCo, expense.listAllTransactions);
 router.post(  '/companies/:companyId/reconcile',                         ...authCo, expense.reconcile);
 router.post(  '/companies/:companyId/reconcile/auto',                    ...authCo, expense.autoReconcile);
+
+// ── Finance (overview + direct investments) — admin only ──────────────────────
+router.get(   '/companies/:companyId/finance/overview',    ...authCo, requireRole(['SUPER_ADMIN', 'ADMIN']), finance.getOverview);
+router.get(   '/companies/:companyId/investments',         ...authCo, requireRole(['SUPER_ADMIN', 'ADMIN']), finance.listInvestments);
+router.post(  '/companies/:companyId/investments',         ...authCo, requireRole(['SUPER_ADMIN', 'ADMIN']), finance.createInvestment);
+router.put(   '/companies/:companyId/investments/:id',     ...authCo, requireRole(['SUPER_ADMIN', 'ADMIN']), finance.updateInvestment);
+router.delete('/companies/:companyId/investments/:id',     ...authCo, requireRole(['SUPER_ADMIN', 'ADMIN']), finance.deleteInvestment);
 
 module.exports = router;

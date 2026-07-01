@@ -47,6 +47,7 @@ model Company {
   members             UserCompany[]
   expenses        Expense[]
   bankStatements  BankStatement[]
+  investments     Investment[]
 
   @@map("companies")
 }
@@ -75,6 +76,7 @@ model User {
   companies        UserCompany[]
   createdInvoices  Invoice[]      @relation("CreatedInvoices")
   createdExpenses  Expense[]      @relation("CreatedExpenses")
+  createdInvestments Investment[] @relation("CreatedInvestments")
 
   @@map("users")
 }
@@ -665,6 +667,24 @@ model Expense {
 
   @@index([companyId, date])
   @@map("expenses")
+}
+
+model Investment {
+  investmentId    String   @id @default(cuid()) @map("investment_id")
+  companyId       String   @map("company_id")
+  date            DateTime
+  amount          Float
+  source          String                        // investor / owner name
+  type            String   @default("OWNER_FUNDS") // OWNER_FUNDS, EQUITY, LOAN, OTHER
+  notes           String?
+  createdByUserId String?  @map("created_by_user_id")
+  createdByUser   User?    @relation("CreatedInvestments", fields: [createdByUserId], references: [userId])
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  company         Company  @relation(fields: [companyId], references: [companyId])
+
+  @@index([companyId, date])
+  @@map("investments")
 }
 
 model BankStatement {

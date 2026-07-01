@@ -27,6 +27,114 @@ function CatBadge({ cat }: { cat: string }) {
   );
 }
 
+// ─── Animated count-up (easeOutCubic) ─────────────────────────
+function useCountUp(target: number, duration = 900) {
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    let raf = 0;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setVal(target * eased);
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, duration]);
+  return val;
+}
+
+// ─── Animated summary stat card ───────────────────────────────
+function StatCard({ label, value, color }: { label: string; value: number; color: string }) {
+  const v = useCountUp(value);
+  return (
+    <Card>
+      <div style={{ fontSize: 11, fontWeight: 600, color: '#7a9baf', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{label}</div>
+      <div style={{ fontSize: 22, fontWeight: 800, color, marginTop: 4, letterSpacing: '-0.02em' }}>{inr(v)}</div>
+    </Card>
+  );
+}
+
+// ─── Animated donut chart (category split) ────────────────────
+function DonutChart({ data, total, size = 176, stroke = 26 }: { data: { label: string; value: number; color: string }[]; total: number; size?: number; stroke?: number }) {
+  const [t, setT] = useState(0);
+  const key = data.map(d => `${d.label}:${d.value}`).join('|');
+  useEffect(() => {
+    let raf = 0;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const x = Math.min(1, (now - start) / 900);
+      setT(1 - Math.pow(1 - x, 3));
+      if (x < 1) raf = requestAnimationFrame(tick);
+    };
+    setT(0);
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [key]);
+  const centerVal = useCountUp(total);
+  const r = (size - stroke) / 2;
+  const C = 2 * Math.PI * r;
+  const sum = data.reduce((a, d) => a + d.value, 0) || 1;
+  let acc = 0;
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
+      <div style={{ position: 'relative', width: size, height: size, flexShrink: 0 }}>
+        <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+          <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#eef3f8" strokeWidth={stroke} />
+          {data.map(d => {
+            const frac = d.value / sum;
+            const len = frac * C * t;
+            const off = -acc * C * t;
+            acc += frac;
+            return <circle key={d.label} cx={size / 2} cy={size / 2} r={r} fill="none" stroke={d.color} strokeWidth={stroke} strokeDasharray={`${len} ${C - len}`} strokeDashoffset={off} />;
+          })}
+        </svg>
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#7a9baf', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total</div>
+          <div style={{ fontSize: 15, fontWeight: 800, color: '#192b3f' }}>{inr(centerVal)}</div>
+        </div>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 7, minWidth: 150, flex: 1 }}>
+        {data.map(d => (
+          <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
+            <span style={{ width: 10, height: 10, borderRadius: 3, background: d.color, flexShrink: 0 }} />
+            <span style={{ color: '#4a6a85', fontWeight: 600, flex: 1 }}>{d.label}</span>
+            <span style={{ color: '#192b3f', fontWeight: 700 }}>{inr(d.value)}</span>
+            <span style={{ color: '#94a3b8', width: 40, textAlign: 'right' }}>{Math.round((d.value / sum) * 100)}%</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Animated monthly-spend bar chart ─────────────────────────
+function MonthlyBarChart({ expenses, year }: { expenses: any[]; year: string }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { const id = requestAnimationFrame(() => setMounted(true)); return () => cancelAnimationFrame(id); }, [year]);
+  const labels = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+  const totals = new Array(12).fill(0);
+  (expenses || []).forEach((e: any) => {
+    const d = new Date(e.date);
+    if (String(d.getFullYear()) === String(year) && e.status !== 'CANCELLED') totals[d.getMonth()] += e.amount || 0;
+  });
+  const max = Math.max(...totals, 1);
+  const H = 140;
+  const fmt = (v: number) => v >= 100000 ? (v / 100000).toFixed(1) + 'L' : v >= 1000 ? Math.round(v / 1000) + 'k' : String(Math.round(v));
+  return (
+    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 5, height: H + 30 }}>
+      {totals.map((v, i) => (
+        <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, height: '100%', justifyContent: 'flex-end' }}>
+          <div style={{ fontSize: 9, color: '#94a3b8', fontWeight: 700, height: 12, opacity: v > 0 ? 1 : 0 }}>{v > 0 ? fmt(v) : ''}</div>
+          <div title={inr(v)} style={{ width: '100%', maxWidth: 30, height: mounted ? (v / max) * H : 0, minHeight: v > 0 ? 3 : 0, background: 'linear-gradient(180deg,#3199d4,#7cc4ea)', borderRadius: '5px 5px 0 0', transition: `height 0.7s cubic-bezier(.22,1,.36,1) ${i * 45}ms` }} />
+          <div style={{ fontSize: 10, color: '#7a9baf', fontWeight: 600 }}>{labels[i]}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ─── CSV Parser ───────────────────────────────────────────────
 function parseCSV(raw: string): { date: string; description: string; debit: number; credit: number; balance: number | null }[] {
   const lines = raw.split(/\r?\n/).filter(l => l.trim());
@@ -647,34 +755,35 @@ export default function ExpensesPage() {
         {/* ── TAB: EXPENSES ── */}
         {tab === 'expenses' && (
           <div className="flex flex-col gap-4">
-            {/* Summary cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {/* Summary cards (animated count-up) */}
+            <div className="stagger grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
-                { label: 'Total Expenses', value: inr(totalExp), color: '#3199d4' },
-                { label: 'GST Input Credit', value: inr(totalGst), color: '#059669' },
-                { label: 'Pending', value: inr(pending), color: '#f59e0b' },
-                { label: 'This Month', value: inr(thisMonth), color: '#7c3aed' },
+                { label: 'Total Expenses', value: totalExp, color: '#3199d4' },
+                { label: 'GST Input Credit', value: totalGst, color: '#059669' },
+                { label: 'Pending', value: pending, color: '#f59e0b' },
+                { label: 'This Month', value: thisMonth, color: '#7c3aed' },
               ].map(c => (
-                <Card key={c.label}>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: '#7a9baf', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{c.label}</div>
-                  <div style={{ fontSize: 22, fontWeight: 800, color: c.color, marginTop: 4, letterSpacing: '-0.02em' }}>{c.value}</div>
-                </Card>
+                <StatCard key={c.label} label={c.label} value={c.value} color={c.color} />
               ))}
             </div>
 
-            {/* Category breakdown */}
+            {/* Charts: category donut + monthly spend bars */}
             {expData?.byCategory && Object.keys(expData.byCategory).length > 0 && (
-              <Card>
-                <div style={{ fontSize: 12, fontWeight: 700, color: '#192b3f', marginBottom: 10 }}>By Category</div>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  {Object.entries(expData.byCategory as Record<string, number>).map(([cat, amt]) => (
-                    <div key={cat} style={{ background: (CAT_COLORS[cat] || '#64748b') + '15', border: `1px solid ${(CAT_COLORS[cat] || '#64748b')}30`, borderRadius: 8, padding: '6px 12px' }}>
-                      <div style={{ fontSize: 10, fontWeight: 700, color: CAT_COLORS[cat] || '#64748b' }}>{cat}</div>
-                      <div style={{ fontSize: 13, fontWeight: 800, color: '#192b3f' }}>{inr(amt)}</div>
-                    </div>
-                  ))}
-                </div>
-              </Card>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#192b3f', marginBottom: 12 }}>Expenses by Category</div>
+                  <DonutChart
+                    total={totalExp}
+                    data={Object.entries(expData.byCategory as Record<string, number>)
+                      .sort((a, b) => b[1] - a[1])
+                      .map(([cat, amt]) => ({ label: cat, value: amt, color: CAT_COLORS[cat] || '#64748b' }))}
+                  />
+                </Card>
+                <Card>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#192b3f', marginBottom: 12 }}>Monthly Spend · {filterYear}</div>
+                  <MonthlyBarChart expenses={expData?.expenses || []} year={filterYear} />
+                </Card>
+              </div>
             )}
 
             {/* Filters */}

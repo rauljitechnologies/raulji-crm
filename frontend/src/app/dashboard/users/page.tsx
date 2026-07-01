@@ -18,7 +18,7 @@ const ROLES = [
   { value:'VIEWER',        label:'Viewer' },
 ];
 
-type PermKey = 'dashboard'|'companies'|'leads'|'pipeline'|'deals'|'project'|'clients'|'quotations'|'invoices'|'expenses'|'analytics'|'users'|'settings'|'api'|'whatsapp'|'campaigns'|'templates'|'backup';
+type PermKey = 'dashboard'|'companies'|'leads'|'pipeline'|'deals'|'project'|'clients'|'quotations'|'invoices'|'expenses'|'finance'|'analytics'|'users'|'settings'|'api'|'whatsapp'|'campaigns'|'templates'|'backup';
 
 const ALL_PERMS: { key: PermKey; label: string; section: string }[] = [
   { key:'dashboard',  label:'Dashboard',      section:'Main' },
@@ -31,6 +31,7 @@ const ALL_PERMS: { key: PermKey; label: string; section: string }[] = [
   { key:'quotations', label:'Quotations',     section:'Finance' },
   { key:'invoices',   label:'Invoices',       section:'Finance' },
   { key:'expenses',   label:'Expenses',       section:'Finance' },
+  { key:'finance',    label:'Finance Overview', section:'Finance' },
   { key:'whatsapp',   label:'WhatsApp Hub',   section:'Automation' },
   { key:'campaigns',  label:'Campaigns',      section:'Automation' },
   { key:'templates',  label:'Templates',      section:'Automation' },
@@ -42,11 +43,11 @@ const ALL_PERMS: { key: PermKey; label: string; section: string }[] = [
 ];
 
 const ROLE_DEFAULTS: Record<string, Record<PermKey, boolean>> = {
-  SUPER_ADMIN:   { dashboard:true,companies:true,leads:true,pipeline:true,deals:true,project:true,clients:true,quotations:true,invoices:true,expenses:true,analytics:true,users:true,settings:true,api:true,whatsapp:true,campaigns:true,templates:true,backup:true },
-  ADMIN:         { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,project:true,clients:true,quotations:true,invoices:true,expenses:true,analytics:true,users:true,settings:true,api:true,whatsapp:true,campaigns:true,templates:true,backup:false },
-  SALES_MANAGER: { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,project:true,clients:true,quotations:true,invoices:true,expenses:true,analytics:true,users:false,settings:false,api:false,whatsapp:true,campaigns:true,templates:true,backup:false },
-  SALES_REP:     { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,project:false,clients:true,quotations:true,invoices:false,expenses:false,analytics:false,users:false,settings:false,api:false,whatsapp:true,campaigns:false,templates:false,backup:false },
-  VIEWER:        { dashboard:true,companies:false,leads:true,pipeline:false,deals:false,project:false,clients:false,quotations:false,invoices:false,expenses:false,analytics:true,users:false,settings:false,api:false,whatsapp:false,campaigns:false,templates:false,backup:false },
+  SUPER_ADMIN:   { dashboard:true,companies:true,leads:true,pipeline:true,deals:true,project:true,clients:true,quotations:true,invoices:true,expenses:true,finance:true,analytics:true,users:true,settings:true,api:true,whatsapp:true,campaigns:true,templates:true,backup:true },
+  ADMIN:         { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,project:true,clients:true,quotations:true,invoices:true,expenses:true,finance:true,analytics:true,users:true,settings:true,api:true,whatsapp:true,campaigns:true,templates:true,backup:false },
+  SALES_MANAGER: { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,project:true,clients:true,quotations:true,invoices:true,expenses:true,finance:false,analytics:true,users:false,settings:false,api:false,whatsapp:true,campaigns:true,templates:true,backup:false },
+  SALES_REP:     { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,project:false,clients:true,quotations:true,invoices:false,expenses:false,finance:false,analytics:false,users:false,settings:false,api:false,whatsapp:true,campaigns:false,templates:false,backup:false },
+  VIEWER:        { dashboard:true,companies:false,leads:true,pipeline:false,deals:false,project:false,clients:false,quotations:false,invoices:false,expenses:false,finance:false,analytics:true,users:false,settings:false,api:false,whatsapp:false,campaigns:false,templates:false,backup:false },
 };
 
 function effectivePerms(user: any): Record<PermKey, boolean> {

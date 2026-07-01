@@ -214,3 +214,12 @@ export const expenseApi = {
   autoReconcile:  (cid: string)                            => request<any>(`/companies/${cid}/reconcile/auto`, { method: 'POST', body: '{}' }),
   listAllTxns:    (cid: string, params?: any)              => request<any>(`/companies/${cid}/bank-transactions?${new URLSearchParams(params||{})}`),
 };
+
+// Finance (overview + direct investments)
+export const financeApi = {
+  overview:    (cid: string, params?: any)          => request<any>(`/companies/${cid}/finance/overview?${new URLSearchParams(params||{})}`),
+  listInv:     (cid: string, params?: any)          => request<any>(`/companies/${cid}/investments?${new URLSearchParams(params||{})}`),
+  createInv:   (cid: string, body: any)             => request<any>(`/companies/${cid}/investments`, { method: 'POST', body: JSON.stringify(body) }),
+  updateInv:   (cid: string, id: string, body: any) => request<any>(`/companies/${cid}/investments/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+  removeInv:   (cid: string, id: string)            => request<any>(`/companies/${cid}/investments/${id}`, { method: 'DELETE' }),
+};
