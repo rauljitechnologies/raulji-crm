@@ -1,34 +1,41 @@
 // backend/services/emailService.js
-// Brevo (Sendinblue) SMTP via nodemailer
+// Gmail SMTP via nodemailer.
+// Logs in as SMTP_USER (rauljigroup@gmail.com, using a Gmail App Password) but
+// sends "From" SMTP_FROM (admin@raulji.com) — that address must be a verified
+// "Send mail as" alias on the Gmail account, or Gmail rewrites From to SMTP_USER.
 
 const nodemailer = require('nodemailer');
 
 let _transporter = null;
 
+const SMTP_HOST = process.env.SMTP_HOST || 'smtp.gmail.com';
+const SMTP_PORT = Number(process.env.SMTP_PORT) || 465;
+const SMTP_USER = process.env.SMTP_USER || '';
+const SMTP_PASS = process.env.SMTP_PASS || '';
+
 const getTransporter = () => {
   if (_transporter) return _transporter;
   _transporter = nodemailer.createTransport({
-    host:   process.env.BREVO_SMTP_HOST || 'smtp-relay.brevo.com',
-    port:   Number(process.env.BREVO_SMTP_PORT) || 587,
-    secure: false,
-    auth: {
-      user: process.env.BREVO_SMTP_USER || '',
-      pass: process.env.BREVO_SMTP_PASS || '',
-    },
+    host:   SMTP_HOST,
+    port:   SMTP_PORT,
+    secure: SMTP_PORT === 465, // implicit TLS on 465, STARTTLS otherwise
+    auth: { user: SMTP_USER, pass: SMTP_PASS },
   });
   return _transporter;
 };
 
-const FROM = () =>
-  `"${process.env.BREVO_FROM_NAME || 'CRM'}" <${process.env.BREVO_FROM_EMAIL || 'noreply@example.com'}>`;
+const FROM = () => {
+  const name  = process.env.SMTP_FROM_NAME || 'CRM';
+  const email = process.env.SMTP_FROM || SMTP_USER || 'noreply@example.com';
+  return `"${name}" <${email}>`;
+};
 
-const isConfigured = () =>
-  !!(process.env.BREVO_SMTP_USER && process.env.BREVO_SMTP_PASS);
+const isConfigured = () => !!(SMTP_USER && SMTP_PASS);
 
 // ── Send OTP for password reset ────────────────────────────────
 exports.sendOtp = async ({ to, name, otp }) => {
   if (!isConfigured()) {
-    console.warn('[email] Brevo not configured — OTP not sent. OTP:', otp);
+    console.warn('[email] SMTP not configured — OTP not sent. OTP:', otp);
     return;
   }
   await getTransporter().sendMail({
@@ -50,7 +57,7 @@ exports.sendOtp = async ({ to, name, otp }) => {
 // ── Send user invite ───────────────────────────────────────────
 exports.sendInvite = async ({ to, name, inviteToken, companyName }) => {
   if (!isConfigured()) {
-    console.warn('[email] Brevo not configured — invite not sent. Token:', inviteToken);
+    console.warn('[email] SMTP not configured — invite not sent. Token:', inviteToken);
     return;
   }
   const baseUrl   = process.env.FRONTEND_URL || 'http://localhost:3000';
@@ -76,7 +83,7 @@ exports.sendInvite = async ({ to, name, inviteToken, companyName }) => {
 // ── Send invoice to client ─────────────────────────────────────
 exports.sendInvoiceEmail = async ({ to, clientName, invoiceNumber, grandTotal, currency, dueDate, pdfBuffer, companyName }) => {
   if (!isConfigured()) {
-    console.warn('[email] Brevo not configured — invoice email not sent.');
+    console.warn('[email] SMTP not configured — invoice email not sent.');
     return;
   }
   const fmt = (n) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: currency || 'INR', maximumFractionDigits: 0 }).format(n);

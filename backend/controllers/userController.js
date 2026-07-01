@@ -147,15 +147,26 @@ exports.updatePermissions = async (req, res) => {
     if (!permissions || typeof permissions !== 'object' || Array.isArray(permissions))
       return res.status(400).json({ success: false, error: { message: 'permissions must be a plain object.' } });
 
-    // Whitelist allowed permission keys
-    const ALLOWED_KEYS = ['leads', 'deals', 'invoices', 'quotations', 'clients', 'analytics', 'settings', 'users', 'campaigns', 'templates', 'automation'];
+    // Whitelist allowed permission keys — must stay in sync with the Sidebar's PermKey set
+    const ALLOWED_KEYS = ['dashboard', 'companies', 'leads', 'pipeline', 'deals', 'clients', 'quotations', 'invoices', 'expenses', 'analytics', 'users', 'settings', 'api', 'whatsapp', 'campaigns', 'templates', 'automation', 'backup', 'project'];
     const sanitized = {};
     for (const key of ALLOWED_KEYS) {
       if (permissions[key] !== undefined) {
         sanitized[key] = Boolean(permissions[key]);
       }
     }
-    await prisma.user.updateMany({ where: { userId, companyId }, data: { permissions: sanitized } });
+    // Verify the target user belongs to this company — directly (primary companyId)
+    // OR through the UserCompany junction — so an admin can only edit permissions
+    // for their own company's members. Permissions live on a single field on the
+    // User, so once membership is confirmed we update by userId (not companyId),
+    // which also covers multi-company users whose primary companyId is null.
+    const member = await prisma.user.findFirst({
+      where: { userId, OR: [{ companyId }, { companies: { some: { companyId } } }] },
+      select: { userId: true },
+    });
+    if (!member) return res.status(404).json({ success: false, error: { message: 'User is not a member of this company.' } });
+
+    await prisma.user.update({ where: { userId }, data: { permissions: sanitized } });
     return res.json({ success: true, message: 'Permissions updated.' });
   } catch { return res.status(500).json({ success: false, error: { message: 'Update failed.' } }); }
 };
@@ -226,6 +237,34 @@ exports.permanentDelete = async (req, res) => {
     await prisma.user.delete({ where: { userId } });
     return res.json({ success: true, message: 'User permanently deleted.' });
   } catch { return res.status(500).json({ success: false, error: { message: 'Delete failed.' } }); }
+};
+
+// ── Set User Password (SUPER_ADMIN) ───────────────────────────
+// Lets a Super Admin set/reset the password for any user without the old password.
+exports.setUserPassword = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { newPassword } = req.body;
+    if (!newPassword)
+      return res.status(400).json({ success: false, error: { message: 'newPassword required.' } });
+    if (newPassword.length < 8)
+      return res.status(400).json({ success: false, error: { message: 'Password must be at least 8 characters.' } });
+
+    const user = await prisma.user.findUnique({ where: { userId } });
+    if (!user) return res.status(404).json({ success: false, error: { message: 'User not found.' } });
+
+    // A Super Admin may reset their own password but not another Super Admin's.
+    if (user.role === 'SUPER_ADMIN' && user.userId !== req.user?.userId)
+      return res.status(403).json({ success: false, error: { message: "You cannot reset another Super Admin's password." } });
+
+    await prisma.user.update({
+      where: { userId },
+      data: { password: await bcrypt.hash(newPassword, 12), inviteToken: null, inviteExpiry: null }
+    });
+    // Revoke all of the target user's refresh tokens to force re-login everywhere
+    await prisma.refreshToken.deleteMany({ where: { userId } });
+    return res.json({ success: true, message: 'Password updated.' });
+  } catch { return res.status(500).json({ success: false, error: { message: 'Password update failed.' } }); }
 };
 
 exports.acceptInvite = async (req, res) => {

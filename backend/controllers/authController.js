@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt    = require('jsonwebtoken');
 const crypto = require('crypto');
 const prisma = require('../lib/prisma');
+const emailService = require('../services/emailService');
 
 // Access token uses JWT_SECRET; refresh token uses its own separate secret
 const signAccess  = (p) => jwt.sign(p, process.env.JWT_SECRET,         { expiresIn: process.env.JWT_EXPIRES_IN           || '1h',  algorithm: 'HS256' });
@@ -155,8 +156,12 @@ exports.forgotPassword = async (req, res) => {
       where: { userId: user.userId },
       data: { inviteToken: `otp:${otp}`, inviteExpiry: new Date(Date.now() + 10 * 60000) } // 10 min expiry
     });
-    // In production: send via email/SMS. Removed console.log to avoid OTP leaking in logs.
-    // TODO: plug in your SMTP/SMS service here
+    // Send the OTP via email. Don't fail the request (or leak existence) if SMTP errors.
+    try {
+      await emailService.sendOtp({ to: user.email, name: user.name, otp });
+    } catch (mailErr) {
+      console.error('[Auth] forgotPassword: failed to send OTP email:', mailErr);
+    }
     return res.json({ success: true, message: 'If that email exists, an OTP has been sent.' });
   } catch { return res.status(500).json({ success: false, error: { message: 'Request failed.' } }); }
 };

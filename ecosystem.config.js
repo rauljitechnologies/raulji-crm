@@ -1,0 +1,32 @@
+module.exports = {
+  apps: [
+    {
+      name: 'raulji-crm-api',
+      script: 'server.js',
+      cwd: '/var/application/raulji-crm',
+      node_args: '-r ./patch-prisma',
+      instances: 1,
+      exec_mode: 'fork',
+      env: { NODE_ENV: 'production', PORT: 4000 },
+      error_file: '/var/log/raulji-crm/api-error.log',
+      out_file: '/var/log/raulji-crm/api-out.log',
+      log_date_format: 'YYYY-MM-DD HH:mm:ss',
+      restart_delay: 3000,
+      max_restarts: 10,
+    },
+    {
+      name: 'raulji-crm-web',
+      script: 'node_modules/.bin/next',
+      args: 'start -p 3001',
+      cwd: '/var/application/raulji-crm/frontend',
+      instances: 1,
+      exec_mode: 'fork',
+      env: { NODE_ENV: 'production', PORT: 3001 },
+      error_file: '/var/log/raulji-crm/web-error.log',
+      out_file: '/var/log/raulji-crm/web-out.log',
+      log_date_format: 'YYYY-MM-DD HH:mm:ss',
+      restart_delay: 3000,
+      max_restarts: 10,
+    },
+  ],
+};

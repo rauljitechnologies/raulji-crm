@@ -52,6 +52,7 @@ router.get(   '/admin/users',                                          authentic
 router.put(   '/admin/users/:userId/assign-company',                   authenticate, requireRole(['SUPER_ADMIN']), user.assignCompany);
 router.delete('/admin/users/:userId/companies/:companyId',             authenticate, requireRole(['SUPER_ADMIN']), user.removeFromCompany);
 router.post(  '/admin/users/:userId/unremove',                         authenticate, requireRole(['SUPER_ADMIN']), user.unremove);
+router.put(   '/admin/users/:userId/password',                         authenticate, requireRole(['SUPER_ADMIN']), user.setUserPassword);
 router.delete('/admin/users/:userId/permanent',                        authenticate, requireRole(['SUPER_ADMIN']), user.permanentDelete);
 router.get(   '/companies/:companyId/users',                     ...authCo, user.getUsers);
 router.post(  '/companies/:companyId/users/invite',              ...authCo, requireRole(['SUPER_ADMIN', 'ADMIN']), user.invite);
@@ -96,6 +97,7 @@ router.get(   '/companies/:companyId/invoices/next-number',   ...authCo, require
 router.get(   '/companies/:companyId/invoices/:id',           ...authCo, invoice.getInvoice);
 router.put(   '/companies/:companyId/invoices/:id',           ...authCo, invoice.updateInvoice);
 router.delete('/companies/:companyId/invoices/:id',           ...authCo, invoice.removeInvoice);
+router.put(   '/companies/:companyId/invoices/:id/assign',    ...authCo, requireRole(['SUPER_ADMIN']), invoice.assignInvoice);
 router.put(   '/companies/:companyId/invoices/:id/mark-paid', ...authCo, invoice.markPaid);
 router.post(  '/companies/:companyId/invoices/:id/send',      ...authCo, invoice.sendInvoice);
 router.get(   '/companies/:companyId/invoices/:id/pdf',       ...authCo, invoice.getInvoicePdf);
@@ -203,6 +205,8 @@ router.post(  '/companies/:companyId/seo/url-check',               ...authCo, se
 // ── Expenses ──────────────────────────────────────────────────────────────────
 router.get(   '/companies/:companyId/expenses',                          ...authCo, expense.listExpenses);
 router.post(  '/companies/:companyId/expenses',                          ...authCo, expense.createExpense);
+router.post(  '/companies/:companyId/expenses/import',                   ...authCo, expense.importExpenses);
+router.put(   '/companies/:companyId/expenses/:id/assign',              ...authCo, requireRole(['SUPER_ADMIN', 'ADMIN']), expense.assignExpense);
 router.put(   '/companies/:companyId/expenses/:id',                      ...authCo, expense.updateExpense);
 router.delete('/companies/:companyId/expenses/:id',                      ...authCo, expense.deleteExpense);
 router.get(   '/companies/:companyId/bank-statements',                   ...authCo, expense.listStatements);

@@ -18,7 +18,7 @@ const ROLES = [
   { value:'VIEWER',        label:'Viewer' },
 ];
 
-type PermKey = 'dashboard'|'companies'|'leads'|'pipeline'|'deals'|'clients'|'quotations'|'invoices'|'analytics'|'users'|'settings'|'api'|'whatsapp'|'campaigns'|'templates';
+type PermKey = 'dashboard'|'companies'|'leads'|'pipeline'|'deals'|'project'|'clients'|'quotations'|'invoices'|'expenses'|'analytics'|'users'|'settings'|'api'|'whatsapp'|'campaigns'|'templates'|'backup';
 
 const ALL_PERMS: { key: PermKey; label: string; section: string }[] = [
   { key:'dashboard',  label:'Dashboard',      section:'Main' },
@@ -26,9 +26,11 @@ const ALL_PERMS: { key: PermKey; label: string; section: string }[] = [
   { key:'leads',      label:'Leads',          section:'Main' },
   { key:'pipeline',   label:'Pipeline',       section:'Main' },
   { key:'deals',      label:'Deals',          section:'Main' },
+  { key:'project',    label:'Projects',       section:'Main' },
   { key:'clients',    label:'Clients',        section:'Finance' },
   { key:'quotations', label:'Quotations',     section:'Finance' },
   { key:'invoices',   label:'Invoices',       section:'Finance' },
+  { key:'expenses',   label:'Expenses',       section:'Finance' },
   { key:'whatsapp',   label:'WhatsApp Hub',   section:'Automation' },
   { key:'campaigns',  label:'Campaigns',      section:'Automation' },
   { key:'templates',  label:'Templates',      section:'Automation' },
@@ -36,14 +38,15 @@ const ALL_PERMS: { key: PermKey; label: string; section: string }[] = [
   { key:'users',      label:'Users & Roles',  section:'System' },
   { key:'settings',   label:'Settings',       section:'System' },
   { key:'api',        label:'API & Webhooks', section:'System' },
+  { key:'backup',     label:'Backups',        section:'System' },
 ];
 
 const ROLE_DEFAULTS: Record<string, Record<PermKey, boolean>> = {
-  SUPER_ADMIN:   { dashboard:true,companies:true,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,analytics:true,users:true,settings:true,api:true,whatsapp:true,campaigns:true,templates:true },
-  ADMIN:         { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,analytics:true,users:true,settings:true,api:true,whatsapp:true,campaigns:true,templates:true },
-  SALES_MANAGER: { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,analytics:true,users:false,settings:false,api:false,whatsapp:true,campaigns:true,templates:true },
-  SALES_REP:     { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:false,analytics:false,users:false,settings:false,api:false,whatsapp:true,campaigns:false,templates:false },
-  VIEWER:        { dashboard:true,companies:false,leads:true,pipeline:false,deals:false,clients:false,quotations:false,invoices:false,analytics:true,users:false,settings:false,api:false,whatsapp:false,campaigns:false,templates:false },
+  SUPER_ADMIN:   { dashboard:true,companies:true,leads:true,pipeline:true,deals:true,project:true,clients:true,quotations:true,invoices:true,expenses:true,analytics:true,users:true,settings:true,api:true,whatsapp:true,campaigns:true,templates:true,backup:true },
+  ADMIN:         { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,project:true,clients:true,quotations:true,invoices:true,expenses:true,analytics:true,users:true,settings:true,api:true,whatsapp:true,campaigns:true,templates:true,backup:false },
+  SALES_MANAGER: { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,project:true,clients:true,quotations:true,invoices:true,expenses:true,analytics:true,users:false,settings:false,api:false,whatsapp:true,campaigns:true,templates:true,backup:false },
+  SALES_REP:     { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,project:false,clients:true,quotations:true,invoices:false,expenses:false,analytics:false,users:false,settings:false,api:false,whatsapp:true,campaigns:false,templates:false,backup:false },
+  VIEWER:        { dashboard:true,companies:false,leads:true,pipeline:false,deals:false,project:false,clients:false,quotations:false,invoices:false,expenses:false,analytics:true,users:false,settings:false,api:false,whatsapp:false,campaigns:false,templates:false,backup:false },
 };
 
 function effectivePerms(user: any): Record<PermKey, boolean> {
@@ -89,6 +92,11 @@ export default function UsersPage() {
   const [permUser,  setPermUser]  = useState<any>(null);
   const [permState, setPermState] = useState<Record<string,boolean>>({});
   const [permSaving,setPermSaving]= useState(false);
+
+  // Set-password modal (SUPER_ADMIN)
+  const [pwUser,   setPwUser]   = useState<any>(null);
+  const [pwValue,  setPwValue]  = useState('');
+  const [pwSaving, setPwSaving] = useState(false);
 
   const { toast, ToastContainer } = useToast();
 
@@ -202,10 +210,14 @@ export default function UsersPage() {
   };
 
   const savePerms = async () => {
-    if (!permUser?.companyId) return;
+    // Permissions are stored on a single field on the user, so any company the user
+    // belongs to works as the scope. Fall back to the first junction company for
+    // multi-company users whose primary companyId is null.
+    const cid = permUser?.companyId || permUser?.companies?.[0]?.companyId;
+    if (!cid) return toast('This user has no company. Assign a company first.', 'err');
     setPermSaving(true);
     try {
-      await userApi.updatePermissions(permUser.companyId, permUser.userId, permState);
+      await userApi.updatePermissions(cid, permUser.userId, permState);
       toast('Permissions saved!');
       setPermUser(null);
       load();
@@ -216,6 +228,20 @@ export default function UsersPage() {
   const resetToRole = () => {
     if (!permUser) return;
     setPermState({ ...ROLE_DEFAULTS[permUser.role] || ROLE_DEFAULTS.VIEWER });
+  };
+
+  const savePassword = async () => {
+    if (!pwUser) return;
+    if (pwValue.length < 8) return toast('Password must be at least 8 characters', 'err');
+    setPwSaving(true);
+    try {
+      await userApi.setPassword(pwUser.userId, pwValue);
+      toast('Password updated!');
+      setPwUser(null);
+      setPwValue('');
+      load();
+    } catch(e: any) { toast(e.message, 'err'); }
+    finally { setPwSaving(false); }
   };
 
   const sections = groupBySection(ALL_PERMS);
@@ -342,6 +368,12 @@ export default function UsersPage() {
                               Edit Perms
                             </button>
                           )}
+                          {u.isActive && isSuperAdmin && (u.role !== 'SUPER_ADMIN' || u.userId === me?.userId) && (
+                            <button onClick={() => { setPwUser(u); setPwValue(''); }}
+                              className="text-xs text-amber-500 hover:text-amber-700 font-semibold transition-colors px-2 py-1 rounded hover:bg-amber-50">
+                              Set Password
+                            </button>
+                          )}
                           {u.isActive && u.role !== 'SUPER_ADMIN' && u.companyId && (
                             <button onClick={() => remove(u)}
                               className="text-xs text-red-400 hover:text-red-600 font-medium transition-colors px-2 py-1 rounded hover:bg-red-50">
@@ -435,6 +467,27 @@ export default function UsersPage() {
               : 'Leave password blank to send an invite email — user sets their own password on accept.'}
           </div>
         </div>
+      </Modal>
+
+      {/* Set Password Modal (SUPER_ADMIN) */}
+      <Modal open={!!pwUser} onClose={() => { setPwUser(null); setPwValue(''); }} title={`Set Password — ${pwUser?.name}`}
+        footer={<>
+          <Btn variant="secondary" onClick={() => { setPwUser(null); setPwValue(''); }}>Cancel</Btn>
+          <Btn variant="primary" loading={pwSaving} onClick={savePassword}>Update Password</Btn>
+        </>}>
+        {pwUser && (
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-2 bg-slate-50 rounded-lg px-3 py-2 text-xs text-slate-600 flex-wrap">
+              <span>User:</span>
+              <span className="font-semibold text-slate-800">{pwUser.email}</span>
+            </div>
+            <Input label="New Password" type="password" value={pwValue}
+              onChange={e => setPwValue(e.target.value)} placeholder="Min 8 characters" />
+            <p className="text-[11px] text-slate-400">
+              Sets this user's password directly. They'll be signed out everywhere and must log in with the new password.
+            </p>
+          </div>
+        )}
       </Modal>
 
       {/* Permission Editor Modal */}

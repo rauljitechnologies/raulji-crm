@@ -28,32 +28,55 @@ const nextInvNum = async (companyId) => {
   return `${prefix}/${year}-${String(c + 1).padStart(4, '0')}`;
 };
 
+// Non-admins may only see/mutate invoices they created OR were assigned to;
+// SUPER_ADMIN and ADMIN can act on any of the company's invoices. Returned as a
+// spreadable filter fragment so it AND-combines with companyId (and other clauses).
+const ownerScope = (req) => {
+  const isAdmin = req.user?.role === 'SUPER_ADMIN' || req.user?.role === 'ADMIN';
+  return isAdmin ? {} : {
+    OR: [
+      { createdByUserId: req.user?.userId },
+      { assignedUserIds: { has: req.user?.userId } },
+    ],
+  };
+};
+
 // ── GET ALL ───────────────────────────────────────────────────
 exports.getInvoices = async (req, res) => {
   try {
     const { companyId } = req.params;
     const { page = 1, limit = 100, status, search, clientName } = req.query;
 
-    // SUPER_ADMIN and ADMIN see all invoices; other roles see only their own
-    const isAdmin = req.user?.role === 'SUPER_ADMIN' || req.user?.role === 'ADMIN';
-    const userFilter = isAdmin ? {} : { createdByUserId: req.user?.userId };
+    // SUPER_ADMIN and ADMIN see all invoices; other roles see only invoices
+    // they created OR have been assigned to.
+    // Combine the per-user visibility filter and the search filter with AND so
+    // their two OR clauses don't collide.
+    const and = [];
+    const scope = ownerScope(req);
+    if (scope.OR) and.push(scope);
+    if (clientName) {
+      and.push({ clientName: { equals: clientName, mode: 'insensitive' } });
+    } else if (search) {
+      and.push({ OR: [
+        { invoiceNumber: { contains: search, mode: 'insensitive' } },
+        { clientName:    { contains: search, mode: 'insensitive' } },
+        { clientEmail:   { contains: search, mode: 'insensitive' } },
+      ]});
+    }
 
     const where = {
       companyId,
-      ...userFilter,
       ...(status && { status }),
-      ...(clientName
-        ? { clientName: { equals: clientName, mode: 'insensitive' } }
-        : search
-          ? { OR: [
-              { invoiceNumber: { contains: search, mode: 'insensitive' } },
-              { clientName:    { contains: search, mode: 'insensitive' } },
-              { clientEmail:   { contains: search, mode: 'insensitive' } },
-            ]}
-          : {}),
+      ...(and.length && { AND: and }),
     };
     const [invoices, total, summary] = await Promise.all([
-      prisma.invoice.findMany({ where, orderBy: { createdAt: 'desc' }, skip: (page - 1) * +limit, take: +limit }),
+      prisma.invoice.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * +limit,
+        take: +limit,
+        include: { createdByUser: { select: { userId: true, name: true, email: true } } },
+      }),
       prisma.invoice.count({ where }),
       prisma.invoice.groupBy({ by: ['status'], where: { companyId }, _count: { status: true }, _sum: { grandTotal: true } })
     ]);
@@ -68,7 +91,7 @@ exports.getInvoices = async (req, res) => {
 exports.getInvoice = async (req, res) => {
   try {
     const inv = await prisma.invoice.findFirst({
-      where: { invoiceId: req.params.id, companyId: req.params.companyId },
+      where: { invoiceId: req.params.id, companyId: req.params.companyId, ...ownerScope(req) },
       include: { company: { select: { name:true, logo:true, gst:true, address:true, phone:true, email:true, website:true, bankDetails:true } } }
     });
     if (!inv) return res.status(404).json({ success: false, error: { message: 'Not found.' } });
@@ -165,15 +188,54 @@ exports.updateInvoice = async (req, res) => {
       updateData.totalDiscount = totals.totalDiscount;
       updateData.grandTotal    = totals.grandTotal;
     }
-    await prisma.invoice.updateMany({ where: { invoiceId: id, companyId }, data: updateData });
+    const result = await prisma.invoice.updateMany({ where: { invoiceId: id, companyId, ...ownerScope(req) }, data: updateData });
+    if (!result.count) return res.status(404).json({ success: false, error: { message: 'Invoice not found or not permitted.' } });
     return res.json({ success: true, message: 'Updated.' });
+  } catch (err) { return res.status(500).json({ success: false, error: { message: err.message } }); }
+};
+
+// ── ASSIGN TO USERS (SUPER_ADMIN) ─────────────────────────────
+// Assigns the invoice to one or more users so it shows in each user's account
+// (non-admins see invoices they created OR are assigned to) and they can edit
+// it. Pass userIds = [] to clear all assignments.
+exports.assignInvoice = async (req, res) => {
+  try {
+    const { id, companyId } = req.params;
+    // Accept `userIds` (array) — also tolerate a single `userId` for compatibility.
+    let userIds = Array.isArray(req.body.userIds)
+      ? req.body.userIds
+      : (req.body.userId ? [req.body.userId] : []);
+    // De-dupe and drop empties
+    userIds = [...new Set(userIds.filter(Boolean))];
+
+    if (userIds.length) {
+      // Every target must exist and belong to this company (primary or via junction)
+      const members = await prisma.user.findMany({
+        where: {
+          userId: { in: userIds },
+          OR: [{ companyId }, { companies: { some: { companyId } } }],
+        },
+        select: { userId: true },
+      });
+      if (members.length !== userIds.length)
+        return res.status(404).json({ success: false, error: { message: 'One or more users are not members of this company.' } });
+    }
+
+    const result = await prisma.invoice.updateMany({
+      where: { invoiceId: id, companyId },
+      data: { assignedUserIds: userIds },
+    });
+    if (!result.count) return res.status(404).json({ success: false, error: { message: 'Invoice not found.' } });
+
+    return res.json({ success: true, message: userIds.length ? `Invoice assigned to ${userIds.length} user(s).` : 'Invoice unassigned.' });
   } catch (err) { return res.status(500).json({ success: false, error: { message: err.message } }); }
 };
 
 // ── DELETE / CANCEL ───────────────────────────────────────────
 exports.removeInvoice = async (req, res) => {
   try {
-    await prisma.invoice.updateMany({ where: { invoiceId: req.params.id, companyId: req.params.companyId }, data: { status: 'CANCELLED' } });
+    const result = await prisma.invoice.updateMany({ where: { invoiceId: req.params.id, companyId: req.params.companyId, ...ownerScope(req) }, data: { status: 'CANCELLED' } });
+    if (!result.count) return res.status(404).json({ success: false, error: { message: 'Invoice not found or not permitted.' } });
     return res.json({ success: true, message: 'Cancelled.' });
   } catch (err) { return res.status(500).json({ success: false, error: { message: err.message } }); }
 };
@@ -183,7 +245,7 @@ exports.markPaid = async (req, res) => {
   try {
     const { companyId, id } = req.params;
     const { paidAmount, paymentMethod, transactionId, paymentDate, tdsAmount, tdsRate } = req.body;
-    const inv    = await prisma.invoice.findFirst({ where: { invoiceId: id, companyId } });
+    const inv    = await prisma.invoice.findFirst({ where: { invoiceId: id, companyId, ...ownerScope(req) } });
     if (!inv) return res.status(404).json({ success: false, error: { message: 'Not found.' } });
     const tds     = +(tdsAmount || 0);
     const paid    = +(paidAmount || (inv.grandTotal - tds));
@@ -202,7 +264,8 @@ exports.markPaid = async (req, res) => {
 // ── SEND ──────────────────────────────────────────────────────
 exports.sendInvoice = async (req, res) => {
   try {
-    await prisma.invoice.updateMany({ where: { invoiceId: req.params.id, companyId: req.params.companyId }, data: { status: 'SENT', sentAt: new Date() } });
+    const result = await prisma.invoice.updateMany({ where: { invoiceId: req.params.id, companyId: req.params.companyId, ...ownerScope(req) }, data: { status: 'SENT', sentAt: new Date() } });
+    if (!result.count) return res.status(404).json({ success: false, error: { message: 'Invoice not found or not permitted.' } });
     return res.json({ success: true, message: `Sent via ${req.body.channel || 'email'}.` });
   } catch (err) { return res.status(500).json({ success: false, error: { message: err.message } }); }
 };
@@ -211,7 +274,7 @@ exports.sendInvoice = async (req, res) => {
 exports.getInvoicePdf = async (req, res) => {
   try {
     const { id, companyId } = req.params;
-    const inv = await prisma.invoice.findFirst({ where: { invoiceId: id, companyId } });
+    const inv = await prisma.invoice.findFirst({ where: { invoiceId: id, companyId, ...ownerScope(req) } });
     if (!inv) return res.status(404).json({ success: false, error: { message: 'Not found.' } });
     const result = await pdfSvc.generateInvoicePdf(id);
     if (result.buffer) {
@@ -228,6 +291,11 @@ exports.getInvoicePdf = async (req, res) => {
 exports.viewInvoicePdf = async (req, res) => {
   try {
     const { id, companyId } = req.params;
+    // Guard: the invoice must belong to this company AND be visible to this user.
+    // (buildInvoiceHtml only takes an id, so without this a member of any company
+    // could view any invoice from any company by guessing its id.)
+    const inv = await prisma.invoice.findFirst({ where: { invoiceId: id, companyId, ...ownerScope(req) }, select: { invoiceId: true } });
+    if (!inv) return res.status(404).json({ success: false, error: { message: 'Not found.' } });
     const html = await pdfSvc.buildInvoiceHtml(id);
     res.setHeader('Content-Type', 'text/html');
     return res.send(html);

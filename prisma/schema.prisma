@@ -74,6 +74,7 @@ model User {
   company          Company?       @relation(fields: [companyId], references: [companyId])
   companies        UserCompany[]
   createdInvoices  Invoice[]      @relation("CreatedInvoices")
+  createdExpenses  Expense[]      @relation("CreatedExpenses")
 
   @@map("users")
 }
@@ -251,6 +252,7 @@ model Invoice {
   tdsAmount        Float?    @map("tds_amount")
   tdsRate          Float?    @map("tds_rate")
   createdByUserId  String?   @map("created_by_user_id")
+  assignedUserIds  String[]  @default([]) @map("assigned_user_ids")
   company          Company   @relation(fields: [companyId], references: [companyId])
   lead             Lead?     @relation(fields: [leadId], references: [leadId])
   createdByUser    User?     @relation("CreatedInvoices", fields: [createdByUserId], references: [userId])
@@ -652,6 +654,10 @@ model Expense {
   reference   String?  // cheque/txn ref
   notes       String?
   status      String   @default("PAID")  // PAID, PENDING, CANCELLED
+  dueDate     DateTime? @map("due_date")  // for PENDING ("to pay") payables
+  createdByUserId String?  @map("created_by_user_id")  // who entered it
+  assignedUserIds String[] @default([]) @map("assigned_user_ids")  // admin-assigned viewers
+  createdByUser   User?    @relation("CreatedExpenses", fields: [createdByUserId], references: [userId])
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
   company     Company  @relation(fields: [companyId], references: [companyId])

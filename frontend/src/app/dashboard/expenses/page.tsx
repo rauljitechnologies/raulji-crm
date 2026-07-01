@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState, useCallback } from 'react';
-import { companyApi, expenseApi } from '@/lib/api';
+import { companyApi, expenseApi, userApi } from '@/lib/api';
 import { Topbar, Card, Btn, Input, Sel, Modal, useToast, Badge, Empty } from '@/components/ui';
 
 // ─── Helpers ─────────────────────────────────────────────────
@@ -131,6 +131,7 @@ const BLANK_EXP = () => ({
   reference: '',
   notes: '',
   status: 'PAID',
+  dueDate: '',
 });
 
 function ExpenseForm({ form, setForm }: { form: any; setForm: (f: any) => void }) {
@@ -161,8 +162,14 @@ function ExpenseForm({ form, setForm }: { form: any; setForm: (f: any) => void }
       </div>
       <div>
         <Sel label="Status" value={form.status} onChange={e => setForm({ ...form, status: e.target.value })}
-          options={STATUSES.map(s => ({ value: s, label: s }))} />
+          options={STATUSES.map(s => ({ value: s, label: s === 'PENDING' ? 'PENDING (To Pay)' : s }))} />
       </div>
+      {form.status === 'PENDING' && (
+        <div className="col-span-2">
+          <Input label="Due Date (to pay by)" type="date" value={form.dueDate || ''}
+            onChange={e => setForm({ ...form, dueDate: e.target.value })} />
+        </div>
+      )}
       <div className="col-span-2">
         <Input label="Reference / Txn No." value={form.reference} placeholder="Cheque no. or UPI ref"
           onChange={e => setForm({ ...form, reference: e.target.value })} />
@@ -175,6 +182,69 @@ function ExpenseForm({ form, setForm }: { form: any; setForm: (f: any) => void }
   );
 }
 
+// ─── Assign Expense modal (admin) — multi-user ────────────────
+function AssignExpenseModal({ exp, cid, onClose, onDone }: any) {
+  const [users, setUsers]     = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving]   = useState(false);
+  const [sel, setSel]         = useState<string[]>(Array.isArray(exp.assignedUserIds) ? exp.assignedUserIds : []);
+  const { toast, ToastContainer } = useToast();
+
+  useEffect(() => {
+    userApi.list(cid)
+      .then((d: any) => setUsers(d.users || []))
+      .catch((e: any) => toast(e.message, 'err'))
+      .finally(() => setLoading(false));
+  }, [cid]);
+
+  const toggle = (uid: string) => setSel(p => p.includes(uid) ? p.filter(x => x !== uid) : [...p, uid]);
+
+  const go = async () => {
+    setSaving(true);
+    try {
+      await expenseApi.assign(cid, exp.expenseId, sel);
+      toast(sel.length ? `Assigned to ${sel.length} user(s).` : 'Unassigned.');
+      setTimeout(() => { onDone(); onClose(); }, 400);
+    } catch (e: any) { toast(e.message, 'err'); setSaving(false); }
+  };
+
+  return (
+    <Modal open onClose={onClose} title="Assign Expense"
+      footer={<>
+        <Btn variant="secondary" size="sm" onClick={onClose}>Cancel</Btn>
+        <Btn variant="primary" size="sm" loading={saving} disabled={loading} onClick={go}>Save</Btn>
+      </>}>
+      <div className="flex flex-col gap-2">
+        <div style={{ fontSize: 12, color: '#7a9baf' }}>
+          <strong style={{ color: '#192b3f' }}>{exp.description}</strong> · {exp.category} · {sel.length} selected
+        </div>
+        {loading ? (
+          <div style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center', padding: 12 }}>Loading users…</div>
+        ) : users.length === 0 ? (
+          <div style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center', padding: 12 }}>No users in this company.</div>
+        ) : (
+          <div style={{ maxHeight: 260, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {users.map((u: any) => {
+              const checked = sel.includes(u.userId);
+              return (
+                <label key={u.userId} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', borderRadius: 8, cursor: 'pointer', border: `1px solid ${checked ? '#bae6fd' : '#eef3f8'}`, background: checked ? '#f0f9ff' : '#fff' }}>
+                  <input type="checkbox" checked={checked} onChange={() => toggle(u.userId)} />
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: '#192b3f' }}>{u.name}</div>
+                    <div style={{ fontSize: 10.5, color: '#94a3b8' }}>{u.email} · {(u.role || '').replace(/_/g, ' ')}</div>
+                  </div>
+                </label>
+              );
+            })}
+          </div>
+        )}
+        <p style={{ fontSize: 11, color: '#94a3b8' }}>Selected users will see this entry in their expense list. Uncheck all to unassign.</p>
+      </div>
+      <ToastContainer />
+    </Modal>
+  );
+}
+
 // ─── Main Page ────────────────────────────────────────────────
 export default function ExpensesPage() {
   const { toast, ToastContainer } = useToast();
@@ -183,6 +253,10 @@ export default function ExpensesPage() {
   const [companies, setCompanies] = useState<any[]>([]);
   const [cid, setCid]             = useState('');
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [isAdmin, setIsAdmin]     = useState(false);
+
+  // Assign expense (admin)
+  const [assignExp, setAssignExp]   = useState<any>(null);
 
   // Tab
   const [tab, setTab] = useState<'expenses'|'statements'|'reconcile'>('expenses');
@@ -190,7 +264,7 @@ export default function ExpensesPage() {
   // Expenses
   const [expData, setExpData]       = useState<any>(null);
   const [expLoading, setExpLoading] = useState(false);
-  const [filterMonth, setFilterMonth] = useState(String(new Date().getMonth() + 1).padStart(2,'0'));
+  const [filterMonth, setFilterMonth] = useState('ALL');
   const [filterYear, setFilterYear]   = useState(String(new Date().getFullYear()));
   const [filterCat, setFilterCat]     = useState('ALL');
   const [filterStatus, setFilterStatus] = useState('ALL');
@@ -198,6 +272,13 @@ export default function ExpensesPage() {
   const [editExp, setEditExp]       = useState<any>(null);
   const [addForm, setAddForm]       = useState(BLANK_EXP());
   const [saving, setSaving]         = useState(false);
+
+  // CSV import (expenses)
+  const [showImport, setShowImport] = useState(false);
+  const [impText, setImpText]       = useState('');
+  const [impRows, setImpRows]       = useState<any[]>([]);
+  const [impResult, setImpResult]   = useState<any>(null);
+  const [impSaving, setImpSaving]   = useState(false);
 
   // Bank Statements
   const [statements, setStatements]   = useState<any[]>([]);
@@ -224,8 +305,9 @@ export default function ExpensesPage() {
     (async () => {
       try {
         const u = JSON.parse(localStorage.getItem('user') || '{}');
-        const isAdmin = u?.role === 'SUPER_ADMIN';
-        setIsSuperAdmin(isAdmin);
+        const superAdmin = u?.role === 'SUPER_ADMIN';
+        setIsSuperAdmin(superAdmin);
+        setIsAdmin(superAdmin || u?.role === 'ADMIN');
         const list = await companyApi.mine();
         const arr  = list?.companies || [];
         setCompanies(arr);
@@ -243,7 +325,8 @@ export default function ExpensesPage() {
     if (!cid) return;
     setExpLoading(true);
     try {
-      const params: any = { month: filterMonth, year: filterYear };
+      const params: any = { year: filterYear };
+      if (filterMonth !== 'ALL') params.month = filterMonth;
       if (filterCat !== 'ALL') params.category = filterCat;
       if (filterStatus !== 'ALL') params.status = filterStatus;
       const d = await expenseApi.list(cid, params);
@@ -325,6 +408,106 @@ export default function ExpensesPage() {
     } catch (e: any) { toast(e.message, 'err'); }
   };
 
+  const markPaid = async (exp: any) => {
+    try {
+      await expenseApi.update(cid, exp.expenseId, { status: 'PAID' });
+      toast('Marked as paid.');
+      loadExpenses();
+    } catch (e: any) { toast(e.message, 'err'); }
+  };
+
+  // ── CSV Export (current filtered view) ──
+  const exportCsv = () => {
+    const rows = expData?.expenses || [];
+    if (!rows.length) { toast('No expenses to export.', 'err'); return; }
+    const esc = (v: any) => {
+      const s = v == null ? '' : String(v);
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const header = ['Date','Category','Description','Amount','GST%','GST Amount','Pay Mode','Reference','Status','Due Date','Notes'];
+    const lines = rows.map((e: any) => [
+      isoDate(e.date), e.category, e.description, e.amount,
+      e.gstPercent ?? '', e.gstAmount ?? 0, e.payMode, e.reference || '',
+      e.status, e.dueDate ? isoDate(e.dueDate) : '', e.notes || '',
+    ].map(esc).join(','));
+    const csv = [header.join(','), ...lines].join('\n');
+    const coName = (companies.find((c: any) => c.companyId === cid)?.name || 'company').replace(/[^a-z0-9]+/gi, '-');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `expenses_${coName}_${filterYear}-${filterMonth}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // ── CSV Import ──
+  const downloadTemplate = () => {
+    const csv = [
+      'Date,Category,Description,Amount,GST%,Pay Mode,Reference,Status,Due Date,Notes',
+      '2026-06-30,SALARY,June salary - staff,25000,,BANK,,PAID,,',
+      '2026-06-01,SOFTWARE,Domain renewal,1000,18,BANK,,PENDING,2026-06-10,Pay before expiry',
+    ].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'expenses_template.csv'; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const parseExpenseCsv = (raw: string): any[] => {
+    const lines = raw.split(/\r?\n/).filter(l => l.trim());
+    if (!lines.length) return [];
+    const splitRow = (line: string) => {
+      const out: string[] = []; let cur = '', q = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (q) { if (ch === '"' && line[i+1] === '"') { cur += '"'; i++; } else if (ch === '"') q = false; else cur += ch; }
+        else { if (ch === '"') q = true; else if (ch === ',') { out.push(cur); cur = ''; } else cur += ch; }
+      }
+      out.push(cur);
+      return out.map(s => s.trim());
+    };
+    // Header detection
+    const first = splitRow(lines[0]).map(h => h.toLowerCase());
+    const hasHeader = first.includes('date') && (first.includes('category') || first.includes('amount'));
+    const cols = hasHeader ? first : ['date','category','description','amount','gst%','pay mode','reference','status','due date','notes'];
+    const idx = (names: string[]) => { for (const n of names) { const j = cols.indexOf(n); if (j >= 0) return j; } return -1; };
+    const map = {
+      date: idx(['date']), category: idx(['category']), description: idx(['description','desc']),
+      amount: idx(['amount']), gstPercent: idx(['gst%','gst percent','gst']), payMode: idx(['pay mode','paymode','mode']),
+      reference: idx(['reference','ref']), status: idx(['status']), dueDate: idx(['due date','duedate']), notes: idx(['notes','note']),
+    };
+    const body = hasHeader ? lines.slice(1) : lines;
+    return body.map(line => {
+      const c = splitRow(line);
+      const g = (k: keyof typeof map) => (map[k] >= 0 ? (c[map[k]] ?? '') : '');
+      return {
+        date: g('date'), category: g('category'), description: g('description'), amount: g('amount'),
+        gstPercent: g('gstPercent'), payMode: g('payMode'), reference: g('reference'),
+        status: g('status'), dueDate: g('dueDate'), notes: g('notes'),
+      };
+    });
+  };
+
+  const handleImpFile = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = () => { setImpText(String(reader.result || '')); setImpRows(parseExpenseCsv(String(reader.result || ''))); setImpResult(null); };
+    reader.readAsText(file);
+  };
+
+  const runImport = async () => {
+    if (!impRows.length) { toast('Nothing to import.', 'err'); return; }
+    setImpSaving(true);
+    try {
+      const d = await expenseApi.importExpenses(cid, impRows);
+      setImpResult(d);
+      toast(`Imported ${d.imported}, skipped ${d.skipped}, ${d.errors?.length || 0} error(s).`);
+      loadExpenses();
+    } catch (e: any) { toast(e.message, 'err'); }
+    finally { setImpSaving(false); }
+  };
+
   // ── CSV Import ──
   const handleParseCSV = () => {
     const rows = parseCSV(csvText);
@@ -398,8 +581,8 @@ export default function ExpensesPage() {
   const totalGst    = expData?.totalGst    || 0;
   const pending     = (expData?.expenses || []).filter((e: any) => e.status === 'PENDING').reduce((a: number, e: any) => a + e.amount, 0);
   const thisMonth   = (expData?.expenses || []).filter((e: any) => {
-    const d = new Date(e.date);
-    return d.getMonth() + 1 === +filterMonth && d.getFullYear() === +filterYear;
+    const d = new Date(e.date), now = new Date();
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   }).reduce((a: number, e: any) => a + e.amount, 0);
 
   const recMatched   = recTxns.filter(t => t.status === 'MATCHED').length;
@@ -431,9 +614,13 @@ export default function ExpensesPage() {
               </select>
             )}
             {tab === 'expenses' && (
-              <Btn variant="primary" size="sm" onClick={() => { setAddForm(BLANK_EXP()); setShowAdd(true); }}>
-                + Add Expense
-              </Btn>
+              <>
+                <Btn variant="secondary" size="sm" onClick={exportCsv}>⬇ Export CSV</Btn>
+                <Btn variant="secondary" size="sm" onClick={() => { setShowImport(true); setImpText(''); setImpRows([]); setImpResult(null); }}>⬆ Import CSV</Btn>
+                <Btn variant="primary" size="sm" onClick={() => { setAddForm(BLANK_EXP()); setShowAdd(true); }}>
+                  + Add Expense
+                </Btn>
+              </>
             )}
           </div>
         }
@@ -497,6 +684,7 @@ export default function ExpensesPage() {
                   <span style={{ fontSize: 12, fontWeight: 600, color: '#4a6a85' }}>Month:</span>
                   <select value={filterMonth} onChange={e => setFilterMonth(e.target.value)}
                     style={{ padding: '5px 8px', fontSize: 12, borderRadius: 7, border: '1px solid #d4e1ec', background: '#fff', color: '#192b3f', fontFamily: 'inherit' }}>
+                    <option value="ALL">All Months</option>
                     {MONTHS.map((m, i) => <option key={m} value={m}>{MONTH_LABELS[i]}</option>)}
                   </select>
                 </div>
@@ -554,6 +742,7 @@ export default function ExpensesPage() {
                           <td style={{ padding: '10px 12px', color: '#192b3f', maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {exp.description}
                             {exp.notes && <div style={{ fontSize: 11, color: '#7a9baf' }}>{exp.notes}</div>}
+                            {isAdmin && exp.createdByUser && <div style={{ fontSize: 10.5, color: '#94a3b8' }}>by {exp.createdByUser.name}{exp.assignedUserIds?.length ? ` · assigned to ${exp.assignedUserIds.length}` : ''}</div>}
                           </td>
                           <td style={{ padding: '10px 12px', color: '#64748b' }}>{exp.payMode}</td>
                           <td style={{ padding: '10px 12px', fontWeight: 700, color: '#192b3f', whiteSpace: 'nowrap' }}>{inr(exp.amount)}</td>
@@ -564,9 +753,21 @@ export default function ExpensesPage() {
                           <td style={{ padding: '10px 12px' }}>
                             <div style={{ display: 'flex', gap: 6 }}>
                               <Btn size="sm" variant="ghost" style={{ padding: '3px 8px', fontSize: 11 }}
-                                onClick={() => { setEditExp(exp); setAddForm({ date: isoDate(exp.date), category: exp.category, description: exp.description, amount: String(exp.amount), gstPercent: exp.gstPercent != null ? String(exp.gstPercent) : '', payMode: exp.payMode, reference: exp.reference || '', notes: exp.notes || '', status: exp.status }); }}>
+                                onClick={() => { setEditExp(exp); setAddForm({ date: isoDate(exp.date), category: exp.category, description: exp.description, amount: String(exp.amount), gstPercent: exp.gstPercent != null ? String(exp.gstPercent) : '', payMode: exp.payMode, reference: exp.reference || '', notes: exp.notes || '', status: exp.status, dueDate: exp.dueDate ? isoDate(exp.dueDate) : '' }); }}>
                                 Edit
                               </Btn>
+                              {isAdmin && (
+                                <Btn size="sm" variant="ghost" style={{ padding: '3px 8px', fontSize: 11, color: '#0284c7' }}
+                                  title={exp.assignedUserIds?.length ? `Assigned to ${exp.assignedUserIds.length} user(s)` : 'Assign to users'}
+                                  onClick={() => setAssignExp(exp)}>
+                                  Assign{exp.assignedUserIds?.length ? ` (${exp.assignedUserIds.length})` : ''}
+                                </Btn>
+                              )}
+                              {exp.status === 'PENDING' && (
+                                <Btn size="sm" variant="primary" style={{ padding: '3px 8px', fontSize: 11 }} onClick={() => markPaid(exp)}>
+                                  Mark Paid
+                                </Btn>
+                              )}
                               {exp.status !== 'CANCELLED' && (
                                 <Btn size="sm" variant="danger" style={{ padding: '3px 8px', fontSize: 11 }} onClick={() => cancelExpense(exp)}>
                                   Cancel
@@ -871,6 +1072,86 @@ export default function ExpensesPage() {
           </div>
         )}
       </div>
+
+      {/* ── Assign Expense Modal ── */}
+      {assignExp && <AssignExpenseModal exp={assignExp} cid={cid} onClose={() => setAssignExp(null)} onDone={loadExpenses} />}
+
+      {/* ── Import CSV Modal ── */}
+      <Modal open={showImport} onClose={() => setShowImport(false)} title="Import Expenses from CSV"
+        footer={
+          <>
+            <Btn variant="secondary" size="sm" onClick={() => setShowImport(false)}>Close</Btn>
+            <Btn variant="primary" size="sm" loading={impSaving} disabled={!impRows.length || !!impResult} onClick={runImport}>
+              Import {impRows.length || ''} row{impRows.length === 1 ? '' : 's'}
+            </Btn>
+          </>
+        }>
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div style={{ fontSize: 12, color: '#7a9baf' }}>
+              Importing into <strong style={{ color: '#192b3f' }}>{companies.find((c: any) => c.companyId === cid)?.name || 'company'}</strong>
+            </div>
+            <button onClick={downloadTemplate} style={{ fontSize: 12, color: '#3199d4', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>
+              ⬇ Download template
+            </button>
+          </div>
+
+          <label style={{ fontSize: 12, fontWeight: 600, color: '#4a6a85' }}>Upload a .csv file</label>
+          <input type="file" accept=".csv,text/csv" onChange={e => { const f = e.target.files?.[0]; if (f) handleImpFile(f); }}
+            style={{ fontSize: 12 }} />
+
+          <div style={{ fontSize: 11, color: '#7a9baf', textAlign: 'center' }}>— or paste CSV below —</div>
+          <textarea value={impText} rows={4}
+            onChange={e => { setImpText(e.target.value); setImpRows(parseExpenseCsv(e.target.value)); setImpResult(null); }}
+            placeholder="Date,Category,Description,Amount,GST%,Pay Mode,Reference,Status,Due Date,Notes"
+            style={{ width: '100%', padding: '8px 12px', fontSize: 12, border: '1px solid #d4e1ec', borderRadius: 8, fontFamily: 'monospace', resize: 'vertical' }} />
+
+          {/* Preview */}
+          {impRows.length > 0 && !impResult && (
+            <div style={{ maxHeight: 200, overflowY: 'auto', border: '1px solid #eef3f8', borderRadius: 8 }}>
+              <table style={{ width: '100%', fontSize: 11, borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ background: '#f8fbfd', position: 'sticky', top: 0 }}>
+                    {['#','Date','Category','Description','Amount','Status'].map(h => (
+                      <th key={h} style={{ padding: '5px 8px', textAlign: 'left', color: '#7a9baf', fontWeight: 600 }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {impRows.slice(0, 100).map((r, i) => (
+                    <tr key={i} style={{ borderTop: '1px solid #f0f5fa' }}>
+                      <td style={{ padding: '4px 8px', color: '#94a3b8' }}>{i + 1}</td>
+                      <td style={{ padding: '4px 8px' }}>{r.date}</td>
+                      <td style={{ padding: '4px 8px' }}>{r.category}</td>
+                      <td style={{ padding: '4px 8px', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.description}</td>
+                      <td style={{ padding: '4px 8px' }}>{r.amount}</td>
+                      <td style={{ padding: '4px 8px' }}>{(r.status || 'PAID').toUpperCase()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {impRows.length > 0 && !impResult && (
+            <div style={{ fontSize: 11, color: '#7a9baf' }}>{impRows.length} row(s) parsed. Server validates & skips duplicates on import.</div>
+          )}
+
+          {/* Result */}
+          {impResult && (
+            <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: 8, padding: 12, fontSize: 12 }}>
+              <div style={{ fontWeight: 700, color: '#0369a1' }}>✓ {impResult.imported} imported · {impResult.skipped} skipped (duplicates) · {impResult.errors?.length || 0} error(s)</div>
+              {impResult.errors?.length > 0 && (
+                <ul style={{ marginTop: 6, color: '#b91c1c', paddingLeft: 16 }}>
+                  {impResult.errors.slice(0, 12).map((er: any, i: number) => (
+                    <li key={i}>Row {er.line}: {er.error}</li>
+                  ))}
+                  {impResult.errors.length > 12 && <li>…and {impResult.errors.length - 12} more</li>}
+                </ul>
+              )}
+            </div>
+          )}
+        </div>
+      </Modal>
 
       {/* ── Add Expense Modal ── */}
       <Modal open={showAdd} onClose={() => setShowAdd(false)} title="Add Expense"

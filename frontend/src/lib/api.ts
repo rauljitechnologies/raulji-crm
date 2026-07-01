@@ -92,6 +92,7 @@ export const invoiceApi = {
   create:   (cid: string, body: any)    => request<any>(`/companies/${cid}/invoices`, { method: 'POST', body: JSON.stringify(body) }),
   update:   (cid: string, id: string, body: any) => request<any>(`/companies/${cid}/invoices/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
   markPaid:   (cid: string, id: string, body: any) => request<any>(`/companies/${cid}/invoices/${id}/mark-paid`, { method: 'PUT', body: JSON.stringify(body) }),
+  assign:     (cid: string, id: string, userIds: string[]) => request<any>(`/companies/${cid}/invoices/${id}/assign`, { method: 'PUT', body: JSON.stringify({ userIds }) }),
   send:       (cid: string, id: string, body: any) => request<any>(`/companies/${cid}/invoices/${id}/send`, { method: 'POST', body: JSON.stringify(body) }),
   nextNumber: (cid: string)                        => request<any>(`/companies/${cid}/invoices/next-number`),
 };
@@ -121,6 +122,7 @@ export const userApi = {
   remove:            (cid: string, uid: string)                     => request<any>(`/companies/${cid}/users/${uid}`, { method: 'DELETE' }),
   unremove:          (uid: string)                                  => request<any>(`/admin/users/${uid}/unremove`, { method: 'POST' }),
   permanentDelete:   (uid: string)                                  => request<any>(`/admin/users/${uid}/permanent`, { method: 'DELETE' }),
+  setPassword:       (uid: string, newPassword: string)             => request<any>(`/admin/users/${uid}/password`, { method: 'PUT', body: JSON.stringify({ newPassword }) }),
   assignCompany:        (uid: string, body: { companyId: string; role?: string }) => request<any>(`/admin/users/${uid}/assign-company`,      { method: 'PUT',    body: JSON.stringify(body) }),
   removeFromCompany:    (uid: string, cid: string)                                => request<any>(`/admin/users/${uid}/companies/${cid}`,        { method: 'DELETE' }),
 };
@@ -200,6 +202,8 @@ export const backupApi = {
 export const expenseApi = {
   list:           (cid: string, params?: any)              => request<any>(`/companies/${cid}/expenses?${new URLSearchParams(params||{})}`),
   create:         (cid: string, body: any)                 => request<any>(`/companies/${cid}/expenses`, { method: 'POST', body: JSON.stringify(body) }),
+  importExpenses: (cid: string, rows: any[])               => request<any>(`/companies/${cid}/expenses/import`, { method: 'POST', body: JSON.stringify({ rows }) }),
+  assign:         (cid: string, id: string, userIds: string[]) => request<any>(`/companies/${cid}/expenses/${id}/assign`, { method: 'PUT', body: JSON.stringify({ userIds }) }),
   update:         (cid: string, id: string, body: any)     => request<any>(`/companies/${cid}/expenses/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
   remove:         (cid: string, id: string)                => request<any>(`/companies/${cid}/expenses/${id}`, { method: 'DELETE' }),
   listStatements: (cid: string)                            => request<any>(`/companies/${cid}/bank-statements`),

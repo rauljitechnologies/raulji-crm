@@ -2,12 +2,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { authApi } from '@/lib/api';
+import { EyeIcon, EyeOffIcon } from '@/components/ui';
 
 export default function LoginPage() {
   const router = useRouter();
   const [form, setForm]       = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState('');
+  const [showPw, setShowPw]   = useState(false);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,10 +52,17 @@ export default function LoginPage() {
                 <label className="text-xs font-semibold text-slate-600">Password</label>
                 <a href="#" className="text-xs text-indigo-600 hover:underline">Forgot?</a>
               </div>
-              <input type="password" required value={form.password}
-                onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-                className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
-                placeholder="••••••••" />
+              <div className="relative">
+                <input type={showPw ? 'text' : 'password'} required value={form.password}
+                  onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+                  className="w-full px-3.5 py-2.5 pr-11 border border-slate-200 rounded-xl text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
+                  placeholder="••••••••" />
+                <button type="button" tabIndex={-1} onClick={() => setShowPw(s => !s)}
+                  aria-label={showPw ? 'Hide password' : 'Show password'}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+                  {showPw ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
+              </div>
             </div>
 
             {error && <div className="bg-red-50 border border-red-100 text-red-600 text-xs px-3 py-2 rounded-lg">{error}</div>}

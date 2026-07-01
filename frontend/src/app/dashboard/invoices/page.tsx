@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { companyApi, invoiceApi, clientApi } from '@/lib/api';
+import { companyApi, invoiceApi, clientApi, userApi } from '@/lib/api';
 import { Topbar, Card, Btn, Input, Sel, Modal, useToast } from '@/components/ui';
 
 const API      = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
@@ -680,6 +680,79 @@ function CancelModal({ inv, cid, onClose, onDone }: any) {
   );
 }
 
+// ─── Assign Invoice modal (SUPER_ADMIN) — multi-user ──────────
+function AssignModal({ inv, cid, onClose, onDone }: any) {
+  const [users,   setUsers]   = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving,  setSaving]  = useState(false);
+  const [sel,     setSel]     = useState<string[]>(Array.isArray(inv.assignedUserIds) ? inv.assignedUserIds : []);
+  const { toast, ToastContainer } = useToast();
+
+  useEffect(() => {
+    userApi.list(cid)
+      .then((d: any) => setUsers(d.users || []))
+      .catch((e: any) => toast(e.message, 'err'))
+      .finally(() => setLoading(false));
+  }, [cid]);
+
+  const toggle = (uid: string) =>
+    setSel(prev => prev.includes(uid) ? prev.filter(x => x !== uid) : [...prev, uid]);
+
+  const go = async () => {
+    setSaving(true);
+    try {
+      await invoiceApi.assign(cid, inv.invoiceId, sel);
+      toast(sel.length ? `Assigned to ${sel.length} user(s).` : 'Invoice unassigned.');
+      setTimeout(() => { onDone(); onClose(); }, 500);
+    } catch (e: any) { toast(e.message, 'err'); setSaving(false); }
+  };
+
+  return (
+    <>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={onClose}>
+        <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl flex flex-col" style={{ maxHeight: '85vh' }} onClick={e => e.stopPropagation()}>
+          <div className="px-6 pt-6 pb-2">
+            <div className="font-bold text-slate-900 mb-1">Assign Invoice</div>
+            <div className="text-xs text-slate-500"><strong>{inv.invoiceNumber}</strong> · {inv.clientName}</div>
+            <div className="text-xs text-slate-400 mt-1">{sel.length} user(s) selected</div>
+          </div>
+          <div className="px-6 py-3 flex-1 overflow-y-auto">
+            {loading ? (
+              <div className="text-xs text-slate-400 py-3 text-center">Loading users…</div>
+            ) : users.length === 0 ? (
+              <div className="text-xs text-slate-400 py-3 text-center">No users in this company.</div>
+            ) : (
+              <div className="flex flex-col gap-1">
+                {users.map((u: any) => {
+                  const checked = sel.includes(u.userId);
+                  return (
+                    <label key={u.userId}
+                      className={`flex items-center gap-2.5 px-3 py-2 rounded-lg border cursor-pointer transition-colors ${checked ? 'border-sky-300 bg-sky-50' : 'border-slate-100 hover:bg-slate-50'}`}>
+                      <input type="checkbox" checked={checked} onChange={() => toggle(u.userId)} className="accent-sky-600" />
+                      <div className="min-w-0">
+                        <div className="text-xs font-semibold text-slate-700 truncate">{u.name}</div>
+                        <div className="text-[10px] text-slate-400 truncate">{u.email} · {u.role.replace(/_/g, ' ')}</div>
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+          <div className="px-6 pt-1 pb-3">
+            <p className="text-[11px] text-slate-400">Selected users will see this invoice in their account and can edit it. Uncheck all to unassign.</p>
+          </div>
+          <div className="px-6 pb-6 flex gap-2">
+            <Btn variant="secondary" onClick={onClose} className="flex-1">Cancel</Btn>
+            <Btn variant="primary" loading={saving} disabled={loading} onClick={go} className="flex-1">Save</Btn>
+          </div>
+        </div>
+      </div>
+      <ToastContainer />
+    </>
+  );
+}
+
 // ─── Chart Components ─────────────────────────────────────────
 
 function SimpleBarChart({ groups, colors, barNames, labels, valueFormatter, chartHeight = 180 }: {
@@ -1264,6 +1337,7 @@ export default function InvoicesPage() {
   const [paidInv,       setPaidInv]       = useState<any>(null);
   const [editInv,       setEditInv]       = useState<any>(null);
   const [cancelInv,     setCancelInv]     = useState<any>(null);
+  const [assignInv,     setAssignInv]     = useState<any>(null);
   const [showCreate,    setShowCreate]    = useState(false);
   const [saving,        setSaving]        = useState(false);
   const [form,          setForm]          = useState(emptyForm());
@@ -1325,6 +1399,14 @@ export default function InvoicesPage() {
     clientApi.list(cid, { limit: '200' }).then((d: any) => setClients(d.clients || [])).catch(() => {});
     loadInvoices();
   }, [cid]);
+
+  // In all-companies (ALL) mode, the client list must follow the billing company
+  // chosen in the Create Invoice modal, otherwise the client search is empty.
+  useEffect(() => {
+    if (cid !== 'ALL') return;
+    if (!createCo) { setClients([]); return; }
+    clientApi.list(createCo, { limit: '200' }).then((d: any) => setClients(d.clients || [])).catch(() => {});
+  }, [cid, createCo]);
 
   const loadInvoices = async () => {
     if (!cid) return;
@@ -1847,6 +1929,13 @@ export default function InvoicesPage() {
                                   className="px-2.5 py-1.5 text-xs bg-slate-50 text-slate-600 rounded-lg font-semibold hover:bg-slate-100 transition-colors">Edit</button>
                               )}
 
+                              {isSuperAdmin && (
+                                <button onClick={() => setAssignInv(inv)} title={inv.assignedUserIds?.length ? `Assigned to ${inv.assignedUserIds.length} user(s)` : 'Assign to users'}
+                                  className="px-2.5 py-1.5 text-xs bg-sky-50 text-sky-600 rounded-lg font-semibold hover:bg-sky-100 transition-colors">
+                                  Assign{inv.assignedUserIds?.length ? ` (${inv.assignedUserIds.length})` : ''}
+                                </button>
+                              )}
+
                               {!['PAID','CANCELLED'].includes(inv.status) && (
                                 <button onClick={() => setCancelInv(inv)} title="Cancel"
                                   className="px-2.5 py-1.5 text-xs bg-red-50 text-red-500 rounded-lg font-semibold hover:bg-red-100 transition-colors">Cancel</button>
@@ -2088,6 +2177,7 @@ export default function InvoicesPage() {
       {paidInv    && <PaidModal   inv={paidInv}    cid={paidInv._companyId    || cid} onClose={() => setPaidInv(null)}   onDone={loadInvoices} />}
       {editInv    && <EditModal   inv={editInv}    cid={editInv._companyId    || cid} onClose={() => setEditInv(null)}   onDone={loadInvoices} isSuperAdmin={isSuperAdmin} />}
       {cancelInv  && <CancelModal inv={cancelInv}  cid={cancelInv._companyId  || cid} onClose={() => setCancelInv(null)} onDone={loadInvoices} />}
+      {assignInv  && <AssignModal inv={assignInv}  cid={assignInv._companyId  || cid} onClose={() => setAssignInv(null)} onDone={loadInvoices} />}
 
       {/* ── Create Invoice ── */}
       <Modal open={showCreate} onClose={() => setShowCreate(false)} title="Create New Invoice" size="xl"
