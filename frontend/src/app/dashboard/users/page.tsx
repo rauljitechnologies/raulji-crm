@@ -1,15 +1,35 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { companyApi, userApi } from '@/lib/api';
-import { Topbar, Card, Btn, Input, Sel, Modal, useToast } from '@/components/ui';
+import { Topbar, Btn, Input, Sel, Modal, useToast, Avatar, Skeleton, UIIcons } from '@/components/ui';
+import { NavIcon } from '@/components/layout/nav';
 
-const ROLE_BADGE: Record<string,string> = {
-  SUPER_ADMIN: 'bg-amber-100 text-amber-700',
-  ADMIN:       'bg-orange-50 text-orange-700',
-  SALES_MANAGER:'bg-indigo-50 text-indigo-700',
-  SALES_REP:   'bg-green-50 text-green-700',
-  VIEWER:      'bg-slate-100 text-slate-500',
+// ── Role badge (token-driven, dark-mode aware) ────────────────
+const ROLE_TONE: Record<string, { bg: string; fg: string }> = {
+  SUPER_ADMIN:   { bg: 'var(--warning-soft)', fg: 'var(--warning-ink)' },
+  ADMIN:         { bg: 'rgba(139,92,246,0.14)', fg: '#8B5CF6' },
+  SALES_MANAGER: { bg: 'var(--primary-soft)', fg: 'var(--primary)' },
+  SALES_REP:     { bg: 'var(--accent-soft)',  fg: 'var(--accent)' },
+  VIEWER:        { bg: 'var(--surface-2)',    fg: 'var(--text-2)' },
 };
+function RoleBadge({ role, small }: { role: string; small?: boolean }) {
+  const t = ROLE_TONE[role] || { bg: 'var(--surface-2)', fg: 'var(--text-2)' };
+  return (
+    <span style={{ background: t.bg, color: t.fg, padding: small ? '2px 8px' : '3px 9px', borderRadius: 9999, fontSize: small ? 10 : 11, fontWeight: 700, whiteSpace: 'nowrap', textTransform: 'capitalize', boxShadow: 'inset 0 0 0 1px rgba(127,127,127,0.08)' }}>
+      {role.replace(/_/g, ' ').toLowerCase()}
+    </span>
+  );
+}
+function StatusPill({ removed, verified }: { removed?: boolean; verified?: boolean }) {
+  const t = removed ? { bg: 'var(--danger-soft)', fg: 'var(--danger-ink)', label: 'Removed' }
+    : verified ? { bg: 'var(--success-soft)', fg: 'var(--success-ink)', label: 'Active' }
+    : { bg: 'var(--warning-soft)', fg: 'var(--warning-ink)', label: 'Pending' };
+  return (
+    <span className="inline-flex items-center gap-1.5" style={{ background: t.bg, color: t.fg, padding: '2.5px 9px', borderRadius: 9999, fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>
+      <span style={{ width: 5, height: 5, borderRadius: '50%', background: t.fg }} />{t.label}
+    </span>
+  );
+}
 
 const ROLES = [
   { value:'ADMIN',         label:'Admin' },
@@ -18,7 +38,7 @@ const ROLES = [
   { value:'VIEWER',        label:'Viewer' },
 ];
 
-type PermKey = 'dashboard'|'companies'|'leads'|'pipeline'|'deals'|'project'|'clients'|'quotations'|'invoices'|'expenses'|'finance'|'analytics'|'users'|'settings'|'api'|'whatsapp'|'campaigns'|'templates'|'backup';
+type PermKey = 'dashboard'|'companies'|'leads'|'pipeline'|'deals'|'clients'|'quotations'|'invoices'|'expenses'|'finance'|'analytics'|'users'|'settings'|'api'|'backup';
 
 const ALL_PERMS: { key: PermKey; label: string; section: string }[] = [
   { key:'dashboard',  label:'Dashboard',      section:'Main' },
@@ -26,15 +46,11 @@ const ALL_PERMS: { key: PermKey; label: string; section: string }[] = [
   { key:'leads',      label:'Leads',          section:'Main' },
   { key:'pipeline',   label:'Pipeline',       section:'Main' },
   { key:'deals',      label:'Deals',          section:'Main' },
-  { key:'project',    label:'Projects',       section:'Main' },
   { key:'clients',    label:'Clients',        section:'Finance' },
   { key:'quotations', label:'Quotations',     section:'Finance' },
   { key:'invoices',   label:'Invoices',       section:'Finance' },
   { key:'expenses',   label:'Expenses',       section:'Finance' },
   { key:'finance',    label:'Finance Overview', section:'Finance' },
-  { key:'whatsapp',   label:'WhatsApp Hub',   section:'Automation' },
-  { key:'campaigns',  label:'Campaigns',      section:'Automation' },
-  { key:'templates',  label:'Templates',      section:'Automation' },
   { key:'analytics',  label:'Analytics',      section:'Insights' },
   { key:'users',      label:'Users & Roles',  section:'System' },
   { key:'settings',   label:'Settings',       section:'System' },
@@ -43,11 +59,11 @@ const ALL_PERMS: { key: PermKey; label: string; section: string }[] = [
 ];
 
 const ROLE_DEFAULTS: Record<string, Record<PermKey, boolean>> = {
-  SUPER_ADMIN:   { dashboard:true,companies:true,leads:true,pipeline:true,deals:true,project:true,clients:true,quotations:true,invoices:true,expenses:true,finance:true,analytics:true,users:true,settings:true,api:true,whatsapp:true,campaigns:true,templates:true,backup:true },
-  ADMIN:         { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,project:true,clients:true,quotations:true,invoices:true,expenses:true,finance:true,analytics:true,users:true,settings:true,api:true,whatsapp:true,campaigns:true,templates:true,backup:false },
-  SALES_MANAGER: { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,project:true,clients:true,quotations:true,invoices:true,expenses:true,finance:false,analytics:true,users:false,settings:false,api:false,whatsapp:true,campaigns:true,templates:true,backup:false },
-  SALES_REP:     { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,project:false,clients:true,quotations:true,invoices:false,expenses:false,finance:false,analytics:false,users:false,settings:false,api:false,whatsapp:true,campaigns:false,templates:false,backup:false },
-  VIEWER:        { dashboard:true,companies:false,leads:true,pipeline:false,deals:false,project:false,clients:false,quotations:false,invoices:false,expenses:false,finance:false,analytics:true,users:false,settings:false,api:false,whatsapp:false,campaigns:false,templates:false,backup:false },
+  SUPER_ADMIN:   { dashboard:true,companies:true,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,expenses:true,finance:true,analytics:true,users:true,settings:true,api:true,backup:true },
+  ADMIN:         { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,expenses:true,finance:true,analytics:true,users:true,settings:true,api:true,backup:false },
+  SALES_MANAGER: { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,expenses:true,finance:false,analytics:true,users:false,settings:false,api:false,backup:false },
+  SALES_REP:     { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:false,expenses:false,finance:false,analytics:false,users:false,settings:false,api:false,backup:false },
+  VIEWER:        { dashboard:true,companies:false,leads:true,pipeline:false,deals:false,clients:false,quotations:false,invoices:false,expenses:false,finance:false,analytics:true,users:false,settings:false,api:false,backup:false },
 };
 
 function effectivePerms(user: any): Record<PermKey, boolean> {
@@ -68,6 +84,20 @@ const MATRIX_ROLES: { key: string; label: string }[] = [
   { key:'VIEWER',        label:'Viewer'  },
 ];
 
+const lbl: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: 'var(--text-2)', marginBottom: 4, display: 'block' };
+
+// ── Small action pill helper ──────────────────────────────────
+function ActBtn({ tone, onClick, children }: { tone: 'primary'|'accent'|'warning'|'danger'|'success'; onClick: () => void; children: React.ReactNode }) {
+  const map = {
+    primary: { bg: 'var(--primary-soft)', fg: 'var(--primary)' },
+    accent:  { bg: 'var(--accent-soft)',  fg: 'var(--accent)' },
+    warning: { bg: 'var(--warning-soft)', fg: 'var(--warning-ink)' },
+    danger:  { bg: 'var(--danger-soft)',  fg: 'var(--danger-ink)' },
+    success: { bg: 'var(--success-soft)', fg: 'var(--success-ink)' },
+  }[tone];
+  return <button onClick={onClick} className="act-btn" style={{ background: map.bg, color: map.fg }}>{children}</button>;
+}
+
 export default function UsersPage() {
   const [me,           setMe]          = useState<any>(null);
   const [companies,    setCompanies]   = useState<any[]>([]);
@@ -77,6 +107,7 @@ export default function UsersPage() {
   const [filterCo,     setFilterCo]    = useState('');
   const [showRemoved,  setShowRemoved] = useState(false);
   const [showInvite,   setShowInvite]  = useState(false);
+  const [showMatrix,   setShowMatrix]  = useState(false);
   const isSuperAdmin = me?.role === 'SUPER_ADMIN';
   const [saving,      setSaving]      = useState(false);
   const [inviteCo,    setInviteCo]    = useState('');
@@ -118,6 +149,8 @@ export default function UsersPage() {
 
   // Filtered view
   const activeUsers  = users.filter(u => u.isActive);
+  const pendingCount = activeUsers.filter(u => !u.isVerified).length;
+  const removedCount = users.filter(u => !u.isActive).length;
   const visible = users.filter(u => {
     if (!showRemoved && !u.isActive) return false;
     const matchCo = !filterCo || u.companyId === filterCo;
@@ -211,9 +244,6 @@ export default function UsersPage() {
   };
 
   const savePerms = async () => {
-    // Permissions are stored on a single field on the user, so any company the user
-    // belongs to works as the scope. Fall back to the first junction company for
-    // multi-company users whose primary companyId is null.
     const cid = permUser?.companyId || permUser?.companies?.[0]?.companyId;
     if (!cid) return toast('This user has no company. Assign a company first.', 'err');
     setPermSaving(true);
@@ -247,152 +277,144 @@ export default function UsersPage() {
 
   const sections = groupBySection(ALL_PERMS);
 
+  const infoBox: React.CSSProperties = { background: 'var(--surface-2)', borderRadius: 10, padding: '8px 12px', fontSize: 12, color: 'var(--text-2)' };
+
   return (
     <>
-      <Topbar title="Users & Roles" subtitle={`${activeUsers.length} active users across ${companies.length} companies`}
-        actions={<Btn variant="primary" size="sm" onClick={() => setShowInvite(true)}>+ Add User</Btn>}
+      <Topbar title="Users & Roles" subtitle={`${activeUsers.length} active user${activeUsers.length !== 1 ? 's' : ''} across ${companies.length} companies`}
+        actions={<>
+          <Btn variant="secondary" size="sm" onClick={() => setShowMatrix(true)}>{UIIcons.command(12)} Role Matrix</Btn>
+          <Btn variant="primary" size="sm" onClick={() => setShowInvite(true)}>{UIIcons.plus(13)} Add User</Btn>
+        </>}
       />
 
-      <div className="flex-1 min-h-0 overflow-y-auto p-5 flex flex-col gap-4">
+      <div className="flex-1 min-h-0 overflow-y-auto">
+        <div className="mx-auto p-4 md:p-6 flex flex-col gap-4" style={{ maxWidth: 1440 }}>
 
-        {/* Filters */}
-        <div className="flex gap-3 flex-wrap items-center">
-          <input
-            value={search} onChange={e => setSearch(e.target.value)}
-            placeholder="Search by name, email or company..."
-            className="flex-1 min-w-48 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-indigo-400 bg-white"
-          />
-          <select value={filterCo} onChange={e => setFilterCo(e.target.value)}
-            className="border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-indigo-400 bg-white">
-            <option value="">All Companies ({companies.length})</option>
-            {companies.map((c: any) => (
-              <option key={c.companyId} value={c.companyId}>{c.name}</option>
+          {/* Stat tiles */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {[
+              { label: 'Active Users', value: activeUsers.length, grad: 'var(--grad-brand)',  icon: <NavIcon name="users" size={18} /> },
+              { label: 'Pending Invites', value: pendingCount,    grad: 'var(--grad-amber)',  icon: UIIcons.bell(16) },
+              { label: 'Companies',    value: companies.length,   grad: 'var(--grad-teal)',   icon: <NavIcon name="companies" size={18} /> },
+              { label: 'Removed',      value: removedCount,       grad: 'var(--grad-rose)',   icon: UIIcons.trash(16) },
+            ].map(s => (
+              <div key={s.label} className="lux-card p-4 flex items-center gap-3" style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16 }}>
+                <div className="flex items-center justify-center text-white flex-shrink-0" style={{ width: 40, height: 40, borderRadius: 12, background: s.grad }}>{s.icon}</div>
+                <div className="min-w-0">
+                  <div style={{ fontSize: 21, fontWeight: 800, color: 'var(--text)', lineHeight: 1.05, letterSpacing: '-0.02em' }}>{s.value}</div>
+                  <div style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--text-2)' }}>{s.label}</div>
+                </div>
+              </div>
             ))}
-          </select>
-          <label className="flex items-center gap-1.5 text-xs text-slate-500 cursor-pointer select-none">
-            <input type="checkbox" checked={showRemoved} onChange={e => setShowRemoved(e.target.checked)} className="accent-indigo-600" />
-            Show removed
-          </label>
-        </div>
-
-        {/* Users table */}
-        <Card className="p-0">
-          <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
-            <div className="text-xs font-bold text-slate-900">
-              All Users <span className="text-slate-400 font-normal">({visible.length}{visible.length !== users.length ? ` of ${users.length}` : ''})</span>
-            </div>
           </div>
-          {loading ? (
-            <div className="py-10 text-center text-slate-400 text-xs">Loading...</div>
-          ) : visible.length === 0 ? (
-            <div className="py-10 text-center text-slate-400 text-xs">No users found.</div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs border-collapse">
+
+          {/* Filters */}
+          <div className="flex gap-2 flex-wrap items-center">
+            <div className="relative w-full sm:w-72">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-3)' }}>{UIIcons.search(13)}</span>
+              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, email or company…" className="fld fld-xs" style={{ paddingLeft: 30 }} />
+            </div>
+            <select value={filterCo} onChange={e => setFilterCo(e.target.value)} className="fld fld-xs" style={{ width: 'auto', maxWidth: 220 }}>
+              <option value="">All Companies ({companies.length})</option>
+              {companies.map((c: any) => <option key={c.companyId} value={c.companyId}>{c.name}</option>)}
+            </select>
+            <label className="flex items-center gap-1.5 cursor-pointer select-none" style={{ fontSize: 12, color: 'var(--text-2)', fontWeight: 500 }}>
+              <input type="checkbox" checked={showRemoved} onChange={e => setShowRemoved(e.target.checked)} style={{ accentColor: 'var(--primary)', width: 14, height: 14 }} />
+              Show removed
+            </label>
+          </div>
+
+          {/* Users table */}
+          <div className="lux-card p-0 overflow-hidden" style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 18 }}>
+            <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid var(--border)' }}>
+              <div style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--text)' }}>
+                All Users <span style={{ color: 'var(--text-3)', fontWeight: 500 }}>({visible.length}{visible.length !== users.length ? ` of ${users.length}` : ''})</span>
+              </div>
+            </div>
+            <div className="table-scroll">
+              <table className="w-full text-xs border-collapse" style={{ minWidth: 900 }}>
                 <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50">
-                    <th className="text-left px-4 py-2.5 text-slate-500 font-semibold">User</th>
-                    <th className="text-left px-3 py-2.5 text-slate-500 font-semibold">Company</th>
-                    <th className="text-left px-3 py-2.5 text-slate-500 font-semibold">Role</th>
-                    <th className="text-left px-3 py-2.5 text-slate-500 font-semibold">Change Role</th>
-                    <th className="text-left px-3 py-2.5 text-slate-500 font-semibold">Status</th>
-                    <th className="text-right px-4 py-2.5 text-slate-500 font-semibold">Actions</th>
+                  <tr style={{ background: 'var(--surface-2)', borderBottom: '1px solid var(--border)' }}>
+                    {['User','Companies','Role','Change Role','Status'].map(h => <th key={h} className="tbl-th">{h}</th>)}
+                    <th className="tbl-th" style={{ textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {visible.map((u: any) => (
-                    <tr key={u.userId} className={`border-b border-slate-50 last:border-none ${u.isActive ? 'hover:bg-slate-50/50' : 'opacity-50 bg-slate-50/40'}`}>
+                  {loading ? (
+                    [0,1,2,3,4].map(i => (
+                      <tr key={i} style={{ borderBottom: '1px solid var(--border)' }}>
+                        <td className="px-4 py-3"><div className="flex items-center gap-2.5"><Skeleton w={32} h={32} r={10} /><div className="flex flex-col gap-1.5"><Skeleton w={110} h={11} /><Skeleton w={140} h={9} /></div></div></td>
+                        <td className="px-3 py-3"><Skeleton w={90} h={16} r={9999} /></td>
+                        <td className="px-3 py-3"><Skeleton w={70} h={16} r={9999} /></td>
+                        <td className="px-3 py-3"><Skeleton w={90} h={22} r={8} /></td>
+                        <td className="px-3 py-3"><Skeleton w={60} h={16} r={9999} /></td>
+                        <td className="px-4 py-3"><div className="flex justify-end"><Skeleton w={160} h={22} r={8} /></div></td>
+                      </tr>
+                    ))
+                  ) : visible.length === 0 ? (
+                    <tr><td colSpan={6}>
+                      <div className="py-14 text-center flex flex-col items-center gap-3">
+                        <div className="flex items-center justify-center" style={{ width: 52, height: 52, borderRadius: 17, background: 'var(--primary-soft)', color: 'var(--primary)' }}><NavIcon name="users" size={22} /></div>
+                        <div>
+                          <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text)' }}>No users found</div>
+                          <div style={{ fontSize: 12, color: 'var(--text-2)', marginTop: 3 }}>{search || filterCo ? 'Try adjusting your filters.' : 'Invite your first teammate to get started.'}</div>
+                        </div>
+                      </div>
+                    </td></tr>
+                  ) : visible.map((u: any) => (
+                    <tr key={u.userId} style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.12s', opacity: u.isActive ? 1 : 0.55 }}
+                      onMouseEnter={e => { if (u.isActive) e.currentTarget.style.background = 'var(--surface-2)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
+                      {/* User */}
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2.5">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0 ${u.isActive ? 'bg-indigo-50 text-indigo-600' : 'bg-slate-100 text-slate-400'}`}>
-                            {u.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
-                          </div>
-                          <div>
-                            <div className={`font-semibold ${u.isActive ? 'text-slate-800' : 'text-slate-400 line-through'}`}>{u.name}</div>
-                            <div className="text-slate-400 text-[10px]">{u.email}</div>
+                          <Avatar name={u.name} size={32} />
+                          <div className="min-w-0">
+                            <div className="truncate" style={{ fontWeight: 600, color: 'var(--text)', fontSize: 12.5, textDecoration: u.isActive ? 'none' : 'line-through' }}>{u.name}</div>
+                            <div className="truncate" style={{ fontSize: 10.5, color: 'var(--text-3)' }}>{u.email}</div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-3 py-3 max-w-[200px]">
+                      {/* Companies */}
+                      <td className="px-3 py-3" style={{ maxWidth: 220 }}>
                         {(u.companies?.length > 0) ? (
                           <div className="flex flex-wrap gap-1">
                             {u.companies.map((uc: any) => (
-                              <span key={uc.companyId}
-                                className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-100">
+                              <span key={uc.companyId} className="inline-flex items-center gap-1" style={{ fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 9999, background: 'var(--surface-2)', color: 'var(--text-2)' }}>
                                 {uc.company.name}
                                 {isSuperAdmin && u.isActive && (
-                                  <button onClick={() => removeFromCo(u, uc.companyId, uc.company.name)}
-                                    className="text-sky-400 hover:text-red-500 font-bold leading-none ml-0.5">×</button>
+                                  <button onClick={() => removeFromCo(u, uc.companyId, uc.company.name)} title="Remove from company"
+                                    style={{ color: 'var(--text-3)', fontWeight: 700, lineHeight: 1, cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
+                                    onMouseEnter={e => { e.currentTarget.style.color = 'var(--danger-ink)'; }}
+                                    onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-3)'; }}>×</button>
                                 )}
                               </span>
                             ))}
                           </div>
-                        ) : (
-                          <span className="text-slate-300 italic text-xs">No company</span>
-                        )}
+                        ) : <span style={{ color: 'var(--text-3)', fontStyle: 'italic', fontSize: 11.5 }}>No company</span>}
                       </td>
-                      <td className="px-3 py-3">
-                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${ROLE_BADGE[u.role] || 'bg-slate-100 text-slate-500'}`}>
-                          {u.role.replace(/_/g, ' ')}
-                        </span>
-                      </td>
+                      {/* Role */}
+                      <td className="px-3 py-3"><RoleBadge role={u.role} /></td>
+                      {/* Change Role */}
                       <td className="px-3 py-3">
                         {u.isActive && u.role !== 'SUPER_ADMIN' ? (
-                          <select value={u.role} onChange={e => changeRole(u, e.target.value)}
-                            className="text-xs border border-slate-200 rounded-lg px-2 py-1 outline-none focus:border-indigo-500 bg-white">
+                          <select value={u.role} onChange={e => changeRole(u, e.target.value)} className="fld fld-xs" style={{ width: 'auto' }}>
                             {ROLES.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
                           </select>
-                        ) : (
-                          <span className="text-slate-300 text-xs italic">—</span>
-                        )}
+                        ) : <span style={{ color: 'var(--text-3)', fontStyle: 'italic' }}>—</span>}
                       </td>
-                      <td className="px-3 py-3">
-                        {!u.isActive ? (
-                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-50 text-red-400">Removed</span>
-                        ) : (
-                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${u.isVerified ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
-                            {u.isVerified ? 'Active' : 'Pending'}
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          {isSuperAdmin && u.role !== 'SUPER_ADMIN' && (
-                            <button onClick={() => openAssign(u)}
-                              className="text-xs text-sky-500 hover:text-sky-700 font-semibold transition-colors px-2 py-1 rounded hover:bg-sky-50">
-                              Assign
-                            </button>
-                          )}
-                          {u.isActive && u.companyId && (
-                            <button onClick={() => openPermEditor(u)}
-                              className="text-xs text-indigo-500 hover:text-indigo-700 font-semibold transition-colors px-2 py-1 rounded hover:bg-indigo-50">
-                              Edit Perms
-                            </button>
-                          )}
-                          {u.isActive && isSuperAdmin && (u.role !== 'SUPER_ADMIN' || u.userId === me?.userId) && (
-                            <button onClick={() => { setPwUser(u); setPwValue(''); }}
-                              className="text-xs text-amber-500 hover:text-amber-700 font-semibold transition-colors px-2 py-1 rounded hover:bg-amber-50">
-                              Set Password
-                            </button>
-                          )}
-                          {u.isActive && u.role !== 'SUPER_ADMIN' && u.companyId && (
-                            <button onClick={() => remove(u)}
-                              className="text-xs text-red-400 hover:text-red-600 font-medium transition-colors px-2 py-1 rounded hover:bg-red-50">
-                              Remove
-                            </button>
-                          )}
-                          {!u.isActive && isSuperAdmin && (
-                            <button onClick={() => unremove(u)}
-                              className="text-xs text-emerald-500 hover:text-emerald-700 font-semibold transition-colors px-2 py-1 rounded hover:bg-emerald-50">
-                              Restore
-                            </button>
-                          )}
-                          {!u.isActive && isSuperAdmin && (
-                            <button onClick={() => permanentDelete(u)}
-                              className="text-xs text-red-500 hover:text-red-700 font-bold transition-colors px-2 py-1 rounded hover:bg-red-50">
-                              Delete
-                            </button>
-                          )}
+                      {/* Status */}
+                      <td className="px-3 py-3"><StatusPill removed={!u.isActive} verified={u.isVerified} /></td>
+                      {/* Actions */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                          {isSuperAdmin && u.role !== 'SUPER_ADMIN' && <ActBtn tone="primary" onClick={() => openAssign(u)}>Assign</ActBtn>}
+                          {u.isActive && u.companyId && <ActBtn tone="accent" onClick={() => openPermEditor(u)}>Edit Perms</ActBtn>}
+                          {u.isActive && isSuperAdmin && (u.role !== 'SUPER_ADMIN' || u.userId === me?.userId) && <ActBtn tone="warning" onClick={() => { setPwUser(u); setPwValue(''); }}>Set Password</ActBtn>}
+                          {u.isActive && u.role !== 'SUPER_ADMIN' && u.companyId && <ActBtn tone="danger" onClick={() => remove(u)}>Remove</ActBtn>}
+                          {!u.isActive && isSuperAdmin && <ActBtn tone="success" onClick={() => unremove(u)}>Restore</ActBtn>}
+                          {!u.isActive && isSuperAdmin && <ActBtn tone="danger" onClick={() => permanentDelete(u)}>Delete</ActBtn>}
                         </div>
                       </td>
                     </tr>
@@ -400,48 +422,8 @@ export default function UsersPage() {
                 </tbody>
               </table>
             </div>
-          )}
-        </Card>
-
-        {/* Role defaults matrix */}
-        <Card className="p-0">
-          <div className="px-4 py-3 border-b border-slate-100">
-            <div className="text-xs font-bold text-slate-900">Default Role Permissions</div>
-            <div className="text-[10px] text-slate-400 mt-0.5">Base permissions per role — individual overrides via "Edit Perms"</div>
           </div>
-          <div className="overflow-x-auto p-4">
-            <table className="w-full text-xs border-collapse">
-              <thead>
-                <tr className="border-b border-slate-100">
-                  <th className="text-left py-2 pr-4 text-slate-500 font-semibold w-32">Module</th>
-                  {MATRIX_ROLES.map(r => (
-                    <th key={r.key} className="text-center py-2 px-3 text-slate-500 font-semibold">
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] ${ROLE_BADGE[r.key] || 'bg-slate-100 text-slate-500'}`}>{r.label}</span>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {ALL_PERMS.map(p => (
-                  <tr key={p.key} className="border-b border-slate-50 last:border-none">
-                    <td className="py-2 pr-4 text-slate-600 font-medium">{p.label}</td>
-                    {MATRIX_ROLES.map(r => {
-                      const has = ROLE_DEFAULTS[r.key]?.[p.key];
-                      return (
-                        <td key={r.key} className="py-2 px-3 text-center">
-                          {has
-                            ? <span className="text-emerald-500 font-bold text-sm">✓</span>
-                            : <span className="text-slate-200 font-bold text-sm">✕</span>
-                          }
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
+        </div>
       </div>
 
       {/* Add User Modal */}
@@ -452,9 +434,8 @@ export default function UsersPage() {
         </>}>
         <div className="flex flex-col gap-3">
           <div>
-            <label className="text-xs font-semibold text-slate-600 mb-1 block">Company *</label>
-            <select value={inviteCo} onChange={e => setInviteCo(e.target.value)}
-              className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-indigo-400">
+            <label style={lbl}>Company *</label>
+            <select value={inviteCo} onChange={e => setInviteCo(e.target.value)} className="fld">
               {companies.map((c: any) => <option key={c.companyId} value={c.companyId}>{c.name}</option>)}
             </select>
           </div>
@@ -462,7 +443,7 @@ export default function UsersPage() {
           <Input label="Email *" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="priya@company.com" />
           <Sel label="Role" value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))} options={ROLES} />
           <Input label="Password (optional)" type="password" value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} placeholder="Set password directly (min 8 chars)" />
-          <div className="bg-slate-50 rounded-lg p-3 text-xs text-slate-500">
+          <div style={infoBox}>
             {form.password
               ? 'User will be created with this password and can log in immediately.'
               : 'Leave password blank to send an invite email — user sets their own password on accept.'}
@@ -471,28 +452,24 @@ export default function UsersPage() {
       </Modal>
 
       {/* Set Password Modal (SUPER_ADMIN) */}
-      <Modal open={!!pwUser} onClose={() => { setPwUser(null); setPwValue(''); }} title={`Set Password — ${pwUser?.name}`}
+      <Modal open={!!pwUser} onClose={() => { setPwUser(null); setPwValue(''); }} title={`Set Password — ${pwUser?.name || ''}`}
         footer={<>
           <Btn variant="secondary" onClick={() => { setPwUser(null); setPwValue(''); }}>Cancel</Btn>
           <Btn variant="primary" loading={pwSaving} onClick={savePassword}>Update Password</Btn>
         </>}>
         {pwUser && (
           <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2 bg-slate-50 rounded-lg px-3 py-2 text-xs text-slate-600 flex-wrap">
-              <span>User:</span>
-              <span className="font-semibold text-slate-800">{pwUser.email}</span>
+            <div style={infoBox} className="flex items-center gap-2 flex-wrap">
+              <span>User:</span><span style={{ fontWeight: 600, color: 'var(--text)' }}>{pwUser.email}</span>
             </div>
-            <Input label="New Password" type="password" value={pwValue}
-              onChange={e => setPwValue(e.target.value)} placeholder="Min 8 characters" />
-            <p className="text-[11px] text-slate-400">
-              Sets this user's password directly. They'll be signed out everywhere and must log in with the new password.
-            </p>
+            <Input label="New Password" type="password" value={pwValue} onChange={e => setPwValue(e.target.value)} placeholder="Min 8 characters" />
+            <p style={{ fontSize: 11, color: 'var(--text-3)' }}>Sets this user's password directly. They'll be signed out everywhere and must log in with the new password.</p>
           </div>
         )}
       </Modal>
 
       {/* Permission Editor Modal */}
-      <Modal open={!!permUser} onClose={() => setPermUser(null)} title={`Permissions — ${permUser?.name}`}
+      <Modal open={!!permUser} onClose={() => setPermUser(null)} title={`Permissions — ${permUser?.name || ''}`} size="lg"
         footer={<>
           <Btn variant="secondary" onClick={resetToRole}>Reset to Role Defaults</Btn>
           <Btn variant="secondary" onClick={() => setPermUser(null)}>Cancel</Btn>
@@ -500,34 +477,26 @@ export default function UsersPage() {
         </>}>
         {permUser && (
           <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-2 bg-slate-50 rounded-lg px-3 py-2 text-xs text-slate-600 flex-wrap">
-              <span>Company:</span>
-              <span className="font-semibold text-slate-800">{permUser.company?.name || '—'}</span>
-              <span className="text-slate-300">·</span>
-              <span>Role:</span>
-              <span className={`font-semibold px-2 py-0.5 rounded-full text-[10px] ${ROLE_BADGE[permUser.role] || 'bg-slate-100 text-slate-500'}`}>
-                {permUser.role.replace(/_/g, ' ')}
-              </span>
+            <div style={infoBox} className="flex items-center gap-2 flex-wrap">
+              <span>Company:</span><span style={{ fontWeight: 600, color: 'var(--text)' }}>{permUser.company?.name || '—'}</span>
+              <span style={{ color: 'var(--text-3)' }}>·</span>
+              <span>Role:</span><RoleBadge role={permUser.role} small />
             </div>
             {Object.entries(sections).map(([section, perms]) => (
               <div key={section}>
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">{section}</div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>{section}</div>
                 <div className="grid grid-cols-2 gap-2">
                   {perms.map(p => {
                     const checked = !!permState[p.key];
                     const roleDefault = !!(ROLE_DEFAULTS[permUser.role]?.[p.key]);
                     const isOverride = checked !== roleDefault;
                     return (
-                      <label key={p.key} className={`flex items-center gap-2.5 rounded-lg border px-3 py-2 cursor-pointer transition-colors ${
-                        checked ? 'border-indigo-200 bg-indigo-50/60' : 'border-slate-100 bg-slate-50/60'
-                      }`}>
-                        <input type="checkbox" checked={checked}
-                          onChange={e => setPermState(s => ({ ...s, [p.key]: e.target.checked }))}
-                          className="w-3.5 h-3.5 accent-indigo-600" />
-                        <span className={`text-xs font-medium ${checked ? 'text-indigo-700' : 'text-slate-500'}`}>{p.label}</span>
-                        {isOverride && (
-                          <span className="ml-auto text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-600">override</span>
-                        )}
+                      <label key={p.key} className="flex items-center gap-2.5 cursor-pointer transition-colors"
+                        style={{ borderRadius: 10, padding: '8px 12px', border: `1px solid ${checked ? 'var(--primary)' : 'var(--border)'}`, background: checked ? 'var(--primary-soft)' : 'var(--surface-2)' }}>
+                        <input type="checkbox" checked={checked} onChange={e => setPermState(s => ({ ...s, [p.key]: e.target.checked }))}
+                          style={{ accentColor: 'var(--primary)', width: 14, height: 14 }} />
+                        <span style={{ fontSize: 12, fontWeight: 600, color: checked ? 'var(--primary)' : 'var(--text-2)' }}>{p.label}</span>
+                        {isOverride && <span className="ml-auto" style={{ fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 6, background: 'var(--warning-soft)', color: 'var(--warning-ink)' }}>override</span>}
                       </label>
                     );
                   })}
@@ -539,55 +508,76 @@ export default function UsersPage() {
       </Modal>
 
       {/* Assign Company Modal */}
-      <Modal open={!!assignUser} onClose={() => setAssignUser(null)} title={`Assign Company — ${assignUser?.name}`}
+      <Modal open={!!assignUser} onClose={() => setAssignUser(null)} title={`Assign Company — ${assignUser?.name || ''}`}
         footer={<>
           <Btn variant="secondary" onClick={() => setAssignUser(null)}>Cancel</Btn>
           <Btn variant="primary" loading={assignSaving} onClick={saveAssign}>Save</Btn>
         </>}>
         {assignUser && (
           <div className="flex flex-col gap-4">
-            <div className="bg-slate-50 rounded-lg px-3 py-2 text-xs text-slate-500">
-              <span className="font-semibold text-slate-700">{assignUser.email}</span>
-            </div>
+            <div style={infoBox}><span style={{ fontWeight: 600, color: 'var(--text)' }}>{assignUser.email}</span></div>
             <div>
-              <label className="text-xs font-semibold text-slate-600 mb-1 block">Companies *</label>
-              <div className="border border-slate-200 rounded-xl overflow-hidden">
-                <div className="flex flex-col divide-y divide-slate-100 max-h-52 overflow-y-auto">
+              <label style={lbl}>Companies *</label>
+              <div style={{ border: '1px solid var(--border-strong)', borderRadius: 12, overflow: 'hidden' }}>
+                <div className="flex flex-col max-h-52 overflow-y-auto">
                   {companies.map((c: any) => {
                     const checked = assignSelectedIds.includes(c.companyId);
                     const wasOriginal = assignOriginalIds.includes(c.companyId);
                     return (
-                      <label key={c.companyId} className={`flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-colors ${checked ? 'bg-indigo-50/60' : 'hover:bg-slate-50'}`}>
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          onChange={() => toggleAssignCompany(c.companyId)}
-                          className="accent-indigo-500 w-3.5 h-3.5 flex-shrink-0"
-                        />
-                        <span className="text-xs text-slate-700 flex-1">{c.name}</span>
-                        {wasOriginal && (
-                          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-sky-50 text-sky-600">current</span>
-                        )}
+                      <label key={c.companyId} className="flex items-center gap-3 cursor-pointer transition-colors"
+                        style={{ padding: '10px 12px', borderTop: '1px solid var(--border)', background: checked ? 'var(--primary-soft)' : 'transparent' }}>
+                        <input type="checkbox" checked={checked} onChange={() => toggleAssignCompany(c.companyId)} style={{ accentColor: 'var(--primary)', width: 14, height: 14, flexShrink: 0 }} />
+                        <span className="flex-1" style={{ fontSize: 12.5, color: 'var(--text)' }}>{c.name}</span>
+                        {wasOriginal && <span style={{ fontSize: 10, fontWeight: 600, padding: '1px 6px', borderRadius: 6, background: 'var(--accent-soft)', color: 'var(--accent)' }}>current</span>}
                       </label>
                     );
                   })}
                 </div>
               </div>
-              <div className="text-[10px] text-slate-400 mt-1">
-                {assignSelectedIds.length === 0
-                  ? 'No companies selected'
-                  : `${assignSelectedIds.length} ${assignSelectedIds.length === 1 ? 'company' : 'companies'} selected`}
+              <div style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 5 }}>
+                {assignSelectedIds.length === 0 ? 'No companies selected' : `${assignSelectedIds.length} ${assignSelectedIds.length === 1 ? 'company' : 'companies'} selected`}
               </div>
             </div>
             <div>
-              <label className="text-xs font-semibold text-slate-600 mb-1 block">Role (for newly assigned companies)</label>
-              <select value={assignRole} onChange={e => setAssignRole(e.target.value)}
-                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-indigo-400">
+              <label style={lbl}>Role (for newly assigned companies)</label>
+              <select value={assignRole} onChange={e => setAssignRole(e.target.value)} className="fld">
                 {ROLES.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
               </select>
             </div>
           </div>
         )}
+      </Modal>
+
+      {/* Role Matrix Modal */}
+      <Modal open={showMatrix} onClose={() => setShowMatrix(false)} title="Default Role Permissions" size="lg"
+        footer={<Btn variant="primary" onClick={() => setShowMatrix(false)}>Done</Btn>}>
+        <div className="flex flex-col gap-3">
+          <p style={{ fontSize: 12, color: 'var(--text-2)' }}>Base permissions granted to each role. Individual users can be overridden via <strong style={{ color: 'var(--text)' }}>Edit Perms</strong>.</p>
+          <div className="table-scroll">
+            <table className="w-full border-collapse" style={{ minWidth: 460 }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                  <th className="tbl-th" style={{ width: 150 }}>Module</th>
+                  {MATRIX_ROLES.map(r => <th key={r.key} className="tbl-th" style={{ textAlign: 'center' }}><RoleBadge role={r.key} small /></th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {ALL_PERMS.map(p => (
+                  <tr key={p.key} style={{ borderBottom: '1px solid var(--border)' }}>
+                    <td style={{ padding: '9px 12px', fontSize: 12, fontWeight: 600, color: 'var(--text)' }}>{p.label}</td>
+                    {MATRIX_ROLES.map(r => (
+                      <td key={r.key} style={{ padding: '9px 12px', textAlign: 'center' }}>
+                        {ROLE_DEFAULTS[r.key]?.[p.key]
+                          ? <span className="inline-flex" style={{ color: 'var(--success-ink)' }}>{UIIcons.check(15)}</span>
+                          : <span style={{ color: 'var(--text-3)', opacity: 0.4 }}>—</span>}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </Modal>
 
       <ToastContainer />

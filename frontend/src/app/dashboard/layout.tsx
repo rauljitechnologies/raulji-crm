@@ -61,15 +61,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const closeSidebar = useCallback(() => setSidebarOpen(false), []);
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: '#f0f5fa' }}>
+    <div className="flex h-screen overflow-hidden" style={{ background: 'var(--bg)' }}>
       <CookieGuard />
       <GALoader />
       <Sidebar mobileOpen={sidebarOpen} onMobileClose={closeSidebar} />
 
       {/* Mobile hamburger button — fixed over topbar area */}
       <button
-        className="md:hidden fixed top-3.5 left-3.5 z-30 w-8 h-8 flex items-center justify-center rounded-lg flex-shrink-0"
-        style={{ background: '#192b3f', color: '#ffffff' }}
+        className="md:hidden fixed top-3 left-3.5 z-30 w-8 h-8 flex items-center justify-center flex-shrink-0"
+        style={{ background: 'var(--grad-brand)', color: '#ffffff', borderRadius: 10, boxShadow: '0 4px 12px -4px rgba(37,99,235,0.5)' }}
         onClick={() => setSidebarOpen(true)}
         aria-label="Open menu"
       >

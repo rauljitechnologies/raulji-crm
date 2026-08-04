@@ -316,12 +316,26 @@ lead_id = submit_lead(
 )
 print(f"Lead created: {lead_id}")`;
 
-  const responseExample = `// ✅ Success (HTTP 201)
+  const responseExample = `// ✅ New lead created (HTTP 201)
 {
   "success": true,
   "data": {
     "leadId": "clx1234abcdef",
+    "duplicate": false,
     "message": "Lead received."
+  }
+}
+
+// ✅ Email already on file (HTTP 200)
+// The enquiry is logged as an activity on the EXISTING lead —
+// nothing is lost, and you get that lead's id back.
+// Treat 200 and 201 the same way in your form.
+{
+  "success": true,
+  "data": {
+    "leadId": "clx1234abcdef",
+    "duplicate": true,
+    "message": "Enquiry recorded on existing lead."
   }
 }
 
@@ -339,6 +353,16 @@ print(f"Lead created: {lead_id}")`;
   "error": {
     "code": "AUTH_004",
     "message": "Invalid API key."
+  }
+}
+
+// ❌ Error — too many submissions (HTTP 429)
+// Public lead intake is capped at 60 requests per minute per IP.
+{
+  "success": false,
+  "error": {
+    "code": "RATE_LIMIT",
+    "message": "Too many requests."
   }
 }`;
 
@@ -555,10 +579,14 @@ const leads = await leadsRes.json();`;
                         {[
                           { f: 'name',         t: 'string',  r: true,  n: 'Full name of the person' },
                           { f: 'phone',        t: 'string',  r: true,  n: 'Mobile / phone number' },
-                          { f: 'email',        t: 'string',  r: false, n: 'Email address' },
+                          { f: 'email',        t: 'string',  r: false, n: 'Unique per company — see note below' },
                           { f: 'city',         t: 'string',  r: false, n: 'City / location' },
+                          { f: 'state',        t: 'string',  r: false, n: 'State / region' },
+                          { f: 'country',      t: 'string',  r: false, n: 'Country' },
+                          { f: 'service',      t: 'string',  r: false, n: 'Service enquired about' },
                           { f: 'source',       t: 'string',  r: false, n: 'Default: WEBSITE_FORM' },
                           { f: 'notes',        t: 'string',  r: false, n: 'Message / comments' },
+                          { f: 'message',      t: 'string',  r: false, n: 'Also logged as an activity' },
                           { f: 'customFields', t: 'object',  r: false, n: 'Any extra key-value data' },
                         ].map(row => (
                           <tr key={row.f} className="border-t border-slate-100">
@@ -575,6 +603,20 @@ const leads = await leadsRes.json();`;
                     <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Response</div>
                     <CodeBlock code={responseExample} lang="json" />
                   </div>
+                </div>
+
+                <div className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3">
+                  <div className="text-sm font-bold text-blue-900 mb-1">Repeat enquiries are never lost</div>
+                  <p className="text-xs text-blue-800 leading-relaxed">
+                    Email addresses are unique per company. If someone submits your form again using an
+                    email already on file, the API does <strong>not</strong> create a second lead and does
+                    <strong> not</strong> error. It records the new enquiry as an activity on the existing
+                    lead, bumps its last-activity time, and returns <code className="bg-blue-100 px-1 rounded">HTTP 200</code> with
+                    <code className="bg-blue-100 px-1 rounded"> duplicate: true</code> and that lead&apos;s id.
+                    Check <code className="bg-blue-100 px-1 rounded">success</code>, not the status code —
+                    both <code className="bg-blue-100 px-1 rounded">200</code> and <code className="bg-blue-100 px-1 rounded">201</code> mean the enquiry was captured.
+                    Submissions with no email always create a new lead.
+                  </p>
                 </div>
               </div>
 

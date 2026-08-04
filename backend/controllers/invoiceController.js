@@ -276,10 +276,11 @@ exports.getInvoicePdf = async (req, res) => {
     const { id, companyId } = req.params;
     const inv = await prisma.invoice.findFirst({ where: { invoiceId: id, companyId, ...ownerScope(req) } });
     if (!inv) return res.status(404).json({ success: false, error: { message: 'Not found.' } });
-    const result = await pdfSvc.generateInvoicePdf(id);
+    const original = req.query.original === '1' || req.query.original === 'true';
+    const result = await pdfSvc.generateInvoicePdf(id, { original });
     if (result.buffer) {
       res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename="${inv.invoiceNumber}.pdf"`);
+      res.setHeader('Content-Disposition', `attachment; filename="${inv.invoiceNumber}${original ? '_ORIGINAL' : ''}.pdf"`);
       return res.send(result.buffer);
     }
     res.setHeader('Content-Type', 'text/html');
@@ -296,7 +297,8 @@ exports.viewInvoicePdf = async (req, res) => {
     // could view any invoice from any company by guessing its id.)
     const inv = await prisma.invoice.findFirst({ where: { invoiceId: id, companyId, ...ownerScope(req) }, select: { invoiceId: true } });
     if (!inv) return res.status(404).json({ success: false, error: { message: 'Not found.' } });
-    const html = await pdfSvc.buildInvoiceHtml(id);
+    const original = req.query.original === '1' || req.query.original === 'true';
+    const html = await pdfSvc.buildInvoiceHtml(id, { original });
     res.setHeader('Content-Type', 'text/html');
     return res.send(html);
   } catch (err) { return res.status(500).json({ success: false, error: { message: err.message } }); }

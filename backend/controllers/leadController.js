@@ -1,6 +1,5 @@
 
 const prisma  = require('../lib/prisma');
-const { fireTrigger } = require('../services/automationEngine');
 
 exports.getLeads = async (req, res) => {
   try {
@@ -73,8 +72,6 @@ exports.createLead = async (req, res) => {
     });
     const activityDesc = message ? `Lead created via ${source.toLowerCase()} — Message: ${message}` : `Lead created via ${source.toLowerCase()}`;
     await prisma.activity.create({ data:{ companyId, leadId:lead.leadId, userId:req.user?.userId, type:'NOTE', description:activityDesc } });
-    // Fire automation triggers (async, non-blocking)
-    fireTrigger('LEAD_CREATED', lead, companyId).catch(() => {});
     return res.status(201).json({ success:true, data:lead });
   } catch (err) { return res.status(500).json({ success:false, error:{ message:err.message } }); }
 };
@@ -108,7 +105,6 @@ exports.updateLead = async (req, res) => {
 
     if (status && status !== old.status) {
       await prisma.activity.create({ data:{ companyId, leadId, userId:req.user?.userId, type:'STATUS_CHANGE', description:`Status changed from ${old.status} to ${status}` } });
-      fireTrigger('STATUS_CHANGED', lead, companyId, { oldStatus: old.status, newStatus: status }).catch(() => {});
     }
     return res.json({ success:true, data:lead });
   } catch (err) { return res.status(500).json({ success:false, error:{ message:err.message } }); }
@@ -196,7 +192,42 @@ exports.createPublicLead = async (req, res) => {
     if (message) {
       await prisma.activity.create({ data:{ companyId, leadId:lead.leadId, type:'NOTE', description:`Message: ${message}` } });
     }
-    fireTrigger('LEAD_CREATED', lead, companyId).catch(() => {});
-    return res.status(201).json({ success:true, data:{ leadId:lead.leadId, message:'Lead received.' } });
-  } catch (err) { return res.status(500).json({ success:false, error:{ message:err.message } }); }
+    return res.status(201).json({ success:true, data:{ leadId:lead.leadId, duplicate:false, message:'Lead received.' } });
+  } catch (err) {
+    // Leads are unique on (companyId, email). A repeat enquiry from someone we
+    // already hold is normal for a website form, not an error — record it on the
+    // existing lead so the enquiry is never dropped, rather than 500ing.
+    if (err.code === 'P2002' && req.body.email) {
+      try {
+        const existing = await prisma.lead.findFirst({
+          where:  { companyId: req.companyId, email: req.body.email },
+          select: { leadId: true }
+        });
+        if (existing) {
+          const { message, notes, service, source='WEBSITE_FORM' } = req.body;
+          const detail = [message, notes, service && `Service: ${service}`]
+            .filter(Boolean).join(' | ') || 'No additional detail.';
+          await prisma.activity.create({
+            data: {
+              companyId: req.companyId,
+              leadId:    existing.leadId,
+              type:      'NOTE',
+              description: `Repeat enquiry via ${source}: ${detail}`
+            }
+          });
+          await prisma.lead.update({
+            where: { leadId: existing.leadId },
+            data:  { lastActivityAt: new Date() }
+          });
+          return res.status(200).json({
+            success: true,
+            data: { leadId: existing.leadId, duplicate: true, message: 'Enquiry recorded on existing lead.' }
+          });
+        }
+      } catch { /* fall through to the generic error below */ }
+    }
+    // Never surface raw ORM errors — they expose schema internals to callers.
+    console.error('[createPublicLead]', err);
+    return res.status(500).json({ success:false, error:{ message:'Could not record lead. Please try again.' } });
+  }
 };

@@ -30,7 +30,7 @@ function gstinStateCode(gstin) {
   return isNaN(code) ? null : code;
 }
 
-function buildHtml(data, type) {
+function buildHtml(data, type, opts = {}) {
   const isInv   = type === 'invoice';
   const docNum  = isInv ? data.invoiceNumber  : data.quotationNumber;
   const docLbl  = isInv ? 'INVOICE'           : 'QUOTATION';
@@ -191,7 +191,8 @@ function buildHtml(data, type) {
   })() : '';
 
   // ── Paid / Balance rows ───────────────────────────────────
-  const paidAmt = isInv ? (data.paidAmount || 0) : 0;
+  // opts.original → render the original invoice (full amount, no payment applied)
+  const paidAmt = isInv && !opts.original ? (data.paidAmount || 0) : 0;
   const balance = Math.max(0, (data.grandTotal || 0) - paidAmt);
   const paidRows = isInv && paidAmt > 0 ? `
     <tr style="background:#f0fdf4">
@@ -421,10 +422,11 @@ exports.generateQuotationPdf = async (quotationId) => {
   return generatePdf(buildHtml(qt, 'quotation'), `QT_${qt.quotationNumber}.pdf`);
 };
 
-exports.generateInvoicePdf = async (invoiceId) => {
+exports.generateInvoicePdf = async (invoiceId, opts = {}) => {
   const inv = await prisma.invoice.findUnique({ where: { invoiceId }, include: { company: { select: CO_SELECT } } });
   if (!inv) throw new Error('Invoice not found');
-  return generatePdf(buildHtml(inv, 'invoice'), `INV_${inv.invoiceNumber}.pdf`);
+  const suffix = opts.original ? '_ORIGINAL' : '';
+  return generatePdf(buildHtml(inv, 'invoice', opts), `INV_${inv.invoiceNumber}${suffix}.pdf`);
 };
 
 exports.buildQuotationHtml = async (quotationId) => {
@@ -433,8 +435,8 @@ exports.buildQuotationHtml = async (quotationId) => {
   return buildHtml(qt, 'quotation');
 };
 
-exports.buildInvoiceHtml = async (invoiceId) => {
+exports.buildInvoiceHtml = async (invoiceId, opts = {}) => {
   const inv = await prisma.invoice.findUnique({ where: { invoiceId }, include: { company: { select: CO_SELECT } } });
   if (!inv) throw new Error('Not found');
-  return buildHtml(inv, 'invoice');
+  return buildHtml(inv, 'invoice', opts);
 };

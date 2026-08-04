@@ -148,7 +148,7 @@ exports.updatePermissions = async (req, res) => {
       return res.status(400).json({ success: false, error: { message: 'permissions must be a plain object.' } });
 
     // Whitelist allowed permission keys — must stay in sync with the Sidebar's PermKey set
-    const ALLOWED_KEYS = ['dashboard', 'companies', 'leads', 'pipeline', 'deals', 'clients', 'quotations', 'invoices', 'expenses', 'finance', 'analytics', 'users', 'settings', 'api', 'whatsapp', 'campaigns', 'templates', 'automation', 'backup', 'project'];
+    const ALLOWED_KEYS = ['dashboard', 'companies', 'leads', 'pipeline', 'deals', 'clients', 'quotations', 'invoices', 'expenses', 'finance', 'analytics', 'users', 'settings', 'api', 'backup'];
     const sanitized = {};
     for (const key of ALLOWED_KEYS) {
       if (permissions[key] !== undefined) {

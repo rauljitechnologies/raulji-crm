@@ -1,9 +1,24 @@
 'use client';
 import { useEffect, useState, useCallback, useRef } from 'react';
+import Link from 'next/link';
 import { companyApi, clientApi, gstApi } from '@/lib/api';
-import { Topbar, Card, Btn, Input, Modal, useToast } from '@/components/ui';
+import { Topbar, Btn, Input, Modal, useToast, Avatar, Skeleton, UIIcons } from '@/components/ui';
+import { NavIcon } from '@/components/layout/nav';
 
 const GSTIN_RE = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+
+// ─── Small line icons (1.8px stroke, matches NavIcon system) ──
+const S = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+const Ic = {
+  mail:  (s = 14) => <svg width={s} height={s} viewBox="0 0 24 24" {...S}><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7 8 6 8-6"/></svg>,
+  phone: (s = 14) => <svg width={s} height={s} viewBox="0 0 24 24" {...S}><path d="M4 5c0 8 7 15 15 15a2 2 0 0 0 2-2v-2.3a1 1 0 0 0-.8-1l-3.3-.7a1 1 0 0 0-1 .3l-1 1.2a12 12 0 0 1-5.6-5.6l1.2-1a1 1 0 0 0 .3-1L9.3 4.8a1 1 0 0 0-1-.8H6a2 2 0 0 0-2 2Z"/></svg>,
+  pin:   (s = 14) => <svg width={s} height={s} viewBox="0 0 24 24" {...S}><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/></svg>,
+  edit:  (s = 14) => <svg width={s} height={s} viewBox="0 0 24 24" {...S}><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>,
+  doc:   (s = 14) => <svg width={s} height={s} viewBox="0 0 24 24" {...S}><path d="M6 2.8h8.2L19 7.6V19a2.2 2.2 0 0 1-2.2 2.2H6A2.2 2.2 0 0 1 3.8 19V5A2.2 2.2 0 0 1 6 2.8Z"/><path d="M14 3v5h5"/></svg>,
+  card:  (s = 14) => <svg width={s} height={s} viewBox="0 0 24 24" {...S}><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 10h18"/></svg>,
+};
+
+const lbl: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: 'var(--text-2)', marginBottom: 4, display: 'block' };
 
 // ─── GST Input with live validation + lookup ─────────────────
 function GstInput({ value, onChange, onFill }: {
@@ -44,33 +59,30 @@ function GstInput({ value, onChange, onFill }: {
     finally { setStatus('valid'); }
   };
 
-  const color = status === 'valid' ? '#16a34a' : status === 'invalid' ? '#dc2626' : status === 'loading' ? '#3199d4' : '#94a3b8';
-  const icon  = status === 'valid' ? '✓' : status === 'invalid' ? '✗' : status === 'loading' ? '…' : '';
+  const tone = status === 'valid' ? 'var(--success-ink)' : status === 'invalid' ? 'var(--danger-ink)' : status === 'loading' ? 'var(--primary)' : 'var(--text-3)';
+  const bord = status === 'valid' ? 'var(--success)' : status === 'invalid' ? 'var(--danger)' : 'var(--border-strong)';
+  const icon = status === 'valid' ? '✓' : status === 'invalid' ? '✗' : status === 'loading' ? '…' : '';
 
   return (
     <div>
-      <label className="text-xs font-semibold text-slate-600 mb-1 block">GST Number (GSTIN)</label>
+      <label style={lbl}>GST Number (GSTIN)</label>
       <div className="flex gap-2">
         <div className="relative flex-1">
           <input
-            className="w-full px-3.5 py-2.5 border rounded-xl text-sm font-mono outline-none transition-all pr-8"
-            style={{ borderColor: status === 'valid' ? '#16a34a' : status === 'invalid' ? '#dc2626' : '#e2e8f0', background: '#fff' }}
+            className="w-full transition-all"
+            style={{ padding: '8px 34px 8px 12px', fontSize: 13, fontFamily: 'ui-monospace, monospace', letterSpacing: '0.03em', borderRadius: 10, border: `1px solid ${bord}`, background: 'var(--surface)', color: 'var(--text)' }}
             value={value}
             onChange={e => handleChange(e.target.value)}
             placeholder="27AAAA0000A1Z5"
             maxLength={15}
           />
-          {icon && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold" style={{ color }}>{icon}</span>}
+          {icon && <span className="absolute right-3 top-1/2 -translate-y-1/2 font-bold" style={{ color: tone, fontSize: 13 }}>{icon}</span>}
         </div>
         {status === 'valid' && (
-          <button onClick={fetchDetails}
-            className="px-3 py-2 text-xs font-semibold rounded-xl text-white flex-shrink-0 transition-colors"
-            style={{ background: '#3199d4' }}>
-            Fetch Details
-          </button>
+          <Btn variant="primary" size="sm" onClick={fetchDetails} style={{ flexShrink: 0 }}>Fetch Details</Btn>
         )}
       </div>
-      {message && <p className="text-xs mt-1" style={{ color }}>{message}</p>}
+      {message && <p className="mt-1.5" style={{ fontSize: 11.5, color: tone }}>{message}</p>}
     </div>
   );
 }
@@ -108,83 +120,53 @@ function ClientModal({ client, cid, onClose, onDone }: { client?: any; cid: stri
     if (!f.name.trim()) return toast('Client name is required', 'err');
     setSaving(true);
     try {
-      if (isEdit) {
-        await clientApi.update(cid, client.clientId, f);
-        toast('Client updated!');
-      } else {
-        await clientApi.create(cid, f);
-        toast('Client added!');
-      }
-      setTimeout(() => { onDone(); onClose(); }, 600);
+      if (isEdit) { await clientApi.update(cid, client.clientId, f); toast('Client updated!'); }
+      else        { await clientApi.create(cid, f); toast('Client added!'); }
+      setTimeout(() => { onDone(); onClose(); }, 500);
     } catch (e: any) { toast(e.message, 'err'); }
     finally { setSaving(false); }
   };
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={onClose}>
-        <div className="bg-white rounded-2xl w-full max-w-lg max-h-[95vh] flex flex-col shadow-2xl" onClick={e => e.stopPropagation()}>
-          {/* Header */}
-          <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between flex-shrink-0">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
-                style={{ background: 'linear-gradient(135deg,#3199d4,#1f293f)' }}>
-                {isEdit ? f.name.slice(0,2).toUpperCase() : '🏛'}
-              </div>
-              <div>
-                <div className="font-bold text-slate-900 text-sm">{isEdit ? 'Edit Client' : 'Add New Client'}</div>
-                <div className="text-xs text-slate-400">{isEdit ? client.name : 'Add client for billing'}</div>
-              </div>
+      <Modal open onClose={onClose} title={isEdit ? 'Edit Client' : 'Add New Client'} size="md"
+        footer={<>
+          <Btn variant="secondary" onClick={onClose}>Cancel</Btn>
+          <Btn variant="primary" loading={saving} onClick={save}>{isEdit ? 'Save Changes' : 'Add Client'}</Btn>
+        </>}>
+        <div className="flex flex-col gap-4">
+          {/* GST first — drives auto-fill */}
+          <GstInput value={f.gst} onChange={v => set('gst', v)} onFill={onGstFill} />
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="col-span-2">
+              <Input label="Business / Client Name *" value={f.name} onChange={e => set('name', e.target.value)} placeholder="Acme Technologies Pvt Ltd" />
             </div>
-            <button onClick={onClose} className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 text-sm">✕</button>
+            <Input label="Email" type="email" value={f.email} onChange={e => set('email', e.target.value)} placeholder="billing@acme.com" />
+            <Input label="Phone" value={f.phone} onChange={e => set('phone', e.target.value)} placeholder="+91 98765 43210" />
           </div>
 
-          {/* Body */}
-          <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-4">
-
-            {/* GST first — drives auto-fill */}
-            <GstInput value={f.gst} onChange={v => set('gst', v)} onFill={onGstFill} />
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="col-span-2">
-                <Input label="Business / Client Name *" value={f.name} onChange={e => set('name', e.target.value)} placeholder="Acme Technologies Pvt Ltd" />
-              </div>
-              <Input label="Email" type="email" value={f.email} onChange={e => set('email', e.target.value)} placeholder="billing@acme.com" />
-              <Input label="Phone" value={f.phone} onChange={e => set('phone', e.target.value)} placeholder="+91 98765 43210" />
-            </div>
-
-            <div>
-              <label className="text-xs font-semibold text-slate-600 mb-1 block">Billing Address</label>
-              <input className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-400 transition-all"
-                value={f.address} onChange={e => set('address', e.target.value)} placeholder="Street / Building / Area" />
-            </div>
-
-            <div className="grid grid-cols-3 gap-3">
-              <Input label="City"    value={f.city}    onChange={e => set('city',    e.target.value)} placeholder="Mumbai" />
-              <Input label="State"   value={f.state}   onChange={e => set('state',   e.target.value)} placeholder="Maharashtra" />
-              <Input label="Pincode" value={f.pincode} onChange={e => set('pincode', e.target.value)} placeholder="400001" />
-            </div>
-
-            <Input label="PAN Number" value={f.pan} onChange={e => set('pan', e.target.value.toUpperCase())} placeholder="AAACT1234C" />
-
-            <div>
-              <label className="text-xs font-semibold text-slate-600 mb-1 block">Notes</label>
-              <textarea rows={2} value={f.notes} onChange={e => set('notes', e.target.value)}
-                className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs resize-none outline-none focus:border-blue-400 transition-all"
-                placeholder="Any notes about this client..." />
-            </div>
+          <div>
+            <label style={lbl}>Billing Address</label>
+            <input className="w-full fld" value={f.address} onChange={e => set('address', e.target.value)} placeholder="Street / Building / Area" />
           </div>
 
-          {/* Footer */}
-          <div className="px-6 py-4 border-t border-slate-100 flex gap-2 justify-end flex-shrink-0">
-            <Btn variant="secondary" onClick={onClose}>Cancel</Btn>
-            <Btn variant="primary" loading={saving} onClick={save}
-              className="!text-white" style={{ background: 'linear-gradient(135deg,#3199d4,#1f293f)', border: 'none' }}>
-              {isEdit ? 'Save Changes' : 'Add Client'}
-            </Btn>
+          <div className="grid grid-cols-3 gap-3">
+            <Input label="City"    value={f.city}    onChange={e => set('city',    e.target.value)} placeholder="Mumbai" />
+            <Input label="State"   value={f.state}   onChange={e => set('state',   e.target.value)} placeholder="Maharashtra" />
+            <Input label="Pincode" value={f.pincode} onChange={e => set('pincode', e.target.value)} placeholder="400001" />
+          </div>
+
+          <Input label="PAN Number" value={f.pan} onChange={e => set('pan', e.target.value.toUpperCase())} placeholder="AAACT1234C" />
+
+          <div>
+            <label style={lbl}>Notes</label>
+            <textarea rows={2} value={f.notes} onChange={e => set('notes', e.target.value)}
+              className="w-full fld" style={{ resize: 'none' }}
+              placeholder="Any notes about this client..." />
           </div>
         </div>
-      </div>
+      </Modal>
       <ToastContainer />
     </>
   );
@@ -196,26 +178,44 @@ function DeleteModal({ client, cid, onClose, onDone }: any) {
   const { toast, ToastContainer } = useToast();
   const go = async () => {
     setSaving(true);
-    try { await clientApi.remove(cid, client.clientId); toast('Client deleted.'); setTimeout(() => { onDone(); onClose(); }, 600); }
+    try { await clientApi.remove(cid, client.clientId); toast('Client deleted.'); setTimeout(() => { onDone(); onClose(); }, 500); }
     catch (e: any) { toast(e.message, 'err'); } finally { setSaving(false); }
   };
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={onClose}>
-        <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl" onClick={e => e.stopPropagation()}>
-          <div className="px-6 pt-6 pb-4 text-center">
-            <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center text-2xl mx-auto mb-3">🗑</div>
-            <div className="font-bold text-slate-900 mb-1">Delete Client?</div>
-            <div className="text-xs text-slate-500 leading-relaxed"><strong>{client.name}</strong> will be removed.<br/>Existing invoices will not be affected.</div>
+      <Modal open onClose={onClose} title="Delete Client" size="sm"
+        footer={<>
+          <Btn variant="secondary" onClick={onClose}>Cancel</Btn>
+          <Btn variant="danger" loading={saving} onClick={go}>Yes, Delete</Btn>
+        </>}>
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-3 px-4 py-3" style={{ borderRadius: 12, background: 'var(--danger-soft)', border: '1px solid var(--danger)' }}>
+            <span style={{ fontSize: 22 }}>⚠️</span>
+            <div>
+              <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--danger-ink)' }}>This action cannot be undone</div>
+              <div style={{ fontSize: 12.5, color: 'var(--text-2)', marginTop: 2 }}>Existing invoices for this client will not be affected.</div>
+            </div>
           </div>
-          <div className="px-6 pb-6 flex gap-2">
-            <Btn variant="secondary" onClick={onClose} className="flex-1">Cancel</Btn>
-            <Btn variant="danger" loading={saving} onClick={go} className="flex-1">Delete</Btn>
-          </div>
+          <p style={{ fontSize: 13, color: 'var(--text-2)' }}>
+            Are you sure you want to delete <strong style={{ color: 'var(--text)' }}>{client.name}</strong>?
+          </p>
         </div>
-      </div>
+      </Modal>
       <ToastContainer />
     </>
+  );
+}
+
+// ─── Stat tile ────────────────────────────────────────────────
+function Stat({ label, value, icon, grad }: { label: string; value: string | number; icon: React.ReactNode; grad: string }) {
+  return (
+    <div className="lux-card p-4 flex items-center gap-3" style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16 }}>
+      <div className="flex items-center justify-center text-white flex-shrink-0" style={{ width: 40, height: 40, borderRadius: 12, background: grad }}>{icon}</div>
+      <div className="min-w-0">
+        <div style={{ fontSize: 21, fontWeight: 800, color: 'var(--text)', lineHeight: 1.05, letterSpacing: '-0.02em' }}>{value}</div>
+        <div style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--text-2)' }}>{label}</div>
+      </div>
+    </div>
   );
 }
 
@@ -275,149 +275,171 @@ export default function ClientsPage() {
     !search || [c.name, c.email, c.phone, c.gst, c.city].some(v => (v||'').toLowerCase().includes(search.toLowerCase()))
   );
 
-  const initials = (name: string) => name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
+  const now = new Date();
+  const stats = {
+    total:    clients.length,
+    withGst:  clients.filter(c => c.gst).length,
+    withMail: clients.filter(c => c.email).length,
+    thisMonth: clients.filter(c => { const d = new Date(c.createdAt); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); }).length,
+  };
 
   return (
     <>
       <Topbar
         title="Clients"
-        subtitle={`${clients.length} client${clients.length !== 1 ? 's' : ''}${cid === 'ALL' ? ' across all companies' : ''}`}
+        subtitle={`${clients.length.toLocaleString('en-IN')} client${clients.length !== 1 ? 's' : ''}${cid === 'ALL' ? ' across all companies' : ''}`}
         actions={<>
-          <select value={cid} onChange={e => setCid(e.target.value)}
-            className="border border-slate-200 rounded-lg px-3 py-1.5 text-xs outline-none bg-white">
+          <select value={cid} onChange={e => setCid(e.target.value)} className="fld fld-xs" style={{ width: 'auto', fontWeight: 600, maxWidth: 200 }}>
             {isSuperAdmin && companies.length > 1 && <option value="ALL">All Companies</option>}
             {companies.map((c: any) => <option key={c.companyId} value={c.companyId}>{c.name}</option>)}
           </select>
           {cid !== 'ALL' && (
-            <Btn variant="primary" size="sm" onClick={() => setAddOpen(true)}
-              style={{ background: 'linear-gradient(135deg,#3199d4,#1f293f)', border: 'none' }}>
-              + Add Client
-            </Btn>
+            <Btn variant="primary" size="sm" onClick={() => setAddOpen(true)}>{UIIcons.plus(13)} Add Client</Btn>
           )}
         </>}
       />
 
-      <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-4">
+      <div className="flex-1 overflow-y-auto">
+        <div className="mx-auto p-4 md:p-6 flex flex-col gap-4" style={{ maxWidth: 1440 }}>
 
-        {/* All-companies summary — SUPER_ADMIN only */}
-        {cid === 'ALL' && !loading && clients.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {companies.map((co: any) => {
-              const count = clients.filter((cl: any) => cl._companyId === co.companyId).length;
-              return (
-                <button key={co.companyId} onClick={() => setCid(co.companyId)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-sky-100 bg-sky-50 text-sky-700 text-xs font-semibold hover:bg-sky-100 transition-colors">
-                  🏢 {co.name}
-                  <span className="bg-sky-200 text-sky-800 rounded-full px-1.5 py-0.5 text-[10px] font-bold">{count}</span>
-                </button>
-              );
-            })}
+          {/* Stat tiles */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <Stat label="Total Clients"   value={stats.total.toLocaleString('en-IN')} grad="var(--grad-brand)"  icon={<NavIcon name="clients" size={19} />} />
+            <Stat label="GST Registered"  value={stats.withGst}   grad="var(--grad-teal)"   icon={Ic.doc(18)} />
+            <Stat label="With Email"      value={stats.withMail}  grad="var(--grad-violet)" icon={Ic.mail(18)} />
+            <Stat label={cid === 'ALL' ? 'Companies' : 'Added This Month'} value={cid === 'ALL' ? companies.length : stats.thisMonth} grad="var(--grad-amber)" icon={cid === 'ALL' ? <NavIcon name="companies" size={18} /> : UIIcons.plus(17)} />
           </div>
-        )}
 
-        {/* Search */}
-        <div className="flex gap-3 items-center">
-          <div className="relative flex-1 max-w-sm">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
-            <input
-              className="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-400 transition-all bg-white"
-              placeholder="Search clients by name, email, GST, phone..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            />
-          </div>
-          {search && <button onClick={() => setSearch('')} className="text-xs text-slate-400 hover:text-slate-600">Clear</button>}
-        </div>
-
-        {/* Grid */}
-        {loading ? (
-          <div className="py-20 flex flex-col items-center gap-2">
-            <svg className="animate-spin w-6 h-6" style={{ color: '#3199d4' }} viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" opacity=".3"/>
-              <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
-            </svg>
-            <span className="text-xs text-slate-400">Loading clients...</span>
-          </div>
-        ) : filtered.length === 0 ? (
-          <div className="py-20 flex flex-col items-center gap-3">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl" style={{ background: '#e8f4fb' }}>🏛</div>
-            <div className="text-sm font-semibold text-slate-700">{search ? 'No clients found' : 'No clients yet'}</div>
-            <div className="text-xs text-slate-400">{search ? 'Try a different search term' : 'Add your first client to start creating invoices'}</div>
-            {!search && <Btn variant="primary" size="sm" onClick={() => setAddOpen(true)}
-              style={{ background: 'linear-gradient(135deg,#3199d4,#1f293f)', border: 'none' }}>
-              + Add First Client
-            </Btn>}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {filtered.map((c: any) => (
-              <div key={`${c._companyId || cid}-${c.clientId}`} className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all p-5 flex flex-col gap-3">
-                {/* Company badge — ALL mode only */}
-                {cid === 'ALL' && c._companyName && (
-                  <div className="flex items-center gap-1.5 -mb-1">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-sky-700 border border-sky-100 truncate max-w-full">
-                      🏢 {c._companyName}
-                    </span>
-                  </div>
-                )}
-
-                {/* Top */}
-                <div className="flex items-start gap-3">
-                  <div className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
-                    style={{ background: 'linear-gradient(135deg,#3199d4,#1f293f)' }}>
-                    {initials(c.name)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-bold text-slate-900 text-sm truncate">{c.name}</div>
-                    {c.gst && <div className="text-xs text-slate-400 font-mono mt-0.5">GST: {c.gst}</div>}
-                    {!c.gst && c.pan && <div className="text-xs text-slate-400 font-mono mt-0.5">PAN: {c.pan}</div>}
-                  </div>
-                </div>
-
-                {/* Details */}
-                <div className="flex flex-col gap-1 text-xs text-slate-500">
-                  {c.email && (
-                    <div className="flex items-center gap-1.5">
-                      <span>✉</span><span className="truncate" style={{ color: '#3199d4' }}>{c.email}</span>
-                    </div>
-                  )}
-                  {c.phone && (
-                    <div className="flex items-center gap-1.5">
-                      <span>📞</span><span>{c.phone}</span>
-                    </div>
-                  )}
-                  {(c.city || c.state) && (
-                    <div className="flex items-center gap-1.5">
-                      <span>📍</span><span>{[c.city, c.state].filter(Boolean).join(', ')}</span>
-                    </div>
-                  )}
-                  {c.address && !(c.city || c.state) && (
-                    <div className="flex items-center gap-1.5 truncate">
-                      <span>📍</span><span className="truncate">{c.address}</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Actions */}
-                <div className="flex gap-2 pt-1 border-t border-slate-50 mt-1">
-                  <button onClick={() => setEditClient(c)}
-                    className="flex-1 text-xs font-semibold py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors">
-                    Edit
+          {/* All-companies quick filter pills — SUPER_ADMIN only */}
+          {cid === 'ALL' && !loading && clients.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {companies.map((co: any) => {
+                const count = clients.filter((cl: any) => cl._companyId === co.companyId).length;
+                return (
+                  <button key={co.companyId} onClick={() => setCid(co.companyId)}
+                    className="inline-flex items-center gap-1.5 transition-colors"
+                    style={{ padding: '5px 10px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-2)', fontSize: 11.5, fontWeight: 600 }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-2)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'var(--surface)'; }}>
+                    <span style={{ color: 'var(--text-3)' }}><NavIcon name="companies" size={13} /></span>
+                    {co.name}
+                    <span style={{ background: 'var(--primary-soft)', color: 'var(--primary)', borderRadius: 9999, padding: '1px 7px', fontSize: 10.5, fontWeight: 700 }}>{count}</span>
                   </button>
-                  <a href={`/dashboard/invoices`}
-                    className="flex-1 text-xs font-semibold py-1.5 rounded-lg text-white text-center transition-colors"
-                    style={{ background: 'linear-gradient(135deg,#3199d4,#1f293f)' }}>
-                    Invoice →
-                  </a>
-                  <button onClick={() => setDelClient(c)}
-                    className="w-8 h-7 rounded-lg bg-red-50 text-red-400 hover:bg-red-100 text-xs flex items-center justify-center transition-colors flex-shrink-0">
-                    🗑
-                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Search */}
+          <div className="flex gap-2 items-center flex-wrap">
+            <div className="relative w-full sm:w-72">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-3)' }}>{UIIcons.search(13)}</span>
+              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, email, GST, phone…" className="fld fld-xs" style={{ paddingLeft: 30 }} />
+            </div>
+            {search && (
+              <button onClick={() => setSearch('')} className="act-btn" style={{ background: 'var(--surface-2)', color: 'var(--text-2)' }}>
+                {UIIcons.x(11)} Clear
+              </button>
+            )}
+          </div>
+
+          {/* Grid */}
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {[0,1,2,3,4,5].map(i => (
+                <div key={i} className="lux-card p-5 flex flex-col gap-3" style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 18 }}>
+                  <div className="flex items-center gap-3"><Skeleton w={44} h={44} r={13} /><div className="flex flex-col gap-2"><Skeleton w={130} h={13} /><Skeleton w={90} h={10} /></div></div>
+                  <Skeleton w="80%" h={11} /><Skeleton w="60%" h={11} />
+                  <div className="flex gap-2 pt-1"><Skeleton w="100%" h={28} r={9} /></div>
                 </div>
+              ))}
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="lux-card py-16 text-center flex flex-col items-center gap-3" style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 18 }}>
+              <div className="flex items-center justify-center" style={{ width: 52, height: 52, borderRadius: 17, background: 'var(--primary-soft)', color: 'var(--primary)' }}>
+                <NavIcon name="clients" size={22} />
               </div>
-            ))}
-          </div>
-        )}
+              <div>
+                <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text)' }}>{search ? 'No clients match your search' : 'No clients yet'}</div>
+                <div style={{ fontSize: 12, color: 'var(--text-2)', marginTop: 3 }}>{search ? 'Try a different search term.' : 'Add your first client to start creating invoices.'}</div>
+              </div>
+              {!search && cid !== 'ALL' && <Btn variant="primary" size="sm" onClick={() => setAddOpen(true)}>{UIIcons.plus(13)} Add First Client</Btn>}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {filtered.map((c: any) => (
+                <div key={`${c._companyId || cid}-${c.clientId}`}
+                  className="lux-card p-5 flex flex-col gap-3.5"
+                  style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 18 }}>
+
+                  {/* Company badge — ALL mode only */}
+                  {cid === 'ALL' && c._companyName && (
+                    <span className="inline-flex items-center gap-1.5 self-start" style={{ padding: '2px 8px', borderRadius: 9999, background: 'var(--surface-2)', color: 'var(--text-2)', fontSize: 10.5, fontWeight: 600, maxWidth: '100%' }}>
+                      <span style={{ color: 'var(--text-3)' }}><NavIcon name="companies" size={11} /></span>
+                      <span className="truncate">{c._companyName}</span>
+                    </span>
+                  )}
+
+                  {/* Top */}
+                  <div className="flex items-start gap-3">
+                    <Avatar name={c.name} size={44} />
+                    <div className="flex-1 min-w-0">
+                      <div className="truncate" style={{ fontWeight: 700, color: 'var(--text)', fontSize: 14 }}>{c.name}</div>
+                      {c.gst
+                        ? <div className="truncate flex items-center gap-1 mt-0.5" style={{ fontSize: 11, color: 'var(--text-3)', fontFamily: 'ui-monospace, monospace' }}>{Ic.doc(11)} {c.gst}</div>
+                        : c.pan
+                        ? <div className="truncate flex items-center gap-1 mt-0.5" style={{ fontSize: 11, color: 'var(--text-3)', fontFamily: 'ui-monospace, monospace' }}>{Ic.card(11)} {c.pan}</div>
+                        : <div className="mt-0.5" style={{ fontSize: 11, color: 'var(--text-3)' }}>No GST / PAN on file</div>}
+                    </div>
+                  </div>
+
+                  {/* Details */}
+                  <div className="flex flex-col gap-1.5" style={{ fontSize: 12, color: 'var(--text-2)' }}>
+                    {c.email && (
+                      <a href={`mailto:${c.email}`} className="flex items-center gap-2 min-w-0 transition-colors hover:underline" style={{ color: 'var(--primary)' }}>
+                        <span style={{ color: 'var(--text-3)' }}>{Ic.mail(13)}</span><span className="truncate">{c.email}</span>
+                      </a>
+                    )}
+                    {c.phone && (
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span style={{ color: 'var(--text-3)' }}>{Ic.phone(13)}</span><span className="truncate">{c.phone}</span>
+                      </div>
+                    )}
+                    {(c.city || c.state || c.address) && (
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span style={{ color: 'var(--text-3)' }}>{Ic.pin(13)}</span>
+                        <span className="truncate">{[c.city, c.state].filter(Boolean).join(', ') || c.address}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-2 pt-3 mt-auto" style={{ borderTop: '1px solid var(--border)' }}>
+                    <button onClick={() => setEditClient(c)}
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 transition-colors"
+                      style={{ padding: '7px 10px', borderRadius: 9, border: '1px solid var(--border-strong)', background: 'var(--surface)', color: 'var(--text)', fontSize: 12, fontWeight: 600 }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-2)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'var(--surface)'; }}>
+                      {Ic.edit(13)} Edit
+                    </button>
+                    <Link href="/dashboard/invoices"
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 transition-opacity hover:opacity-90"
+                      style={{ padding: '7px 10px', borderRadius: 9, background: 'var(--grad-brand)', color: '#fff', fontSize: 12, fontWeight: 600 }}>
+                      {Ic.doc(13)} Invoice
+                    </Link>
+                    <button onClick={() => setDelClient(c)} title="Delete client"
+                      className="flex items-center justify-center transition-colors flex-shrink-0"
+                      style={{ width: 34, borderRadius: 9, background: 'transparent', color: 'var(--text-3)', border: '1px solid var(--border-strong)' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--danger-soft)'; e.currentTarget.style.color = 'var(--danger-ink)'; e.currentTarget.style.borderColor = 'var(--danger)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-3)'; e.currentTarget.style.borderColor = 'var(--border-strong)'; }}>
+                      {UIIcons.trash(14)}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {addOpen    && <ClientModal cid={cid} onClose={() => setAddOpen(false)} onDone={loadClients} />}
