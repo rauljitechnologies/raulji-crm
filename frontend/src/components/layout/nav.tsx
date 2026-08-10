@@ -1,14 +1,14 @@
 // Shared navigation model — consumed by the Sidebar, the command palette
 // and the Quick Add menu so all three stay in sync.
 
-export type PermKey = 'dashboard'|'companies'|'leads'|'pipeline'|'deals'|'clients'|'quotations'|'invoices'|'analytics'|'users'|'settings'|'api'|'backup'|'expenses'|'finance';
+export type PermKey = 'dashboard'|'companies'|'leads'|'pipeline'|'deals'|'clients'|'quotations'|'invoices'|'analytics'|'users'|'settings'|'api'|'backup'|'expenses'|'finance'|'payroll';
 
 export const ROLE_DEFAULTS: Record<string, Record<PermKey, boolean>> = {
-  SUPER_ADMIN:   { dashboard:true,companies:true,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,analytics:true,users:true,settings:true,api:true,backup:true,expenses:true,finance:true },
-  ADMIN:         { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,analytics:true,users:true,settings:true,api:true,backup:false,expenses:true,finance:true },
-  SALES_MANAGER: { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,analytics:true,users:false,settings:false,api:false,backup:false,expenses:true,finance:false },
-  SALES_REP:     { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:false,analytics:false,users:false,settings:false,api:false,backup:false,expenses:false,finance:false },
-  VIEWER:        { dashboard:true,companies:false,leads:true,pipeline:false,deals:false,clients:false,quotations:false,invoices:false,analytics:true,users:false,settings:false,api:false,backup:false,expenses:false,finance:false },
+  SUPER_ADMIN:   { dashboard:true,companies:true,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,analytics:true,users:true,settings:true,api:true,backup:true,expenses:true,finance:true,payroll:true },
+  ADMIN:         { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,analytics:true,users:true,settings:true,api:true,backup:false,expenses:true,finance:true,payroll:true },
+  SALES_MANAGER: { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,analytics:true,users:false,settings:false,api:false,backup:false,expenses:true,finance:false,payroll:false },
+  SALES_REP:     { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:false,analytics:false,users:false,settings:false,api:false,backup:false,expenses:false,finance:false,payroll:false },
+  VIEWER:        { dashboard:true,companies:false,leads:true,pipeline:false,deals:false,clients:false,quotations:false,invoices:false,analytics:true,users:false,settings:false,api:false,backup:false,expenses:false,finance:false,payroll:false },
 };
 
 export function getEffectivePerms(user: any): Record<string, boolean> {
@@ -34,6 +34,9 @@ export const NAV: NavSection[] = [
     { href: '/dashboard/invoices',    label: 'Invoices',       key: 'invoices',   perm: 'invoices'   },
     { href: '/dashboard/expenses',    label: 'Expenses',       key: 'expenses',   perm: 'expenses'   },
     { href: '/dashboard/finance',     label: 'Finance',        key: 'finance',    perm: 'finance'    },
+  ]},
+  { section: 'People', items: [
+    { href: '/dashboard/payroll',     label: 'Payroll',        key: 'payroll',    perm: 'payroll'    },
   ]},
   { section: 'Insights', items: [
     { href: '/dashboard/analytics',   label: 'Analytics',      key: 'analytics',  perm: 'analytics'  },
@@ -63,6 +66,7 @@ export function NavIcon({ name, size = 17 }: { name: string; size?: number }) {
     case 'invoices':   return <svg {...p}><rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="M3 9.5h18"/><path d="M7 14.5h3"/></svg>;
     case 'expenses':   return <svg {...p}><rect x="2.8" y="6" width="18.4" height="13" rx="2.5"/><path d="M2.8 10h18.4"/><circle cx="16.5" cy="14.8" r="1.6"/></svg>;
     case 'finance':    return <svg {...p}><path d="M3.5 20.5v-5.2"/><path d="M9.2 20.5V10"/><path d="M14.8 20.5v-7.8"/><path d="M20.5 20.5V6.5"/><path d="M3.5 9.8 9 5.5l4.5 3.4 6-5"/><path d="M16 3.5h3.5V7"/></svg>;
+    case 'payroll':    return <svg {...p}><circle cx="9" cy="7.5" r="3.2"/><path d="M3.2 20c.6-3.4 2.9-5.2 5.8-5.2 1 0 1.9.2 2.7.6"/><rect x="13" y="13" width="8.5" height="7.5" rx="1.8"/><path d="M13 16h8.5"/><path d="M15.5 18.6h1.8"/></svg>;
     case 'whatsapp':   return <svg {...p}><path d="M12 3.5a8.5 8.5 0 0 0-7.3 12.8L3.5 20.5l4.4-1.1A8.5 8.5 0 1 0 12 3.5Z"/><path d="M8.8 9.5c.4 2.6 2.9 5.2 5.6 5.7l1.2-1.3-2-1.2-1 .7c-1-.5-1.8-1.3-2.3-2.3l.8-.9-1.2-2-1.1 1.3Z"/></svg>;
     case 'campaigns':  return <svg {...p}><path d="m4 10 12-5.5v15L4 14v-4Z"/><path d="M4 10H3a1.5 1.5 0 0 0 0 4h1"/><path d="M8 14.5V18a1.5 1.5 0 0 0 3 0v-2.4"/><path d="M19.5 8.5 21 7M19.5 15.5 21 17M20.5 12H22"/></svg>;
     case 'templates':  return <svg {...p}><rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M8.5 8h7M8.5 12h7M8.5 16h4"/></svg>;

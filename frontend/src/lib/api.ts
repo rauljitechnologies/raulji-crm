@@ -174,3 +174,20 @@ export const financeApi = {
   updateInv:   (cid: string, id: string, body: any) => request<any>(`/companies/${cid}/investments/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
   removeInv:   (cid: string, id: string)            => request<any>(`/companies/${cid}/investments/${id}`, { method: 'DELETE' }),
 };
+
+// Payroll (employees + salary slips)
+export const payrollApi = {
+  listEmployees:  (cid: string, params?: any)          => request<any>(`/companies/${cid}/employees?${new URLSearchParams(params||{})}`),
+  createEmployee: (cid: string, body: any)             => request<any>(`/companies/${cid}/employees`, { method: 'POST', body: JSON.stringify(body) }),
+  updateEmployee: (cid: string, id: string, body: any) => request<any>(`/companies/${cid}/employees/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+  removeEmployee: (cid: string, id: string)            => request<any>(`/companies/${cid}/employees/${id}`, { method: 'DELETE' }),
+  nextEmpCode:    (cid: string, prefix?: string)       => request<any>(`/companies/${cid}/employees/next-code?${new URLSearchParams(prefix ? { prefix } : {})}`),
+
+  listPayslips:   (cid: string, params?: any)          => request<any>(`/companies/${cid}/payslips?${new URLSearchParams(params||{})}`),
+  previewSlips:   (cid: string, params: any)           => request<any>(`/companies/${cid}/payslips/preview?${new URLSearchParams(params)}`),
+  generateSlips:  (cid: string, body: any)             => request<any>(`/companies/${cid}/payslips/generate`, { method: 'POST', body: JSON.stringify(body) }),
+  updatePayslip:  (cid: string, id: string, body: any) => request<any>(`/companies/${cid}/payslips/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+  removePayslip:  (cid: string, id: string)            => request<any>(`/companies/${cid}/payslips/${id}`, { method: 'DELETE' }),
+  viewUrl:        (cid: string, id: string)            => `${BASE}/companies/${cid}/payslips/${id}/view`,
+  pdfUrl:         (cid: string, id: string)            => `${BASE}/companies/${cid}/payslips/${id}/pdf`,
+};

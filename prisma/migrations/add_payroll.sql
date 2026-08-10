@@ -1,0 +1,71 @@
+-- Payroll: company-scoped employee roster + generated salary slips
+
+CREATE TABLE IF NOT EXISTS employees (
+  employee_id       text PRIMARY KEY,
+  company_id        text NOT NULL REFERENCES companies(company_id),
+  emp_code          text NOT NULL,
+  name              text NOT NULL,
+  designation       text,
+  department        text,
+  gender            text,
+  email             text,
+  phone             text,
+  pan_no            text,
+  uan_no            text,
+  date_of_joining   timestamp(3),
+  date_of_leaving   timestamp(3),
+  status            text NOT NULL DEFAULT 'ACTIVE',
+  bank_name         text,
+  account_number    text,
+  ifsc              text,
+  basic             double precision NOT NULL DEFAULT 0,
+  hra               double precision NOT NULL DEFAULT 0,
+  other_allowance   double precision NOT NULL DEFAULT 0,
+  income_tax        double precision NOT NULL DEFAULT 0,
+  provident_fund    double precision NOT NULL DEFAULT 0,
+  pf_percent        double precision,
+  professional_tax  double precision NOT NULL DEFAULT 0,
+  other_deduction   double precision NOT NULL DEFAULT 0,
+  notes             text,
+  created_at        timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at        timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE UNIQUE INDEX IF NOT EXISTS employees_company_id_emp_code_key ON employees (company_id, emp_code);
+CREATE INDEX IF NOT EXISTS employees_company_id_status_idx ON employees (company_id, status);
+
+CREATE TABLE IF NOT EXISTS payslips (
+  payslip_id        text PRIMARY KEY,
+  company_id        text NOT NULL REFERENCES companies(company_id),
+  employee_id       text NOT NULL REFERENCES employees(employee_id) ON DELETE CASCADE,
+  month             integer NOT NULL,
+  year              integer NOT NULL,
+  emp_code          text NOT NULL,
+  employee_name     text NOT NULL,
+  designation       text,
+  gender            text,
+  pan_no            text,
+  date_of_joining   timestamp(3),
+  working_days      double precision NOT NULL DEFAULT 0,
+  paid_days         double precision NOT NULL DEFAULT 0,
+  basic             double precision NOT NULL DEFAULT 0,
+  hra               double precision NOT NULL DEFAULT 0,
+  other_allowance   double precision NOT NULL DEFAULT 0,
+  extra_earnings    jsonb NOT NULL DEFAULT '[]',
+  gross_earnings    double precision NOT NULL DEFAULT 0,
+  income_tax        double precision NOT NULL DEFAULT 0,
+  provident_fund    double precision NOT NULL DEFAULT 0,
+  professional_tax  double precision NOT NULL DEFAULT 0,
+  other_deduction   double precision NOT NULL DEFAULT 0,
+  extra_deductions  jsonb NOT NULL DEFAULT '[]',
+  total_deductions  double precision NOT NULL DEFAULT 0,
+  net_payable       double precision NOT NULL DEFAULT 0,
+  status            text NOT NULL DEFAULT 'DRAFT',
+  pay_mode          text,
+  paid_on           timestamp(3),
+  notes             text,
+  created_by_user_id text REFERENCES users(user_id),
+  created_at        timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at        timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE UNIQUE INDEX IF NOT EXISTS payslips_employee_id_year_month_key ON payslips (employee_id, year, month);
+CREATE INDEX IF NOT EXISTS payslips_company_id_year_month_idx ON payslips (company_id, year, month);

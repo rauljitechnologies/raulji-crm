@@ -38,7 +38,7 @@ const ROLES = [
   { value:'VIEWER',        label:'Viewer' },
 ];
 
-type PermKey = 'dashboard'|'companies'|'leads'|'pipeline'|'deals'|'clients'|'quotations'|'invoices'|'expenses'|'finance'|'analytics'|'users'|'settings'|'api'|'backup';
+type PermKey = 'dashboard'|'companies'|'leads'|'pipeline'|'deals'|'clients'|'quotations'|'invoices'|'expenses'|'finance'|'payroll'|'analytics'|'users'|'settings'|'api'|'backup';
 
 const ALL_PERMS: { key: PermKey; label: string; section: string }[] = [
   { key:'dashboard',  label:'Dashboard',      section:'Main' },
@@ -51,6 +51,7 @@ const ALL_PERMS: { key: PermKey; label: string; section: string }[] = [
   { key:'invoices',   label:'Invoices',       section:'Finance' },
   { key:'expenses',   label:'Expenses',       section:'Finance' },
   { key:'finance',    label:'Finance Overview', section:'Finance' },
+  { key:'payroll',    label:'Payroll & Payslips', section:'People' },
   { key:'analytics',  label:'Analytics',      section:'Insights' },
   { key:'users',      label:'Users & Roles',  section:'System' },
   { key:'settings',   label:'Settings',       section:'System' },
@@ -59,11 +60,11 @@ const ALL_PERMS: { key: PermKey; label: string; section: string }[] = [
 ];
 
 const ROLE_DEFAULTS: Record<string, Record<PermKey, boolean>> = {
-  SUPER_ADMIN:   { dashboard:true,companies:true,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,expenses:true,finance:true,analytics:true,users:true,settings:true,api:true,backup:true },
-  ADMIN:         { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,expenses:true,finance:true,analytics:true,users:true,settings:true,api:true,backup:false },
-  SALES_MANAGER: { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,expenses:true,finance:false,analytics:true,users:false,settings:false,api:false,backup:false },
-  SALES_REP:     { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:false,expenses:false,finance:false,analytics:false,users:false,settings:false,api:false,backup:false },
-  VIEWER:        { dashboard:true,companies:false,leads:true,pipeline:false,deals:false,clients:false,quotations:false,invoices:false,expenses:false,finance:false,analytics:true,users:false,settings:false,api:false,backup:false },
+  SUPER_ADMIN:   { dashboard:true,companies:true,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,expenses:true,finance:true,payroll:true,analytics:true,users:true,settings:true,api:true,backup:true },
+  ADMIN:         { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,expenses:true,finance:true,payroll:true,analytics:true,users:true,settings:true,api:true,backup:false },
+  SALES_MANAGER: { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:true,expenses:true,finance:false,payroll:false,analytics:true,users:false,settings:false,api:false,backup:false },
+  SALES_REP:     { dashboard:true,companies:false,leads:true,pipeline:true,deals:true,clients:true,quotations:true,invoices:false,expenses:false,finance:false,payroll:false,analytics:false,users:false,settings:false,api:false,backup:false },
+  VIEWER:        { dashboard:true,companies:false,leads:true,pipeline:false,deals:false,clients:false,quotations:false,invoices:false,expenses:false,finance:false,payroll:false,analytics:true,users:false,settings:false,api:false,backup:false },
 };
 
 function effectivePerms(user: any): Record<PermKey, boolean> {

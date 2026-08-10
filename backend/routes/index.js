@@ -17,6 +17,7 @@ const backup    = require('../controllers/backupController');
 const seo       = require('../controllers/seoController');
 const expense   = require('../controllers/expenseController');
 const finance   = require('../controllers/financeController');
+const payroll   = require('../controllers/payrollController');
 
 // Shorthand: authenticate + verify company ownership
 const authCo = [authenticate, requireCompanyAccess];
@@ -162,5 +163,22 @@ router.get(   '/companies/:companyId/investments',         ...authCo, requireRol
 router.post(  '/companies/:companyId/investments',         ...authCo, requireRole(['SUPER_ADMIN', 'ADMIN']), finance.createInvestment);
 router.put(   '/companies/:companyId/investments/:id',     ...authCo, requireRole(['SUPER_ADMIN', 'ADMIN']), finance.updateInvestment);
 router.delete('/companies/:companyId/investments/:id',     ...authCo, requireRole(['SUPER_ADMIN', 'ADMIN']), finance.deleteInvestment);
+
+// ── Payroll (employees + salary slips) — admin only ───────────────────────────
+const authAdmin = [...authCo, requireRole(['SUPER_ADMIN', 'ADMIN'])];
+router.get(   '/companies/:companyId/employees',                ...authAdmin, payroll.listEmployees);
+router.post(  '/companies/:companyId/employees',                ...authAdmin, payroll.createEmployee);
+router.get(   '/companies/:companyId/employees/next-code',      ...authAdmin, payroll.nextEmpCode);
+router.put(   '/companies/:companyId/employees/:id',            ...authAdmin, payroll.updateEmployee);
+router.delete('/companies/:companyId/employees/:id',            ...authAdmin, payroll.deleteEmployee);
+
+router.get(   '/companies/:companyId/payslips',                 ...authAdmin, payroll.listPayslips);
+router.get(   '/companies/:companyId/payslips/preview',         ...authAdmin, payroll.previewPayslips);
+router.post(  '/companies/:companyId/payslips/generate',        ...authAdmin, payroll.generatePayslips);
+router.get(   '/companies/:companyId/payslips/:id',             ...authAdmin, payroll.getPayslip);
+router.put(   '/companies/:companyId/payslips/:id',             ...authAdmin, payroll.updatePayslip);
+router.delete('/companies/:companyId/payslips/:id',             ...authAdmin, payroll.deletePayslip);
+router.get(   '/companies/:companyId/payslips/:id/view',        ...authAdmin, payroll.viewPayslip);
+router.get(   '/companies/:companyId/payslips/:id/pdf',         ...authAdmin, payroll.getPayslipPdf);
 
 module.exports = router;
