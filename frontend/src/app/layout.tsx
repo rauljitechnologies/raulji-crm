@@ -12,12 +12,14 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'Raulji CRM — Sales Intelligence Platform',
   description: 'Multi-tenant CRM for modern sales teams',
+  // Served from /public — the marketing site hotlink-protects its uploads and
+  // answers 403 to any request carrying a crm.raulji.com referer.
   icons: {
     icon: [
-      { url: 'https://www.rauljitechnologies.com/wp-content/uploads/2026/01/cropped-RAULJI-LOGO-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/logo.png', sizes: '192x192', type: 'image/png' },
     ],
-    apple: 'https://www.rauljitechnologies.com/wp-content/uploads/2026/01/cropped-RAULJI-LOGO-192x192.png',
-    shortcut: 'https://www.rauljitechnologies.com/wp-content/uploads/2026/01/cropped-RAULJI-LOGO-192x192.png',
+    apple: '/logo.png',
+    shortcut: '/logo.png',
   },
 };
 

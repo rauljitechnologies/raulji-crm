@@ -96,7 +96,7 @@ export default function Sidebar({ mobileOpen = false, onMobileClose }: { mobileO
           <div className="flex-shrink-0 flex items-center justify-center overflow-hidden"
             style={{ width: 34, height: 34, borderRadius: 11, background: 'var(--grad-brand)', padding: 3, boxShadow: '0 4px 12px -4px rgba(37,99,235,0.5)' }}>
             <Image
-              src="https://www.rauljitechnologies.com/wp-content/uploads/2026/01/cropped-RAULJI-LOGO-192x192.png"
+              src="/logo.png"
               alt="Raulji Logo"
               width={28}
               height={28}
