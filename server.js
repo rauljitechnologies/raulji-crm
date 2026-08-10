@@ -11,6 +11,13 @@ const app    = express();
 const prisma = new PrismaClient();
 const PORT   = process.env.PORT || 4000;
 
+// We sit behind exactly one nginx hop. Without this, req.ip is the proxy socket
+// (127.0.0.1) for every request, so the rate limiters below bucket all traffic
+// into a single counter — one noisy client would lock out everyone. Trust one
+// hop rather than `true`: `true` would honour a client-supplied X-Forwarded-For
+// and let callers forge their own rate-limit key.
+app.set('trust proxy', 1);
+
 // ── Validate env ──────────────────────────────────────────────────────────────
 const missing = ['DATABASE_URL', 'JWT_SECRET'].filter(v => !process.env[v]);
 if (missing.length) {
@@ -29,11 +36,29 @@ app.use(helmet({
   referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
 }));
 
-app.use(cors({
-  origin: (process.env.ALLOWED_ORIGINS || 'http://localhost:3000').split(',').map(o => o.trim()),
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key', 'X-Company-ID'],
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000').split(',').map(o => o.trim());
+
+// Public intake (/api/v1/public/*) is what customer website forms post to. It
+// authenticates by X-API-Key rather than a cookie session, so it has to accept
+// any origin — those forms live on arbitrary customer domains. Credentials stay
+// off there, so reflecting the origin carries no session-riding risk.
+// Everything else is the CRM frontend talking to us and stays pinned to
+// ALLOWED_ORIGINS with credentials on.
+app.use(cors((req, callback) => {
+  if (req.path.startsWith('/api/v1/public')) {
+    return callback(null, {
+      origin: true,
+      credentials: false,
+      methods: ['POST', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'X-API-Key'],
+    });
+  }
+  callback(null, {
+    origin: allowedOrigins,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key', 'X-Company-ID'],
+  });
 }));
 
 // ── Rate Limiters ─────────────────────────────────────────────────────────────
@@ -86,9 +111,6 @@ app.use('/api/v1/public',       publicLimiter);
 app.use('/api/v1/webhooks',     publicLimiter);
 app.use('/api/v1',              generalLimiter);
 app.use('/api/v1',              require('./backend/routes'));
-
-// ── Automation job runner ─────────────────────────────────────────────────────
-require('./backend/services/jobRunner').start();
 
 // ── Daily backup scheduler (05:00 AM IST) ────────────────────────────────────
 require('./backend/services/backupScheduler').start();

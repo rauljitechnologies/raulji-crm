@@ -47,6 +47,9 @@ model Company {
   members             UserCompany[]
   expenses        Expense[]
   bankStatements  BankStatement[]
+  investments     Investment[]
+  employees       Employee[]
+  payslips        Payslip[]
 
   @@map("companies")
 }
@@ -75,6 +78,8 @@ model User {
   companies        UserCompany[]
   createdInvoices  Invoice[]      @relation("CreatedInvoices")
   createdExpenses  Expense[]      @relation("CreatedExpenses")
+  createdInvestments Investment[] @relation("CreatedInvestments")
+  createdPayslips  Payslip[]      @relation("CreatedPayslips")
 
   @@map("users")
 }
@@ -667,6 +672,24 @@ model Expense {
   @@map("expenses")
 }
 
+model Investment {
+  investmentId    String   @id @default(cuid()) @map("investment_id")
+  companyId       String   @map("company_id")
+  date            DateTime
+  amount          Float
+  source          String                        // investor / owner name
+  type            String   @default("OWNER_FUNDS") // OWNER_FUNDS, EQUITY, LOAN, OTHER
+  notes           String?
+  createdByUserId String?  @map("created_by_user_id")
+  createdByUser   User?    @relation("CreatedInvestments", fields: [createdByUserId], references: [userId])
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  company         Company  @relation(fields: [companyId], references: [companyId])
+
+  @@index([companyId, date])
+  @@map("investments")
+}
+
 model BankStatement {
   statementId  String            @id @default(cuid()) @map("statement_id")
   companyId    String            @map("company_id")
@@ -701,4 +724,95 @@ model BankTransaction {
 
   @@index([statementId])
   @@map("bank_transactions")
+}
+
+// ── PAYROLL ────────────────────────────────────────────────────
+// Employees are company-scoped: each company keeps its own roster,
+// its own employee-code series and its own salary structures.
+model Employee {
+  employeeId      String    @id @default(cuid()) @map("employee_id")
+  companyId       String    @map("company_id")
+  empCode         String    @map("emp_code")            // e.g. INC-009
+  name            String
+  designation     String?
+  department      String?
+  gender          String?                                // Male / Female / Other
+  email           String?
+  phone           String?
+  panNo           String?   @map("pan_no")
+  uanNo           String?   @map("uan_no")               // PF universal account number
+  dateOfJoining   DateTime? @map("date_of_joining")
+  dateOfLeaving   DateTime? @map("date_of_leaving")
+  status          String    @default("ACTIVE")           // ACTIVE / INACTIVE
+  bankName        String?   @map("bank_name")
+  accountNumber   String?   @map("account_number")
+  ifsc            String?
+  // Monthly salary structure — the basis every payslip is generated from
+  basic           Float     @default(0)
+  hra             Float     @default(0)
+  otherAllowance  Float     @default(0) @map("other_allowance")
+  // Default monthly deductions
+  incomeTax       Float     @default(0) @map("income_tax")
+  providentFund   Float     @default(0) @map("provident_fund")
+  pfPercent       Float?    @map("pf_percent")           // if set, PF = basic × pfPercent%
+  professionalTax Float     @default(0) @map("professional_tax")
+  otherDeduction  Float     @default(0) @map("other_deduction")
+  notes           String?
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  company         Company   @relation(fields: [companyId], references: [companyId])
+  payslips        Payslip[]
+
+  @@unique([companyId, empCode])
+  @@index([companyId, status])
+  @@map("employees")
+}
+
+// A payslip snapshots the employee details AND the amounts at the moment it
+// was generated, so re-reading an old slip is never affected by later edits
+// to the employee record.
+model Payslip {
+  payslipId       String    @id @default(cuid()) @map("payslip_id")
+  companyId       String    @map("company_id")
+  employeeId      String    @map("employee_id")
+  month           Int                                     // 1–12
+  year            Int
+  // ── Snapshot of employee details ──
+  empCode         String    @map("emp_code")
+  employeeName    String    @map("employee_name")
+  designation     String?
+  gender          String?
+  panNo           String?   @map("pan_no")
+  dateOfJoining   DateTime? @map("date_of_joining")
+  // ── Attendance ──
+  workingDays     Float     @default(0) @map("working_days")
+  paidDays        Float     @default(0) @map("paid_days")
+  // ── Earnings ──
+  basic           Float     @default(0)
+  hra             Float     @default(0)
+  otherAllowance  Float     @default(0) @map("other_allowance")
+  extraEarnings   Json      @default("[]") @map("extra_earnings")   // [{ label, amount }]
+  grossEarnings   Float     @default(0) @map("gross_earnings")
+  // ── Deductions ──
+  incomeTax       Float     @default(0) @map("income_tax")
+  providentFund   Float     @default(0) @map("provident_fund")
+  professionalTax Float     @default(0) @map("professional_tax")
+  otherDeduction  Float     @default(0) @map("other_deduction")
+  extraDeductions Json      @default("[]") @map("extra_deductions")
+  totalDeductions Float     @default(0) @map("total_deductions")
+  netPayable      Float     @default(0) @map("net_payable")
+  status          String    @default("DRAFT")             // DRAFT / PUBLISHED / PAID
+  payMode         String?   @map("pay_mode")              // BANK / CASH / UPI / CHEQUE
+  paidOn          DateTime? @map("paid_on")
+  notes           String?
+  createdByUserId String?   @map("created_by_user_id")
+  createdByUser   User?     @relation("CreatedPayslips", fields: [createdByUserId], references: [userId])
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  company         Company   @relation(fields: [companyId], references: [companyId])
+  employee        Employee  @relation(fields: [employeeId], references: [employeeId], onDelete: Cascade)
+
+  @@unique([employeeId, year, month])
+  @@index([companyId, year, month])
+  @@map("payslips")
 }

@@ -11,6 +11,7 @@ pnpm-debug.log*
 # NEXT.JS
 # =========================
 .next/
+.next.bak/
 out/
 build/
 .next/cache/

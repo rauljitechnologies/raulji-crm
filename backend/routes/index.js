@@ -12,14 +12,12 @@ const client    = require('../controllers/clientController');
 const gst       = require('../controllers/gstController');
 const user      = require('../controllers/userController');
 const analytics = require('../controllers/analyticsController');
-const template  = require('../controllers/templateController');
-//const automation= require('../controllers/automationController');
-const campaign  = require('../controllers/campaignController');
-const comm      = require('../controllers/communicationController');
 const geo       = require('../controllers/geoController');
 const backup    = require('../controllers/backupController');
 const seo       = require('../controllers/seoController');
 const expense   = require('../controllers/expenseController');
+const finance   = require('../controllers/financeController');
+const payroll   = require('../controllers/payrollController');
 
 // Shorthand: authenticate + verify company ownership
 const authCo = [authenticate, requireCompanyAccess];
@@ -67,7 +65,7 @@ router.get(   '/companies/:companyId/leads',                    ...authCo, lead.
 router.post(  '/companies/:companyId/leads',                    ...authCo, lead.createLead);
 router.get(   '/companies/:companyId/leads/:leadId',            ...authCo, lead.getLead);
 router.put(   '/companies/:companyId/leads/:leadId',            ...authCo, lead.updateLead);
-router.delete('/companies/:companyId/leads/:leadId',            ...authCo, lead.deleteLead);
+router.delete('/companies/:companyId/leads/:leadId',            ...authCo, requireRole(['SUPER_ADMIN']), lead.deleteLead);
 router.post(  '/companies/:companyId/leads/:leadId/activities', ...authCo, lead.addActivity);
 router.post(  '/companies/:companyId/leads/:leadId/convert',    ...authCo, lead.convertToDeal);
 
@@ -121,48 +119,9 @@ router.get('/companies/:companyId/analytics/revenue',   ...authCo, analytics.get
 router.get('/companies/:companyId/analytics/team',      ...authCo, analytics.getTeam);
 router.get('/companies/:companyId/analytics/pipeline',  ...authCo, analytics.getPipeline);
 
-// ── Message Templates ─────────────────────────────────────────────────────────
-router.get(   '/companies/:companyId/templates',             ...authCo, template.list);
-router.post(  '/companies/:companyId/templates',             ...authCo, template.create);
-router.get(   '/companies/:companyId/templates/:id',         ...authCo, template.get);
-router.put(   '/companies/:companyId/templates/:id',         ...authCo, template.update);
-router.delete('/companies/:companyId/templates/:id',         ...authCo, template.remove);
-router.post(  '/companies/:companyId/templates/:id/preview', ...authCo, template.preview);
-
-// ── Automation Rules ──────────────────────────────────────────────────────────
-//router.get(   '/companies/:companyId/automation/rules',            ...authCo, automation.listRules);
-//router.post(  '/companies/:companyId/automation/rules',            ...authCo, automation.createRule);
-//router.get(   '/companies/:companyId/automation/rules/:id',        ...authCo, automation.getRule);
-//router.put(   '/companies/:companyId/automation/rules/:id',        ...authCo, automation.updateRule);
-//router.put(   '/companies/:companyId/automation/rules/:id/toggle', ...authCo, automation.toggleRule);
-//router.delete('/companies/:companyId/automation/rules/:id',        ...authCo, automation.deleteRule);
-//router.get(   '/companies/:companyId/automation/jobs',             ...authCo, automation.listJobs);
-//router.post(  '/companies/:companyId/automation/jobs/:id/retry',   ...authCo, automation.retryJob);
-
-// ── Campaigns ─────────────────────────────────────────────────────────────────
-router.get(   '/companies/:companyId/campaigns',                     ...authCo, campaign.listCampaigns);
-router.post(  '/companies/:companyId/campaigns',                     ...authCo, campaign.createCampaign);
-router.get(   '/companies/:companyId/campaigns/:id',                 ...authCo, campaign.getCampaign);
-router.put(   '/companies/:companyId/campaigns/:id',                 ...authCo, campaign.updateCampaign);
-router.delete('/companies/:companyId/campaigns/:id',                 ...authCo, campaign.deleteCampaign);
-router.post(  '/companies/:companyId/campaigns/:id/preview-audience',...authCo, campaign.previewAudience);
-router.post(  '/companies/:companyId/campaigns/:id/launch',          ...authCo, campaign.launchCampaign);
-router.post(  '/companies/:companyId/campaigns/:id/cancel',          ...authCo, campaign.cancelCampaign);
-
-// ── Communications / Timeline ─────────────────────────────────────────────────
-router.get(   '/companies/:companyId/leads/:leadId/timeline',  ...authCo, comm.getTimeline);
-router.post(  '/companies/:companyId/leads/:leadId/send',      ...authCo, comm.sendManual);
-router.get(   '/companies/:companyId/auto-reply-rules',        ...authCo, comm.getAutoReplyRules);
-router.post(  '/companies/:companyId/auto-reply-rules',        ...authCo, comm.createAutoReplyRule);
-router.put(   '/companies/:companyId/auto-reply-rules/:id',    ...authCo, comm.updateAutoReplyRule);
-router.delete('/companies/:companyId/auto-reply-rules/:id',    ...authCo, comm.deleteAutoReplyRule);
-
 // ── Geography (public, static data) ──────────────────────────────────────────
 router.get('/geo/countries',              geo.getCountries);
 router.get('/geo/countries/:code/states', geo.getStates);
-
-// ── WATI Inbound Webhook ──────────────────────────────────────────────────────
-router.post('/webhooks/wati', comm.handleWatiWebhook);
 
 // ── Backup Management (SUPER_ADMIN only) ──────────────────────────────────────
 router.get(   '/admin/backups',                    authenticate, requireRole(['SUPER_ADMIN']), backup.listBackups);
@@ -172,25 +131,6 @@ router.delete('/admin/backups/:id',                authenticate, requireRole(['S
 
 // ── Public API ────────────────────────────────────────────────────────────────
 router.post('/public/leads', apiKeyAuth, lead.createPublicLead);
-
-
-const project = require('../controllers/projectController');
-
-// ── Projects ──────────────────────────────────────────────────────────────────
-router.get(   '/companies/:companyId/projects',                                        ...authCo, project.listProjects);
-router.post(  '/companies/:companyId/projects',                                        ...authCo, project.createProject);
-router.get(   '/companies/:companyId/projects/:projectId',                             ...authCo, project.getProject);
-router.put(   '/companies/:companyId/projects/:projectId',                             ...authCo, project.updateProject);
-router.delete('/companies/:companyId/projects/:projectId',                             ...authCo, project.deleteProject);
-router.post(  '/companies/:companyId/projects/:projectId/assign',                      ...authCo, project.assignCompany);
-router.delete('/companies/:companyId/projects/:projectId/assign/:assignedCompanyId',   ...authCo, project.removeAssignment);
-router.post(  '/companies/:companyId/projects/:projectId/documents',                   ...authCo, project.addDocument);
-router.delete('/companies/:companyId/projects/:projectId/documents/:docId',            ...authCo, project.removeDocument);
-router.post(  '/companies/:companyId/projects/:projectId/credentials',                 ...authCo, project.addCredential);
-router.put(   '/companies/:companyId/projects/:projectId/credentials/:credId',         ...authCo, project.updateCredential);
-router.delete('/companies/:companyId/projects/:projectId/credentials/:credId',         ...authCo, project.removeCredential);
-router.get(   '/companies/:companyId/projects/:projectId/credentials/:credId/reveal',  ...authCo, project.getCredentialPlain);
-router.post(  '/companies/:companyId/projects/:projectId/history',                     ...authCo, project.addHistory);
 
 // ── SEO Audits ────────────────────────────────────────────────────────────────
 router.post(  '/companies/:companyId/seo/audits',                  ...authCo, seo.triggerAudit);
@@ -216,5 +156,29 @@ router.get(   '/companies/:companyId/bank-statements/:statementId/txns', ...auth
 router.get(   '/companies/:companyId/bank-transactions',                 ...authCo, expense.listAllTransactions);
 router.post(  '/companies/:companyId/reconcile',                         ...authCo, expense.reconcile);
 router.post(  '/companies/:companyId/reconcile/auto',                    ...authCo, expense.autoReconcile);
+
+// ── Finance (overview + direct investments) — admin only ──────────────────────
+router.get(   '/companies/:companyId/finance/overview',    ...authCo, requireRole(['SUPER_ADMIN', 'ADMIN']), finance.getOverview);
+router.get(   '/companies/:companyId/investments',         ...authCo, requireRole(['SUPER_ADMIN', 'ADMIN']), finance.listInvestments);
+router.post(  '/companies/:companyId/investments',         ...authCo, requireRole(['SUPER_ADMIN', 'ADMIN']), finance.createInvestment);
+router.put(   '/companies/:companyId/investments/:id',     ...authCo, requireRole(['SUPER_ADMIN', 'ADMIN']), finance.updateInvestment);
+router.delete('/companies/:companyId/investments/:id',     ...authCo, requireRole(['SUPER_ADMIN', 'ADMIN']), finance.deleteInvestment);
+
+// ── Payroll (employees + salary slips) — admin only ───────────────────────────
+const authAdmin = [...authCo, requireRole(['SUPER_ADMIN', 'ADMIN'])];
+router.get(   '/companies/:companyId/employees',                ...authAdmin, payroll.listEmployees);
+router.post(  '/companies/:companyId/employees',                ...authAdmin, payroll.createEmployee);
+router.get(   '/companies/:companyId/employees/next-code',      ...authAdmin, payroll.nextEmpCode);
+router.put(   '/companies/:companyId/employees/:id',            ...authAdmin, payroll.updateEmployee);
+router.delete('/companies/:companyId/employees/:id',            ...authAdmin, payroll.deleteEmployee);
+
+router.get(   '/companies/:companyId/payslips',                 ...authAdmin, payroll.listPayslips);
+router.get(   '/companies/:companyId/payslips/preview',         ...authAdmin, payroll.previewPayslips);
+router.post(  '/companies/:companyId/payslips/generate',        ...authAdmin, payroll.generatePayslips);
+router.get(   '/companies/:companyId/payslips/:id',             ...authAdmin, payroll.getPayslip);
+router.put(   '/companies/:companyId/payslips/:id',             ...authAdmin, payroll.updatePayslip);
+router.delete('/companies/:companyId/payslips/:id',             ...authAdmin, payroll.deletePayslip);
+router.get(   '/companies/:companyId/payslips/:id/view',        ...authAdmin, payroll.viewPayslip);
+router.get(   '/companies/:companyId/payslips/:id/pdf',         ...authAdmin, payroll.getPayslipPdf);
 
 module.exports = router;

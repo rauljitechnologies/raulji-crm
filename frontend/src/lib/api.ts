@@ -127,38 +127,6 @@ export const userApi = {
   removeFromCompany:    (uid: string, cid: string)                                => request<any>(`/admin/users/${uid}/companies/${cid}`,        { method: 'DELETE' }),
 };
 
-// Message Templates
-export const templateApi = {
-  list:    (cid: string, params?: any) => request<any>(`/companies/${cid}/templates?${new URLSearchParams(params||{})}`),
-  get:     (cid: string, id: string)   => request<any>(`/companies/${cid}/templates/${id}`),
-  create:  (cid: string, body: any)    => request<any>(`/companies/${cid}/templates`, { method: 'POST', body: JSON.stringify(body) }),
-  update:  (cid: string, id: string, body: any) => request<any>(`/companies/${cid}/templates/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
-  remove:  (cid: string, id: string)   => request<any>(`/companies/${cid}/templates/${id}`, { method: 'DELETE' }),
-  preview: (cid: string, id: string, lead?: any) => request<any>(`/companies/${cid}/templates/${id}/preview`, { method: 'POST', body: JSON.stringify({ lead }) }),
-};
-
-// Campaigns
-export const campaignApi = {
-  list:            (cid: string)                        => request<any>(`/companies/${cid}/campaigns`),
-  get:             (cid: string, id: string)            => request<any>(`/companies/${cid}/campaigns/${id}`),
-  create:          (cid: string, body: any)             => request<any>(`/companies/${cid}/campaigns`, { method: 'POST', body: JSON.stringify(body) }),
-  update:          (cid: string, id: string, body: any) => request<any>(`/companies/${cid}/campaigns/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
-  previewAudience: (cid: string, id: string)            => request<any>(`/companies/${cid}/campaigns/${id}/preview-audience`, { method: 'POST' }),
-  launch:          (cid: string, id: string)            => request<any>(`/companies/${cid}/campaigns/${id}/launch`, { method: 'POST' }),
-  cancel:          (cid: string, id: string)            => request<any>(`/companies/${cid}/campaigns/${id}/cancel`, { method: 'POST' }),
-  remove:          (cid: string, id: string)            => request<any>(`/companies/${cid}/campaigns/${id}`, { method: 'DELETE' }),
-};
-
-// Communications
-export const commApi = {
-  getTimeline:         (cid: string, leadId: string)             => request<any>(`/companies/${cid}/leads/${leadId}/timeline`),
-  sendManual:          (cid: string, leadId: string, body: any)  => request<any>(`/companies/${cid}/leads/${leadId}/send`, { method: 'POST', body: JSON.stringify(body) }),
-  getAutoReplyRules:   (cid: string)                             => request<any>(`/companies/${cid}/auto-reply-rules`),
-  createAutoReplyRule: (cid: string, body: any)                  => request<any>(`/companies/${cid}/auto-reply-rules`, { method: 'POST', body: JSON.stringify(body) }),
-  updateAutoReplyRule: (cid: string, id: string, body: any)      => request<any>(`/companies/${cid}/auto-reply-rules/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
-  deleteAutoReplyRule: (cid: string, id: string)                 => request<any>(`/companies/${cid}/auto-reply-rules/${id}`, { method: 'DELETE' }),
-};
-
 // Geography
 export const geoApi = {
   countries: ()                   => request<any>('/geo/countries'),
@@ -172,23 +140,6 @@ export const analyticsApi = {
   pipeline: (cid: string) => request<any>(`/companies/${cid}/analytics/pipeline`),
 };
 
-// Projects
-export const projectApi = {
-  list:             (cid: string, params?: any) => request<any>(`/companies/${cid}/projects${params ? '?' + new URLSearchParams(params) : ''}`),
-  create:           (cid: string, body: any)    => request<any>(`/companies/${cid}/projects`, { method: 'POST', body: JSON.stringify(body) }),
-  get:              (cid: string, pid: string)  => request<any>(`/companies/${cid}/projects/${pid}`),
-  update:           (cid: string, pid: string, body: any) => request<any>(`/companies/${cid}/projects/${pid}`, { method: 'PUT', body: JSON.stringify(body) }),
-  remove:           (cid: string, pid: string)  => request<any>(`/companies/${cid}/projects/${pid}`, { method: 'DELETE' }),
-  assignCompany:    (cid: string, pid: string, body: any) => request<any>(`/companies/${cid}/projects/${pid}/assign`, { method: 'POST', body: JSON.stringify(body) }),
-  removeAssignment: (cid: string, pid: string, assignedCid: string) => request<any>(`/companies/${cid}/projects/${pid}/assign/${assignedCid}`, { method: 'DELETE' }),
-  addDocument:      (cid: string, pid: string, body: any) => request<any>(`/companies/${cid}/projects/${pid}/documents`, { method: 'POST', body: JSON.stringify(body) }),
-  removeDocument:   (cid: string, pid: string, docId: string) => request<any>(`/companies/${cid}/projects/${pid}/documents/${docId}`, { method: 'DELETE' }),
-  addCredential:    (cid: string, pid: string, body: any) => request<any>(`/companies/${cid}/projects/${pid}/credentials`, { method: 'POST', body: JSON.stringify(body) }),
-  updateCredential: (cid: string, pid: string, credId: string, body: any) => request<any>(`/companies/${cid}/projects/${pid}/credentials/${credId}`, { method: 'PUT', body: JSON.stringify(body) }),
-  removeCredential: (cid: string, pid: string, credId: string) => request<any>(`/companies/${cid}/projects/${pid}/credentials/${credId}`, { method: 'DELETE' }),
-  revealCredential: (cid: string, pid: string, credId: string) => request<any>(`/companies/${cid}/projects/${pid}/credentials/${credId}/reveal`),
-  addHistory:       (cid: string, pid: string, body: any) => request<any>(`/companies/${cid}/projects/${pid}/history`, { method: 'POST', body: JSON.stringify(body) }),
-};
 
 // Backup (SUPER_ADMIN only)
 export const backupApi = {
@@ -213,4 +164,30 @@ export const expenseApi = {
   reconcile:      (cid: string, body: any)                 => request<any>(`/companies/${cid}/reconcile`, { method: 'POST', body: JSON.stringify(body) }),
   autoReconcile:  (cid: string)                            => request<any>(`/companies/${cid}/reconcile/auto`, { method: 'POST', body: '{}' }),
   listAllTxns:    (cid: string, params?: any)              => request<any>(`/companies/${cid}/bank-transactions?${new URLSearchParams(params||{})}`),
+};
+
+// Finance (overview + direct investments)
+export const financeApi = {
+  overview:    (cid: string, params?: any)          => request<any>(`/companies/${cid}/finance/overview?${new URLSearchParams(params||{})}`),
+  listInv:     (cid: string, params?: any)          => request<any>(`/companies/${cid}/investments?${new URLSearchParams(params||{})}`),
+  createInv:   (cid: string, body: any)             => request<any>(`/companies/${cid}/investments`, { method: 'POST', body: JSON.stringify(body) }),
+  updateInv:   (cid: string, id: string, body: any) => request<any>(`/companies/${cid}/investments/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+  removeInv:   (cid: string, id: string)            => request<any>(`/companies/${cid}/investments/${id}`, { method: 'DELETE' }),
+};
+
+// Payroll (employees + salary slips)
+export const payrollApi = {
+  listEmployees:  (cid: string, params?: any)          => request<any>(`/companies/${cid}/employees?${new URLSearchParams(params||{})}`),
+  createEmployee: (cid: string, body: any)             => request<any>(`/companies/${cid}/employees`, { method: 'POST', body: JSON.stringify(body) }),
+  updateEmployee: (cid: string, id: string, body: any) => request<any>(`/companies/${cid}/employees/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+  removeEmployee: (cid: string, id: string)            => request<any>(`/companies/${cid}/employees/${id}`, { method: 'DELETE' }),
+  nextEmpCode:    (cid: string, prefix?: string)       => request<any>(`/companies/${cid}/employees/next-code?${new URLSearchParams(prefix ? { prefix } : {})}`),
+
+  listPayslips:   (cid: string, params?: any)          => request<any>(`/companies/${cid}/payslips?${new URLSearchParams(params||{})}`),
+  previewSlips:   (cid: string, params: any)           => request<any>(`/companies/${cid}/payslips/preview?${new URLSearchParams(params)}`),
+  generateSlips:  (cid: string, body: any)             => request<any>(`/companies/${cid}/payslips/generate`, { method: 'POST', body: JSON.stringify(body) }),
+  updatePayslip:  (cid: string, id: string, body: any) => request<any>(`/companies/${cid}/payslips/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+  removePayslip:  (cid: string, id: string)            => request<any>(`/companies/${cid}/payslips/${id}`, { method: 'DELETE' }),
+  viewUrl:        (cid: string, id: string)            => `${BASE}/companies/${cid}/payslips/${id}/view`,
+  pdfUrl:         (cid: string, id: string)            => `${BASE}/companies/${cid}/payslips/${id}/pdf`,
 };
