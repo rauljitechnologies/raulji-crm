@@ -205,12 +205,15 @@ function buildHtml(data, type, opts = {}) {
     </tr>` : '';
 
   // ── Bank details block ────────────────────────────────────
-  const bankBlock = isInv && coBank.bankName ? `
+  // Invoices snapshot bank fields at creation, so fall back to the company's current UPI ID
+  const upiId = String(coBank.upiId || co.bankDetails?.upiId || '').trim()
+    .replace(/[&<>"']/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch]));
+  const bankBlock = isInv && (coBank.bankName || upiId) ? `
     <table cellpadding="0" cellspacing="0" style="width:100%;margin-top:20px;border-collapse:collapse">
       <tr><td colspan="4" style="padding:0 0 10px 0">
         <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#1f293f;border-bottom:2px solid #3199d4;padding-bottom:6px;margin-bottom:4px">Payment Details</div>
       </td></tr>
-      <tr>
+      ${coBank.bankName ? `<tr>
         <td style="padding:4px 8px 4px 0;font-size:12px;color:#64748b;width:120px">Bank</td>
         <td style="padding:4px 16px 4px 0;font-size:12px;font-weight:600;color:#0f172a">${coBank.bankName}</td>
         <td style="padding:4px 8px 4px 0;font-size:12px;color:#64748b;width:120px">Account Name</td>
@@ -221,10 +224,10 @@ function buildHtml(data, type, opts = {}) {
         <td style="padding:4px 16px 4px 0;font-size:13px;font-weight:700;color:#0f172a;font-family:monospace">${coBank.accountNumber || ''}</td>
         <td style="padding:4px 8px 4px 0;font-size:12px;color:#64748b">IFSC</td>
         <td style="padding:4px 0;font-size:12px;font-weight:700;color:#0f172a;font-family:monospace">${coBank.ifsc || ''}</td>
-      </tr>
-      ${coBank.upiId ? `<tr>
-        <td style="padding:4px 8px 4px 0;font-size:12px;color:#64748b">UPI ID</td>
-        <td colspan="3" style="padding:4px 0;font-size:12px;font-weight:600;color:#3199d4">${coBank.upiId}</td>
+      </tr>` : ''}
+      ${upiId ? `<tr>
+        <td style="padding:4px 8px 4px 0;font-size:12px;color:#64748b;width:120px">UPI ID</td>
+        <td colspan="3" style="padding:4px 0;font-size:13px;font-weight:700;color:#3199d4">${upiId}</td>
       </tr>` : ''}
     </table>` : '';
   // Invoices snapshot bank fields at creation, so fall back to the company's current QR
@@ -233,6 +236,7 @@ function buildHtml(data, type, opts = {}) {
     <div style="text-align:center;padding:8px;border:1px solid #e2e8f0;border-radius:8px;background:#fff">
       <img src="${payQr}" alt="Payment QR" style="width:120px;height:120px;object-fit:contain;display:block;margin:0 auto">
       <div style="font-size:10px;font-weight:700;color:#1f293f;margin-top:4px;text-transform:uppercase;letter-spacing:.5px">Scan to Pay</div>
+      ${upiId ? `<div style="font-size:10px;color:#3199d4;font-weight:600;margin-top:2px;word-break:break-all">${upiId}</div>` : ''}
     </div>` : '';
   const payBlock = bankBlock && qrCell
     ? `<table cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse"><tr>
