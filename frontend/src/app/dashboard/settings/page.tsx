@@ -16,7 +16,7 @@ export default function SettingsPage() {
     address: { line1:'', city:'', state:'', pincode:'', country:'India' }
   });
   const [bank, setBank] = useState({
-    bankName:'', accountNumber:'', ifsc:'', accountName:'', upiId:'', paymentTerms:'Net 30'
+    bankName:'', accountNumber:'', ifsc:'', accountName:'', upiId:'', paymentTerms:'Net 30', qrCode:''
   });
   const [general, setGeneral] = useState({ currency:'INR', timezone:'Asia/Kolkata', gstRate:'18', invoicePrefix:'INV', quotationPrefix:'QT' });
   const [integrations, setIntegrations] = useState({
@@ -41,7 +41,7 @@ export default function SettingsPage() {
       const bd   = d.bankDetails || {};
       const s    = d.settings || {};
       setProfile({ name:d.name||'', logo:d.logo||'', phone:d.phone||'', email:d.email||'', website:d.website||'', gst:d.gst||'', udyamNumber:s.udyamNumber||'', address:{line1:a.line1||'',city:a.city||'',state:a.state||'',pincode:a.pincode||'',country:a.country||'India'} });
-      setBank({ bankName:bd.bankName||'', accountNumber:bd.accountNumber||'', ifsc:bd.ifsc||'', accountName:bd.accountName||'', upiId:bd.upiId||'', paymentTerms:bd.paymentTerms||'Net 30' });
+      setBank({ bankName:bd.bankName||'', accountNumber:bd.accountNumber||'', ifsc:bd.ifsc||'', accountName:bd.accountName||'', upiId:bd.upiId||'', paymentTerms:bd.paymentTerms||'Net 30', qrCode:bd.qrCode||'' });
       setGeneral({ currency:s.currency||'INR', timezone:s.timezone||'Asia/Kolkata', gstRate:String(s.gstRate||18), invoicePrefix:s.invoicePrefix||'INV', quotationPrefix:s.quotationPrefix||'QT' });
       setIntegrations({
         gaTrackingId:  s.gaTrackingId  || '',
@@ -68,6 +68,18 @@ export default function SettingsPage() {
     setSaving(true);
     try { await companyApi.updateSettings(cid, { bankDetails: bank }); toast('Billing details saved — will appear on all invoices!'); }
     catch(e:any){ toast(e.message,'err'); } finally { setSaving(false); }
+  };
+
+  // Payment QR is stored inline as a data URL so the PDF renderer never has to fetch it
+  const onQrFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    if (!/^image\/(png|jpe?g|webp)$/.test(file.type)) { toast('QR code must be a PNG, JPG or WEBP image','err'); return; }
+    if (file.size > 1024 * 1024) { toast('QR image must be under 1 MB','err'); return; }
+    const reader = new FileReader();
+    reader.onload = () => setBank(b => ({ ...b, qrCode: String(reader.result) }));
+    reader.readAsDataURL(file);
   };
 
   const saveGeneral = async () => {
@@ -221,6 +233,26 @@ export default function SettingsPage() {
                   <Sel   label="Default Payment Terms" value={bank.paymentTerms} onChange={e=>setBank(b=>({...b,paymentTerms:e.target.value}))}
                     options={[{value:'Net 30',label:'Net 30 Days'},{value:'Net 15',label:'Net 15 Days'},{value:'Net 7',label:'Net 7 Days'},{value:'Due on Receipt',label:'Due on Receipt'},{value:'50% Advance',label:'50% Advance'}]} />
                 </div>
+                {/* Payment QR */}
+                <div className="border border-slate-200 rounded-xl p-4">
+                  <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Payment QR Code</div>
+                  <div className="flex items-center gap-4">
+                    {bank.qrCode
+                      ? <img src={bank.qrCode} alt="Payment QR" className="h-28 w-28 rounded-lg object-contain border border-slate-200 bg-white p-1" />
+                      : <div className="h-28 w-28 rounded-lg border-2 border-dashed border-slate-200 flex items-center justify-center text-xs text-slate-400 text-center px-2">No QR uploaded</div>}
+                    <div className="flex flex-col gap-2">
+                      <div className="text-xs text-slate-500 leading-relaxed">Upload your UPI / payment QR. It prints in the Payment Details section of every invoice PDF so clients can scan and pay.</div>
+                      <div className="flex gap-2">
+                        <label className="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-semibold cursor-pointer hover:bg-slate-700">
+                          {bank.qrCode ? 'Replace QR' : 'Upload QR'}
+                          <input type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={onQrFile} />
+                        </label>
+                        {bank.qrCode && <Btn variant="ghost" onClick={()=>setBank(b=>({...b,qrCode:''}))}>Remove</Btn>}
+                      </div>
+                      <div className="text-[11px] text-slate-400">PNG / JPG / WEBP, max 1 MB. Click “Save Billing Details” to apply.</div>
+                    </div>
+                  </div>
+                </div>
                 {/* Preview */}
                 {bank.bankName && (
                   <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mt-2">
@@ -234,6 +266,7 @@ export default function SettingsPage() {
                         <div><span className="text-slate-400">IFSC: </span><span className="font-mono font-bold">{bank.ifsc}</span></div>
                         {bank.upiId && <div className="col-span-2"><span className="text-slate-400">UPI: </span><span className="text-indigo-600 font-bold">{bank.upiId}</span></div>}
                       </div>
+                      {bank.qrCode && <div className="mt-3 flex items-center gap-3"><img src={bank.qrCode} alt="QR" className="h-20 w-20 bg-white border border-slate-200 rounded p-1" /><span className="text-slate-500">Scan to Pay</span></div>}
                     </div>
                   </div>
                 )}

@@ -227,6 +227,19 @@ function buildHtml(data, type, opts = {}) {
         <td colspan="3" style="padding:4px 0;font-size:12px;font-weight:600;color:#3199d4">${coBank.upiId}</td>
       </tr>` : ''}
     </table>` : '';
+  // Invoices snapshot bank fields at creation, so fall back to the company's current QR
+  const payQr = isInv ? (coBank.qrCode || co.bankDetails?.qrCode || '') : '';
+  const qrCell = /^data:image\/(png|jpe?g|webp);base64,[A-Za-z0-9+/=]+$/.test(payQr) ? `
+    <div style="text-align:center;padding:8px;border:1px solid #e2e8f0;border-radius:8px;background:#fff">
+      <img src="${payQr}" alt="Payment QR" style="width:120px;height:120px;object-fit:contain;display:block;margin:0 auto">
+      <div style="font-size:10px;font-weight:700;color:#1f293f;margin-top:4px;text-transform:uppercase;letter-spacing:.5px">Scan to Pay</div>
+    </div>` : '';
+  const payBlock = bankBlock && qrCell
+    ? `<table cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse"><tr>
+        <td style="vertical-align:top">${bankBlock}</td>
+        <td style="vertical-align:bottom;width:150px;padding-left:20px">${qrCell}</td>
+      </tr></table>`
+    : bankBlock || (qrCell ? `<div style="margin-top:20px;width:150px">${qrCell}</div>` : '');
 
   // ── Address lines ─────────────────────────────────────────
   const coAddrLine = [addr.line1, addr.city, addr.state, addr.pincode].filter(Boolean).join(', ');
@@ -392,7 +405,7 @@ ${taxSummaryBlock}
 </table>
 
 <!-- BANK DETAILS -->
-${bankBlock ? `<div style="padding:0 40px 20px">${bankBlock}</div>` : ''}
+${payBlock ? `<div style="padding:0 40px 20px">${payBlock}</div>` : ''}
 
 
 </div><!-- /max-width wrapper -->

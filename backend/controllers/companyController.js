@@ -129,6 +129,11 @@ exports.getSettings = async (req, res) => {
 exports.updateSettings = async (req, res) => {
   try {
     const { phone, email, website, address, gst, logo, bankDetails, ...settingsFields } = req.body;
+    const qr = bankDetails?.qrCode;
+    if (qr && !/^data:image\/(png|jpe?g|webp);base64,[A-Za-z0-9+/=]+$/.test(qr))
+      return res.status(400).json({ success:false, error:{ message:'QR code must be a PNG, JPG or WEBP image' } });
+    if (qr && qr.length > 1.5 * 1024 * 1024)
+      return res.status(400).json({ success:false, error:{ message:'QR image must be under 1 MB' } });
     const co      = await prisma.company.findUnique({ where:{ companyId:req.params.companyId } });
     const merged  = { ...(co.settings || {}), ...settingsFields };
     const updateData = { settings: merged };
