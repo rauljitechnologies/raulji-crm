@@ -43,7 +43,7 @@ export default function LoginPage() {
 
         <div className="relative flex items-center gap-3">
           <div className="flex items-center justify-center" style={{ width: 40, height: 40, borderRadius: 13, background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.22)', backdropFilter: 'blur(8px)' }}>
-            <img src="https://www.rauljitechnologies.com/wp-content/uploads/2026/01/cropped-RAULJI-LOGO-192x192.png" alt="Raulji" width={26} height={26} style={{ borderRadius: 7, background: '#fff' }} />
+            <img src="/logo.png" alt="Raulji" width={26} height={26} style={{ borderRadius: 7, background: '#fff' }} />
           </div>
           <div>
             <div style={{ color: '#fff', fontSize: 16, fontWeight: 800, letterSpacing: '-0.01em' }}>Raulji CRM</div>
@@ -81,7 +81,7 @@ export default function LoginPage() {
           {/* Mobile logo */}
           <div className="lg:hidden text-center mb-8">
             <div className="mx-auto mb-3 flex items-center justify-center" style={{ width: 52, height: 52, borderRadius: 16, background: 'var(--grad-brand)', boxShadow: '0 10px 24px -8px rgba(37,99,235,0.5)' }}>
-              <img src="https://www.rauljitechnologies.com/wp-content/uploads/2026/01/cropped-RAULJI-LOGO-192x192.png" alt="Raulji" width={32} height={32} style={{ borderRadius: 9, background: '#fff' }} />
+              <img src="/logo.png" alt="Raulji" width={32} height={32} style={{ borderRadius: 9, background: '#fff' }} />
             </div>
             <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.02em' }}>Raulji CRM</h1>
             <p style={{ fontSize: 12, color: 'var(--text-2)', marginTop: 2 }}>Sales Intelligence Platform</p>
